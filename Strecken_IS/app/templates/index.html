@@ -1,19 +1,63 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <h1 class="mt-5 mb-4">Hi, {{ current_user.username }}!</h1>
-                {% for post in posts %}
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ post.author.username }} says:</h5>
-                            <p class="card-text"><b>{{ post.body }}</b></p>
-                        </div>
-                    </div>
-                {% endfor %}
+<head>
+    <!-- Andere Meta-Tags und Stile -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mt-5 mb-4">Hi, {{ current_user.username }}!</h1>
+            {% for post in posts %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.author.username }} says:</h5>
+                    <p class="card-text"><b>{{ post.body }}</b></p>
+                </div>
             </div>
+            {% endfor %}
         </div>
     </div>
+
+    <!-- Karte -->
+    <div id="mapid" style="height: 400px; margin-top: 20px;"></div>
+</div>
+
+<script>
+    var mymap = L.map('mapid').setView([47.8095, 14.0119], 8); // Zentriert die Karte auf Österreich
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(mymap);
+
+    // Marker für die verschiedenen Orte
+    var locations = [
+        {name: "Salzburg", coordinates: [47.8095, 13.0550]},
+        {name: "Vöcklabruck", coordinates: [48.0149, 13.6570]},
+        {name: "Attnang-Puchheim", coordinates: [48.0120, 13.7872]},
+        {name: "Wels", coordinates: [48.1667, 14.0333]},
+        {name: "Linz", coordinates: [48.3064, 14.3008]},
+        {name: "St. Valentin", coordinates: [48.1941, 14.5164]},
+        {name: "Amstetten", coordinates: [48.1235, 14.8759]},
+        {name: "St. Pölten", coordinates: [48.2045, 15.6226]},
+        {name: "Wien Meidling", coordinates: [48.1780, 16.3286]},
+        {name: "Wien", coordinates: [48.2082, 16.3738]}
+    ];
+var latlngs = [];
+for (var i = 0; i < locations.length; i++) {
+    var marker = L.marker(locations[i].coordinates).addTo(mymap);
+    marker.bindPopup("<b>" + locations[i].name + "</b> <br> <a class=\"nav-link\" href='orf.at'>Details</a>");
+}
+ var latlngs = locations.map(function(location) {
+        return location.coordinates;
+    });
+    var polyline = L.polyline(latlngs, {color: 'green'}).addTo(mymap);
+
+    // Popup für die Polylinie
+    polyline.bindPopup("<b>Route durch Österreich!</b><br>Dies verbindet die verschiedenen Orte.").openPopup();
+
+</script>
+
 {% endblock %}
