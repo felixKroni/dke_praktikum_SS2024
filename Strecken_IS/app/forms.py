@@ -1,12 +1,23 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, IntegerField, DateField, TextAreaField
 from wtforms.validators import DataRequired
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 import sqlalchemy as sa
 from app import db
 from app.models import User
+from app.models import Bahnhof
+from app.models import Abschnitt
+from app.models import Strecke
+
+def get_bahnhof_choices():
+    return [(b.name, b.name) for b in Bahnhof.query.all()]
+
+def get_abschnitt_choices():
+    return [(a.abschnitt_id, a.abschnitt_id) for a in Abschnitt.query.all()]
+
+def get_strecke_choices():
+    return [(s.name, s.name) for s in Strecke.query.all()]
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -41,3 +52,24 @@ class BahnhofForm(FlaskForm):
     latitude = FloatField('Latitude', validators=[DataRequired()])
     longitude = FloatField('Longitude', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class AbschnittForm(FlaskForm):
+    startbahnhof_id = SelectField('Startbahnhof', choices=get_bahnhof_choices, validators=[DataRequired()])
+    endbahnhof_id = SelectField('Endbahnhof', choices=get_bahnhof_choices, validators=[DataRequired()])
+    strecke = SelectField('Strecke', choices=get_strecke_choices, validators=[DataRequired()])
+    maximale_geschwindigkeit = IntegerField('Maximale Geschwindigkeit', validators=[DataRequired()])
+    maximale_spurweite = IntegerField('Maximale Spurweite', validators=[DataRequired()])
+    nutzungsentgelt = IntegerField('Nutzungsentgelt', validators=[DataRequired()])
+    distanz = IntegerField('Distanz', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class WarnungForm(FlaskForm):
+    abschnitt_id_warnung = SelectField('Abschnitt', choices=get_abschnitt_choices, validators=[DataRequired()])
+    titel = StringField('Titel', validators=[DataRequired()])
+    gueltigkeitsdatum = DateField('Gültigkeitsdatum', format='%Y-%m-%d', validators=[DataRequired()])
+    beschreibung = TextAreaField('Beschreibung', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class StreckeForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    submit = SubmitField('Speichern')

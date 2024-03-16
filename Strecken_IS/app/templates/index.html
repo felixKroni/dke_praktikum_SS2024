@@ -32,19 +32,12 @@
         maxZoom: 19,
     }).addTo(mymap);
 
-    // Marker für die verschiedenen Orte
     var locations = [
-        {name: "Salzburg", coordinates: [47.8095, 13.0550]},
-        {name: "Vöcklabruck", coordinates: [48.0149, 13.6570]},
-        {name: "Attnang-Puchheim", coordinates: [48.0120, 13.7872]},
-        {name: "Wels", coordinates: [48.1667, 14.0333]},
-        {name: "Linz", coordinates: [48.3064, 14.3008]},
-        {name: "St. Valentin", coordinates: [48.1941, 14.5164]},
-        {name: "Amstetten", coordinates: [48.1235, 14.8759]},
-        {name: "St. Pölten", coordinates: [48.2045, 15.6226]},
-        {name: "Wien Meidling", coordinates: [48.1780, 16.3286]},
-        {name: "Wien", coordinates: [48.2082, 16.3738]}
+        {% for bahnhof in bahnhof %}
+        {name: "{{ bahnhof.name }}", coordinates: [{{ bahnhof.latitude }}, {{ bahnhof.longitude }}]},
+        {% endfor %}
     ];
+console.log(locations);
 var latlngs = [];
 for (var i = 0; i < locations.length; i++) {
     var marker = L.marker(locations[i].coordinates).addTo(mymap);

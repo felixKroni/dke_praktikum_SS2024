@@ -13,11 +13,18 @@ from app import db
 from app.forms import RegistrationForm
 from app.forms import BahnhofForm
 from app.models import Bahnhof
+from app.forms import AbschnittForm
+from app.models import Abschnitt
+from app.forms import WarnungForm
+from app.models import Warnung
+from app.forms import StreckeForm
+from app.models import Strecke
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
+    bahnhof = Bahnhof.query.all()
     posts = [
         {
             'author': {'username': 'John'},
@@ -28,7 +35,7 @@ def index():
             'body': 'The Avengers movie was so cool!'
         }
     ]
-    return render_template("index.html", title='Home Page', posts=posts)
+    return render_template("index.html", title='Home Page', posts=posts, bahnhof=bahnhof)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -102,3 +109,97 @@ def delete_bahnhof(name):
     db.session.commit()
     flash('Der Bahnhof wurde gelöscht.')
     return redirect(url_for('bahnhof'))
+
+@app.route('/abschnitt', methods=['GET', 'POST'])
+def abschnitt():
+    form = AbschnittForm()
+    if form.validate_on_submit():
+        abschnitt = Abschnitt(startbahnhof_id=form.startbahnhof_id.data, endbahnhof_id=form.endbahnhof_id.data, maximale_geschwindigkeit=form.maximale_geschwindigkeit.data, maximale_spurweite=form.maximale_spurweite.data, nutzungsentgelt=form.nutzungsentgelt.data, distanz=form.distanz.data)
+        db.session.add(abschnitt)
+        db.session.commit()
+        flash('Der Abschnitt wurde erfolgreich hinzugefügt!')
+        return redirect(url_for('abschnitt'))
+    abschnitte = Abschnitt.query.all()
+    return render_template('abschnitt.html', title='Abschnitt', abschnitte=abschnitte, form=form)
+
+@app.route('/abschnitt/edit/<startbahnhof_id>/<endbahnhof_id>', methods=['GET', 'POST'])
+def edit_abschnitt(startbahnhof_id, endbahnhof_id):
+    abschnitt = Abschnitt.query.get_or_404((startbahnhof_id, endbahnhof_id))
+    form = AbschnittForm(obj=abschnitt)
+    if form.validate_on_submit():
+        form.populate_obj(abschnitt)
+        db.session.commit()
+        flash('Die Änderungen wurden gespeichert.')
+        return redirect(url_for('abschnitt'))
+    return render_template('edit_abschnitt.html', form=form)
+
+@app.route('/abschnitt/delete/<startbahnhof_id>/<endbahnhof_id>', methods=['POST'])
+def delete_abschnitt(startbahnhof_id, endbahnhof_id):
+    abschnitt = Abschnitt.query.get_or_404((startbahnhof_id, endbahnhof_id))
+    db.session.delete(abschnitt)
+    db.session.commit()
+    flash('Der Abschnitt wurde erfolgreich gelöscht.')
+    return redirect(url_for('abschnitt'))
+
+@app.route('/warnungen', methods=['GET', 'POST'])
+def warnungen():
+    form = WarnungForm()
+    if form.validate_on_submit():
+        warnung = Warnung(abschnitt_id_warnung=form.abschnitt_id_warnung.data, titel=form.titel.data, gueltigkeitsdatum=form.gueltigkeitsdatum.data, beschreibung=form.beschreibung.data)
+        db.session.add(warnung)
+        db.session.commit()
+        flash('Warnung hinzugefügt')
+        return redirect(url_for('warnungen'))
+    warnungen = Warnung.query.all()
+    return render_template('warnungen.html', title='Warnungen', warnungen=warnungen, form=form)
+
+@app.route('/warnung/edit/<int:abschnitt_id_warnung>', methods=['GET', 'POST'])
+def edit_warnung(abschnitt_id_warnung):
+    warnung = Warnung.query.get_or_404(abschnitt_id_warnung)
+    form = WarnungForm(obj=warnung)
+    if form.validate_on_submit():
+        form.populate_obj(warnung)
+        db.session.commit()
+        flash('Die Änderungen wurden gespeichert.')
+        return redirect(url_for('warnungen'))
+    return render_template('edit_warnung.html', form=form)
+
+@app.route('/warnung/delete/<int:abschnitt_id_warnung>', methods=['POST'])
+def delete_warnung(abschnitt_id_warnung):
+    warnung = Warnung.query.get_or_404(abschnitt_id_warnung)
+    db.session.delete(warnung)
+    db.session.commit()
+    flash('Warnung gelöscht')
+    return redirect(url_for('warnungen'))
+
+
+@app.route('/strecke', methods=['GET', 'POST'])
+def strecke():
+    form = StreckeForm()
+    if form.validate_on_submit():
+        strecke = Strecke(name=form.name.data)
+        db.session.add(strecke)
+        db.session.commit()
+        flash('Die Strecke wurde erfolgreich erstellt.')
+        return redirect(url_for('index'))
+    strecken = Strecke.query.all()  # Alle Strecken abrufen
+    return render_template('strecke.html', form=form, strecken=strecken)
+
+@app.route('/strecke/<name>', methods=['GET', 'POST'])
+def edit_strecke(name):
+    strecke = Strecke.query.get_or_404(name)
+    form = StreckeForm(obj=strecke)
+    if form.validate_on_submit():
+        form.populate_obj(strecke)
+        db.session.commit()
+        flash('Die Strecke wurde erfolgreich aktualisiert.')
+        return redirect(url_for('index'))
+    return render_template('edit_strecke.html', form=form)
+
+@app.route('/strecke/<name>/delete', methods=['POST'])
+def delete_strecke(name):
+    strecke = Strecke.query.get_or_404(name)
+    db.session.delete(strecke)
+    db.session.commit()
+    flash('Die Strecke wurde erfolgreich gelöscht.')
+    return redirect(url_for('index'))

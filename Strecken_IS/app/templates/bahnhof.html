@@ -28,6 +28,8 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Adresse</th>
+                    <th scope="col">Breitengrad</th>
+                    <th scope="col">Längengrad</th>
                     <th scope="col">Aktionen</th>
                 </tr>
             </thead>
@@ -36,6 +38,8 @@
                 <tr>
                     <td>{{ bahnhof.name }}</td>
                     <td>{{ bahnhof.adresse }}</td>
+                    <td>{{ bahnhof.latitude }}</td>
+                    <td>{{ bahnhof.longitude }}</td>
                     <td>
                         <a href="{{ url_for('edit_bahnhof', name=bahnhof.name) }}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
                         <form action="{{ url_for('delete_bahnhof', name=bahnhof.name) }}" method="post" style="display: inline;">

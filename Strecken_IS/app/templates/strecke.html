@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>Neue Strecke</h1>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control", placeholder="Name") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Speichern</button>
+        </form>
+    </div>
+    <div class="container">
+        <ul>
+            {% for strecke in strecken %}
+            <li>{{ strecke.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

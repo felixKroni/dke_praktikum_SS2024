@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>Warnungen</h1>
+        <form method="POST" class="mb-4">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.abschnitt_id_warnung.label(class="form-label") }}
+                {{ form.abschnitt_id_warnung(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.titel.label(class="form-label") }}
+                {{ form.titel(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.gueltigkeitsdatum.label(class="form-label") }}
+                {{ form.gueltigkeitsdatum(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.beschreibung.label(class="form-label") }}
+                {{ form.beschreibung(class="form-control") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Warnung hinzufügen</button>
+        </form>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Abschnitt</th>
+                    <th scope="col">Titel</th>
+                    <th scope="col">Gültigkeitsdatum</th>
+                    <th scope="col">Beschreibung</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for warnung in warnungen %}
+                <tr>
+                    <td>{{ warnung.abschnitt_id_warnung }}</td>
+                    <td>{{ warnung.titel }}</td>
+                    <td>{{ warnung.gueltigkeitsdatum }}</td>
+                    <td>{{ warnung.beschreibung }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('delete_warnung', abschnitt_id_warnung=warnung.abschnitt_id_warnung) }}">
+                            <button type="submit" class="btn btn-danger">Löschen</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
