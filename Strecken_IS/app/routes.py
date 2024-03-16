@@ -11,7 +11,8 @@ from flask import request
 from urllib.parse import urlsplit
 from app import db
 from app.forms import RegistrationForm
-
+from app.forms import BahnhofForm
+from app.models import Bahnhof
 
 @app.route('/')
 @app.route('/index')
@@ -54,14 +55,50 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
+        user.set_role(form.role.data)
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/bahnhof', methods=['GET', 'POST'])
+def bahnhof():
+    form = BahnhofForm()
+    if form.validate_on_submit():
+        bahnhof = Bahnhof(name=form.name.data, adresse=form.adresse.data, latitude=form.latitude.data, longitude=form.longitude.data)
+        db.session.add(bahnhof)
+        db.session.commit()
+        flash('Der Bahnhof wurde erfolgreich hinzugefügt!')
+        return redirect(url_for('bahnhof'))
+    bahnhof = Bahnhof.query.all()
+    return render_template('bahnhof.html', title='Bahnhof', bahnhof=bahnhof, form=form)
+
+@app.route('/bahnhof/edit/<name>', methods=['GET', 'POST'])
+def edit_bahnhof(name):
+    bahnhof = Bahnhof.query.get(name)
+    if bahnhof is None:
+        flash('Bahnhof {} existiert nicht.'.format(name))
+        return redirect(url_for('bahnhof'))
+    form = BahnhofForm(obj=bahnhof)
+    if form.validate_on_submit():
+        form.populate_obj(bahnhof)
+        db.session.commit()
+        flash('Die Änderungen wurden gespeichert.')
+        return redirect(url_for('bahnhof'))
+    return render_template('edit_bahnhof.html', form=form)
+
+@app.route('/bahnhof/delete/<name>', methods=['POST'])
+def delete_bahnhof(name):
+    bahnhof = Bahnhof.query.get(name)
+    if bahnhof is None:
+        flash('Bahnhof {} existiert nicht.'.format(name))
+        return redirect(url_for('bahnhof'))
+    db.session.delete(bahnhof)
+    db.session.commit()
+    flash('Der Bahnhof wurde gelöscht.')
+    return redirect(url_for('bahnhof'))

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>Bahnhöfe</h1>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control", placeholder="Name") }}
+            </div>
+            <div class="form-group">
+                {{ form.adresse.label(class="form-label") }}
+                {{ form.adresse(class="form-control", placeholder="Adresse") }}
+            </div>
+            <div class="form-group">
+                {{ form.latitude.label(class="form-label") }}
+                {{ form.latitude(class="form-control", placeholder="Breitengrad") }}
+            </div>
+            <div class="form-group">
+                {{ form.longitude.label(class="form-label") }}
+                {{ form.longitude(class="form-control", placeholder="Längengrad") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Speichern</button>
+        </form>
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Adresse</th>
+                    <th scope="col">Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bahnhof in bahnhof %}
+                <tr>
+                    <td>{{ bahnhof.name }}</td>
+                    <td>{{ bahnhof.adresse }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_bahnhof', name=bahnhof.name) }}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+                        <form action="{{ url_for('delete_bahnhof', name=bahnhof.name) }}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

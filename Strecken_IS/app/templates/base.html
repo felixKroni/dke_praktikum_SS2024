@@ -28,6 +28,16 @@
                 <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
             </li>
             {% endif %}
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ url_for('register') }}">Register new user</a>
+            </li>
+        {% endif %}
+         {% if current_user.is_authenticated%}
+        <li class="nav-item active">
+                <a class="nav-link" href="{{ url_for('bahnhof') }}">Bahnof-Management</a>
+            </li>
+        {% endif %}
         </ul>
     </div>
 </nav>
