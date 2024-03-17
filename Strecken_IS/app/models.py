@@ -46,6 +46,7 @@ class Abschnitt(db.Model):
     maximale_spurweite = Column(Integer)
     nutzungsentgelt = Column(Integer)
     distanz = Column(Integer)
+    warnung = db.Column(db.Boolean)
     startbahnhof = relationship('Bahnhof', foreign_keys=[startbahnhof_id])
     endbahnhof = relationship('Bahnhof', foreign_keys=[endbahnhof_id])
     strecke = relationship('Strecke', foreign_keys=[strecke_id])

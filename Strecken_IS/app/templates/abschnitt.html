@@ -14,8 +14,8 @@
                 {{ form.endbahnhof_id(class="form-control") }}
             </div>
             <div class="form-group">
-                {{ form.strecke.label(class="form-label") }}  <!-- Strecke Feld hinzufügen -->
-                {{ form.strecke(class="form-control") }}
+                {{ form.strecke_id.label(class="form-label") }}
+                {{ form.strecke_id(class="form-control") }}
             </div>
             <div class="form-group">
                 {{ form.maximale_geschwindigkeit.label(class="form-label") }}
@@ -37,35 +37,37 @@
         </form>
         <table class="table mt-4">
             <thead>
-                <tr>
-                    <th scope="col">Startbahnhof</th>
-                    <th scope="col">Endbahnhof</th>
-                    <th scope="col">Strecke</th>  <!-- Strecke Spalte hinzufügen -->
-                    <th scope="col">Maximale Geschwindigkeit</th>
-                    <th scope="col">Maximale Spurweite</th>
-                    <th scope="col">Nutzungsentgelt</th>
-                    <th scope="col">Distanz</th>
-                    <th scope="col">Aktionen</th>
-                </tr>
+            <tr>
+                <th scope="col">Startbahnhof</th>
+                <th scope="col">Endbahnhof</th>
+                <th scope="col">Strecke</th>
+                <th scope="col">Maximale Geschwindigkeit</th>
+                <th scope="col">Maximale Spurweite</th>
+                <th scope="col">Nutzungsentgelt</th>
+                <th scope="col">Distanz</th>
+                <th scope="col">Aktionen</th>
+            </tr>
             </thead>
             <tbody>
-                {% for abschnitt in abschnitte %}
+            {% for abschnitt in abschnitte %}
                 <tr>
                     <td>{{ abschnitt.startbahnhof_id }}</td>
                     <td>{{ abschnitt.endbahnhof_id }}</td>
-                    <td>{{ abschnitt.strecke }}</td>  <!-- Strecke Daten hinzufügen -->
+                    <td>{{ abschnitt.strecke.name }}</td>
                     <td>{{ abschnitt.maximale_geschwindigkeit }}</td>
                     <td>{{ abschnitt.maximale_spurweite }}</td>
                     <td>{{ abschnitt.nutzungsentgelt }}</td>
                     <td>{{ abschnitt.distanz }}</td>
                     <td>
-                        <a href="{{ url_for('edit_abschnitt', startbahnhof_id=abschnitt.startbahnhof_id, endbahnhof_id=abschnitt.endbahnhof_id) }}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
-                        <form action="{{ url_for('delete_abschnitt', startbahnhof_id=abschnitt.startbahnhof_id, endbahnhof_id=abschnitt.endbahnhof_id) }}" method="post" style="display: inline;">
+                        <a href="{{ url_for('edit_abschnitt', abschnitt_id=abschnitt.abschnitt_id) }}"
+                           class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+                        <form action="{{ url_for('delete_abschnitt', abschnitt_id=abschnitt.abschnitt_id) }}"
+                              method="post" style="display: inline;">
                             <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
                         </form>
                     </td>
                 </tr>
-                {% endfor %}
+            {% endfor %}
             </tbody>
         </table>
     </div>

@@ -11,14 +11,31 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <h1 class="mt-5 mb-4">Hi, {{ current_user.username }}!</h1>
-            {% for post in posts %}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">{{ post.author.username }} says:</h5>
-                    <p class="card-text"><b>{{ post.body }}</b></p>
-                </div>
-            </div>
+            <h2>Warnungen</h2>
+<div class="alert alert-danger" role="alert">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Titel</th>
+                <th>Startbahnhof</th>
+                <th>Endbahnhof</th>
+                <th>Gültigkeitsdatum</th>
+                <th>Beschreibung</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for warnung in warnungen %}
+            <tr>
+                <td>{{ warnung.titel }}</td>
+                <td>{{warnung.abschnitt.startbahnhof_id}}</td>
+                <td>{{warnung.abschnitt.endbahnhof_id}}</td>
+                <td>{{ warnung.gueltigkeitsdatum }}</td>
+                <td>{{ warnung.beschreibung }}</td>
+            </tr>
             {% endfor %}
+        </tbody>
+    </table>
+</div>
         </div>
     </div>
 
@@ -32,25 +49,40 @@
         maxZoom: 19,
     }).addTo(mymap);
 
-    var locations = [
-        {% for bahnhof in bahnhof %}
-        {name: "{{ bahnhof.name }}", coordinates: [{{ bahnhof.latitude }}, {{ bahnhof.longitude }}]},
-        {% endfor %}
-    ];
-console.log(locations);
-var latlngs = [];
-for (var i = 0; i < locations.length; i++) {
-    var marker = L.marker(locations[i].coordinates).addTo(mymap);
-    marker.bindPopup("<b>" + locations[i].name + "</b> <br> <a class=\"nav-link\" href='orf.at'>Details</a>");
+    var abschnitte = [
+    {% for abschnitt in abschnitt %}
+    {
+        startbahnhof: {name: "{{ abschnitt.startbahnhof.name }}", coordinates: [{{ abschnitt.startbahnhof.latitude }}, {{ abschnitt.startbahnhof.longitude }}]},
+        endbahnhof: {name: "{{ abschnitt.endbahnhof.name }}", coordinates: [{{ abschnitt.endbahnhof.latitude }}, {{ abschnitt.endbahnhof.longitude }}]},
+        warnung: {{ abschnitt.warnung|lower }},
+        strecke_id: "{{ abschnitt.strecke_id }}",
+        maximale_geschwindigkeit: {{ abschnitt.maximale_geschwindigkeit }},
+        maximale_spurweite: {{ abschnitt.maximale_spurweite }},
+        nutzungsentgelt: {{ abschnitt.nutzungsentgelt }},
+        distanz: {{ abschnitt.distanz }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+console.log(abschnitte);
+for (var i = 0; i < abschnitte.length; i++) {
+    var startMarker = L.marker(abschnitte[i].startbahnhof.coordinates).addTo(mymap);
+    startMarker.bindPopup("<b>" + abschnitte[i].startbahnhof.name + "</b></b><br>Adresse: " + abschnitte[i].startbahnhof.adresse);
+
+    var endMarker = L.marker(abschnitte[i].endbahnhof.coordinates).addTo(mymap);
+    endMarker.bindPopup("<b>" + abschnitte[i].endbahnhof.name + "</b><br>Adresse: " + abschnitte[i].endbahnhof.adresse);
+
+    var color = abschnitte[i].warnung ? 'red' : 'green';
+    var polyline = L.polyline([abschnitte[i].startbahnhof.coordinates, abschnitte[i].endbahnhof.coordinates], {color: color}).addTo(mymap);
+   var abschnittInfo = "Startbahnhof: " + abschnitte[i].startbahnhof.name +
+                    "<br>Endbahnhof: " + abschnitte[i].endbahnhof.name +
+                    "<br>Warnung: " + abschnitte[i].warnung +
+                    "<br>Strecke ID: " + abschnitte[i].strecke_id +
+                    "<br>Maximale Geschwindigkeit: " + abschnitte[i].maximale_geschwindigkeit +
+                    "<br>Maximale Spurweite: " + abschnitte[i].maximale_spurweite +
+                    "<br>Nutzungsentgelt: " + abschnitte[i].nutzungsentgelt +
+                    "<br>Distanz: " + abschnitte[i].distanz;
+    polyline.bindPopup(abschnittInfo);
 }
- var latlngs = locations.map(function(location) {
-        return location.coordinates;
-    });
-    var polyline = L.polyline(latlngs, {color: 'green'}).addTo(mymap);
-
-    // Popup für die Polylinie
-    polyline.bindPopup("<b>Route durch Österreich!</b><br>Dies verbindet die verschiedenen Orte.").openPopup();
-
 </script>
 
 {% endblock %}

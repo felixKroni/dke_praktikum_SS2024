@@ -19,23 +19,27 @@ from app.forms import WarnungForm
 from app.models import Warnung
 from app.forms import StreckeForm
 from app.models import Strecke
+from sqlalchemy.orm import joinedload
+from datetime import date
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
     bahnhof = Bahnhof.query.all()
-    posts = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
-    return render_template("index.html", title='Home Page', posts=posts, bahnhof=bahnhof)
+    abschnitt = Abschnitt.query.options(joinedload(Abschnitt.startbahnhof), joinedload(Abschnitt.endbahnhof)).all()
+    strecke = Strecke.query.all()
+    warnungen = Warnung.query.options(joinedload(Warnung.abschnitt)).all()
+    warnungen = [warnung for warnung in warnungen if warnung.gueltigkeitsdatum >= date.today()]
+
+    for abschnitt_item in abschnitt:
+        if any(warnung.abschnitt_id_warnung == abschnitt_item.abschnitt_id for warnung in warnungen):
+            abschnitt_item.warnung = True
+        else:
+            abschnitt_item.warnung = False
+
+
+    return render_template("index.html", title='Home Page',  bahnhof=bahnhof, strecke=strecke, abschnitt=abschnitt, warnungen=warnungen)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -114,7 +118,7 @@ def delete_bahnhof(name):
 def abschnitt():
     form = AbschnittForm()
     if form.validate_on_submit():
-        abschnitt = Abschnitt(startbahnhof_id=form.startbahnhof_id.data, endbahnhof_id=form.endbahnhof_id.data, maximale_geschwindigkeit=form.maximale_geschwindigkeit.data, maximale_spurweite=form.maximale_spurweite.data, nutzungsentgelt=form.nutzungsentgelt.data, distanz=form.distanz.data)
+        abschnitt = Abschnitt(startbahnhof_id=form.startbahnhof_id.data, endbahnhof_id=form.endbahnhof_id.data, maximale_geschwindigkeit=form.maximale_geschwindigkeit.data, maximale_spurweite=form.maximale_spurweite.data, nutzungsentgelt=form.nutzungsentgelt.data, distanz=form.distanz.data, strecke_id=form.strecke_id.data)
         db.session.add(abschnitt)
         db.session.commit()
         flash('Der Abschnitt wurde erfolgreich hinzugefügt!')
@@ -122,9 +126,9 @@ def abschnitt():
     abschnitte = Abschnitt.query.all()
     return render_template('abschnitt.html', title='Abschnitt', abschnitte=abschnitte, form=form)
 
-@app.route('/abschnitt/edit/<startbahnhof_id>/<endbahnhof_id>', methods=['GET', 'POST'])
-def edit_abschnitt(startbahnhof_id, endbahnhof_id):
-    abschnitt = Abschnitt.query.get_or_404((startbahnhof_id, endbahnhof_id))
+@app.route('/abschnitt/edit/<abschnitt_id>', methods=['GET', 'POST'])
+def edit_abschnitt(abschnitt_id):
+    abschnitt = Abschnitt.query.get_or_404(abschnitt_id)
     form = AbschnittForm(obj=abschnitt)
     if form.validate_on_submit():
         form.populate_obj(abschnitt)
@@ -133,9 +137,9 @@ def edit_abschnitt(startbahnhof_id, endbahnhof_id):
         return redirect(url_for('abschnitt'))
     return render_template('edit_abschnitt.html', form=form)
 
-@app.route('/abschnitt/delete/<startbahnhof_id>/<endbahnhof_id>', methods=['POST'])
-def delete_abschnitt(startbahnhof_id, endbahnhof_id):
-    abschnitt = Abschnitt.query.get_or_404((startbahnhof_id, endbahnhof_id))
+@app.route('/abschnitt/delete/<abschnitt_id>', methods=['POST'])
+def delete_abschnitt(abschnitt_id):
+    abschnitt = Abschnitt.query.get_or_404(abschnitt_id)
     db.session.delete(abschnitt)
     db.session.commit()
     flash('Der Abschnitt wurde erfolgreich gelöscht.')
@@ -150,12 +154,12 @@ def warnungen():
         db.session.commit()
         flash('Warnung hinzugefügt')
         return redirect(url_for('warnungen'))
-    warnungen = Warnung.query.all()
+    warnungen = Warnung.query.options(joinedload(Warnung.abschnitt)).all()
     return render_template('warnungen.html', title='Warnungen', warnungen=warnungen, form=form)
 
-@app.route('/warnung/edit/<int:abschnitt_id_warnung>', methods=['GET', 'POST'])
-def edit_warnung(abschnitt_id_warnung):
-    warnung = Warnung.query.get_or_404(abschnitt_id_warnung)
+@app.route('/warnung/edit/<int:warnung_id>', methods=['GET', 'POST'])
+def edit_warnung(warnung_id):
+    warnung = Warnung.query.get_or_404(warnung_id)
     form = WarnungForm(obj=warnung)
     if form.validate_on_submit():
         form.populate_obj(warnung)
@@ -164,9 +168,9 @@ def edit_warnung(abschnitt_id_warnung):
         return redirect(url_for('warnungen'))
     return render_template('edit_warnung.html', form=form)
 
-@app.route('/warnung/delete/<int:abschnitt_id_warnung>', methods=['POST'])
-def delete_warnung(abschnitt_id_warnung):
-    warnung = Warnung.query.get_or_404(abschnitt_id_warnung)
+@app.route('/warnung/delete/<int:warnung_id>', methods=['POST'])
+def delete_warnung(warnung_id):
+    warnung = Warnung.query.get_or_404(warnung_id)
     db.session.delete(warnung)
     db.session.commit()
     flash('Warnung gelöscht')
@@ -181,25 +185,14 @@ def strecke():
         db.session.add(strecke)
         db.session.commit()
         flash('Die Strecke wurde erfolgreich erstellt.')
-        return redirect(url_for('index'))
+        return redirect(url_for('strecke'))
     strecken = Strecke.query.all()  # Alle Strecken abrufen
     return render_template('strecke.html', form=form, strecken=strecken)
 
-@app.route('/strecke/<name>', methods=['GET', 'POST'])
-def edit_strecke(name):
-    strecke = Strecke.query.get_or_404(name)
-    form = StreckeForm(obj=strecke)
-    if form.validate_on_submit():
-        form.populate_obj(strecke)
-        db.session.commit()
-        flash('Die Strecke wurde erfolgreich aktualisiert.')
-        return redirect(url_for('index'))
-    return render_template('edit_strecke.html', form=form)
-
-@app.route('/strecke/<name>/delete', methods=['POST'])
+@app.route('/strecke/delete/<name>', methods=['POST'])
 def delete_strecke(name):
     strecke = Strecke.query.get_or_404(name)
     db.session.delete(strecke)
     db.session.commit()
     flash('Die Strecke wurde erfolgreich gelöscht.')
-    return redirect(url_for('index'))
+    return redirect(url_for('strecke'))

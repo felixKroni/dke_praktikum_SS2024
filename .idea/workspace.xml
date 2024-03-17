@@ -5,21 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0c128973-c82d-4487-a9d6-dc1198604cfb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/abschnitt.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/strecke.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/warnungen.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Strecken_IS/migrations/versions/46c4b8e25d3c_strecke.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/edit_abschnitt.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/edit_bahnhof.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/edit_warnung.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Strecken_IS/migrations/versions/938cae3c571f_warnung_boolean.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Strecken_IS/migrations/versions/c79b14107691_warnung_bol.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Strecken_IS/migrations/versions/d24af21cedcf_warnung_backref.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Strecken_IS/app.db" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Strecken_IS/app/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Strecken_IS/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Strecken_IS/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/bahnhof.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/bahnhof.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/abschnitt.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/abschnitt.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/migrations/versions/23b9138a8a63_users_table.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/migrations/versions/59a4511b244c_added_coordinates_to_bahnhof_model.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/strecken_is.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/strecken_is.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/strecke.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/strecke.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/warnungen.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/warnungen.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +87,7 @@
       <updated>1710499150209</updated>
       <workItem from="1710499155395" duration="16690000" />
       <workItem from="1710523232502" duration="466000" />
-      <workItem from="1710579351314" duration="20091000" />
+      <workItem from="1710579351314" duration="32478000" />
     </task>
     <servers />
   </component>
@@ -96,6 +96,17 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Strecken_IS/app/models.py</url>
+          <line>48</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/dke_praktikum_SS2024$strecken_is.coverage" NAME="strecken_is Coverage Results" MODIFIED="1710507647234" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Strecken_IS" />

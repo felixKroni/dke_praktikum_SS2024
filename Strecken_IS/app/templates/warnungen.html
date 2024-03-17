@@ -25,28 +25,31 @@
         </form>
         <table class="table">
             <thead>
-                <tr>
-                    <th scope="col">Abschnitt</th>
-                    <th scope="col">Titel</th>
-                    <th scope="col">Gültigkeitsdatum</th>
-                    <th scope="col">Beschreibung</th>
-                    <th scope="col"></th>
-                </tr>
+            <tr>
+                <th scope="col">Abschnitt</th>
+                <th scope="col">Titel</th>
+                <th scope="col">Gültigkeitsdatum</th>
+                <th scope="col">Beschreibung</th>
+                <th scope="col"></th>
+            </tr>
             </thead>
             <tbody>
-                {% for warnung in warnungen %}
+            {% for warnung in warnungen %}
                 <tr>
                     <td>{{ warnung.abschnitt_id_warnung }}</td>
                     <td>{{ warnung.titel }}</td>
                     <td>{{ warnung.gueltigkeitsdatum }}</td>
                     <td>{{ warnung.beschreibung }}</td>
                     <td>
-                        <form method="POST" action="{{ url_for('delete_warnung', abschnitt_id_warnung=warnung.abschnitt_id_warnung) }}">
+                        <form method="GET" action="{{ url_for('edit_warnung',  warnung_id=warnung.warnung_id) }}">
+                            <button type="submit" class="btn btn-primary">Bearbeiten</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('delete_warnung',  warnung_id=warnung.warnung_id) }}">
                             <button type="submit" class="btn btn-danger">Löschen</button>
                         </form>
                     </td>
                 </tr>
-                {% endfor %}
+            {% endfor %}
             </tbody>
         </table>
     </div>

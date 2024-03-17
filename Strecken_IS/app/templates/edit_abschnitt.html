@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>Abschnitt bearbeiten</h1>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.startbahnhof_id.label(class="form-label") }}
+                {{ form.startbahnhof_id(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.endbahnhof_id.label(class="form-label") }}
+                {{ form.endbahnhof_id(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.strecke_id.label(class="form-label") }}
+                {{ form.strecke_id(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.maximale_geschwindigkeit.label(class="form-label") }}
+                {{ form.maximale_geschwindigkeit(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.maximale_spurweite.label(class="form-label") }}
+                {{ form.maximale_spurweite(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.nutzungsentgelt.label(class="form-label") }}
+                {{ form.nutzungsentgelt(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.distanz.label(class="form-label") }}
+                {{ form.distanz(class="form-control") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+        </form>
+    </div>
+{% endblock %}
