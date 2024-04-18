@@ -2,35 +2,41 @@
 
 {% block content %}
     <div class="container">
-        <h1>Neue Strecke</h1>
-        <form action="" method="post">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                {{ form.name.label(class="form-label") }}
-                {{ form.name(class="form-control", placeholder="Name") }}
-            </div>
-            <button type="submit" class="btn btn-primary">Speichern</button>
-        </form>
+        <h1>Strecken</h1>
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control", placeholder="Name") }}
+                </div>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </form>
+        {% endif %}
     </div>
     <div class="container">
         <table class="table">
             <thead>
-                <tr>
-                    <th>Name</th>
+            <tr>
+                <th>Name</th>
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
                     <th>Aktionen</th>
-                </tr>
+                {% endif %}
+            </tr>
             </thead>
             <tbody>
-                {% for strecke in strecken %}
+            {% for strecke in strecken %}
                 <tr>
                     <td>{{ strecke.name }}</td>
-                    <td>
-                        <form method="POST" action="{{ url_for('delete_strecke',name=strecke.name) }}">
-                            <button type="submit" class="btn btn-danger">Löschen</button>
-                        </form>
-                    </td>
+                    {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                        <td>
+                            <form method="POST" action="{{ url_for('delete_strecke',name=strecke.name) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
+                            </form>
+                        </td>
+                    {% endif %}
                 </tr>
-                {% endfor %}
+            {% endfor %}
             </tbody>
         </table>
     </div>

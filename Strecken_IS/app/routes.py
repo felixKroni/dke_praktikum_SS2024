@@ -3,7 +3,6 @@ from app import app
 from app.forms import LoginForm
 from flask_login import current_user, login_user
 import sqlalchemy as sa
-from app import db
 from app.models import User
 from flask_login import logout_user
 from flask_login import login_required
@@ -21,6 +20,7 @@ from app.forms import StreckeForm
 from app.models import Strecke
 from sqlalchemy.orm import joinedload
 from datetime import date
+from flask import jsonify
 
 @app.route('/')
 @app.route('/index')
@@ -65,6 +65,7 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
+@login_required
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -78,6 +79,7 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/bahnhof', methods=['GET', 'POST'])
+@login_required
 def bahnhof():
     form = BahnhofForm()
     if form.validate_on_submit():
@@ -90,6 +92,7 @@ def bahnhof():
     return render_template('bahnhof.html', title='Bahnhof', bahnhof=bahnhof, form=form)
 
 @app.route('/bahnhof/edit/<name>', methods=['GET', 'POST'])
+@login_required
 def edit_bahnhof(name):
     bahnhof = Bahnhof.query.get(name)
     if bahnhof is None:
@@ -104,6 +107,7 @@ def edit_bahnhof(name):
     return render_template('edit_bahnhof.html', form=form)
 
 @app.route('/bahnhof/delete/<name>', methods=['POST'])
+@login_required
 def delete_bahnhof(name):
     bahnhof = Bahnhof.query.get(name)
     if bahnhof is None:
@@ -115,6 +119,7 @@ def delete_bahnhof(name):
     return redirect(url_for('bahnhof'))
 
 @app.route('/abschnitt', methods=['GET', 'POST'])
+@login_required
 def abschnitt():
     form = AbschnittForm()
     if form.validate_on_submit():
@@ -127,6 +132,7 @@ def abschnitt():
     return render_template('abschnitt.html', title='Abschnitt', abschnitte=abschnitte, form=form)
 
 @app.route('/abschnitt/edit/<abschnitt_id>', methods=['GET', 'POST'])
+@login_required
 def edit_abschnitt(abschnitt_id):
     abschnitt = Abschnitt.query.get_or_404(abschnitt_id)
     form = AbschnittForm(obj=abschnitt)
@@ -138,6 +144,7 @@ def edit_abschnitt(abschnitt_id):
     return render_template('edit_abschnitt.html', form=form)
 
 @app.route('/abschnitt/delete/<abschnitt_id>', methods=['POST'])
+@login_required
 def delete_abschnitt(abschnitt_id):
     abschnitt = Abschnitt.query.get_or_404(abschnitt_id)
     db.session.delete(abschnitt)
@@ -146,6 +153,7 @@ def delete_abschnitt(abschnitt_id):
     return redirect(url_for('abschnitt'))
 
 @app.route('/warnungen', methods=['GET', 'POST'])
+@login_required
 def warnungen():
     form = WarnungForm()
     if form.validate_on_submit():
@@ -158,6 +166,7 @@ def warnungen():
     return render_template('warnungen.html', title='Warnungen', warnungen=warnungen, form=form)
 
 @app.route('/warnung/edit/<int:warnung_id>', methods=['GET', 'POST'])
+@login_required
 def edit_warnung(warnung_id):
     warnung = Warnung.query.get_or_404(warnung_id)
     form = WarnungForm(obj=warnung)
@@ -169,6 +178,7 @@ def edit_warnung(warnung_id):
     return render_template('edit_warnung.html', form=form)
 
 @app.route('/warnung/delete/<int:warnung_id>', methods=['POST'])
+@login_required
 def delete_warnung(warnung_id):
     warnung = Warnung.query.get_or_404(warnung_id)
     db.session.delete(warnung)
@@ -178,6 +188,7 @@ def delete_warnung(warnung_id):
 
 
 @app.route('/strecke', methods=['GET', 'POST'])
+@login_required
 def strecke():
     form = StreckeForm()
     if form.validate_on_submit():
@@ -190,9 +201,17 @@ def strecke():
     return render_template('strecke.html', form=form, strecken=strecken)
 
 @app.route('/strecke/delete/<name>', methods=['POST'])
+@login_required
 def delete_strecke(name):
     strecke = Strecke.query.get_or_404(name)
     db.session.delete(strecke)
     db.session.commit()
     flash('Die Strecke wurde erfolgreich gelöscht.')
     return redirect(url_for('strecke'))
+
+@app.route('/api/warnung/<int:warnung_id>', methods=['GET'])
+def get_warnung(warnung_id):
+    warnung = Warnung.query.get(warnung_id)
+    if warnung is None:
+        return jsonify({'message': 'Warnung not found'}), 404
+    return jsonify({'titel': warnung.titel, 'gueltigkeitsdatum': warnung.gueltigkeitsdatum})

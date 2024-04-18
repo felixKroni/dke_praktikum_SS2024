@@ -65,11 +65,14 @@ class AbschnittForm(FlaskForm):
     startbahnhof_id = SelectField('Startbahnhof', choices=get_bahnhof_choices, validators=[DataRequired()])
     endbahnhof_id = SelectField('Endbahnhof', choices=get_bahnhof_choices, validators=[DataRequired()])
     strecke_id = SelectField('Strecke', choices=get_strecke_choices, validators=[DataRequired()])
-    maximale_geschwindigkeit = IntegerField('Maximale Geschwindigkeit', validators=[DataRequired()])
-    maximale_spurweite = IntegerField('Maximale Spurweite', validators=[DataRequired()])
-    nutzungsentgelt = IntegerField('Nutzungsentgelt', validators=[DataRequired()])
-    distanz = IntegerField('Distanz', validators=[DataRequired()])
+    maximale_geschwindigkeit = IntegerField('Maximale Geschwindigkeit [km/h]', validators=[DataRequired()])
+    maximale_spurweite = SelectField('Maximale Spurweite [cm]', choices=[(140, '140'), (120, '120')], coerce=int, validators=[DataRequired()])
+    nutzungsentgelt = IntegerField('Nutzungsentgelt [€]', validators=[DataRequired()])
+    distanz = IntegerField('Distanz [km]', validators=[DataRequired()])
     submit = SubmitField('Submit')
+    def validate_endbahnhof_id(self, endbahnhof_id):
+        if endbahnhof_id.data == self.startbahnhof_id.data:
+            raise ValidationError('Startbahnhof und Endbahnhof können nicht identisch sein.')
 
 
 class WarnungForm(FlaskForm):
