@@ -1,16 +1,13 @@
 
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from app.database import Base
+from app.models.abschnitt_halteplan import AbschnittHalteplan
 
-Base = declarative_base()
 
 class Halteplan(Base):
     __tablename__ = 'halteplan'
-
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    haltepunkte = relationship('Haltepunkt', backref='halteplan')
-    preis = Column(Float)
-    fahrplan_id = Column(Integer, ForeignKey('fahrplan.id'))
-    fahrplan = relationship('Fahrplan', backref='halteplan')
+    streckenName = Column(String)
+    abschnitte = relationship("AbschnittHalteplan", order_by=AbschnittHalteplan.reihung)

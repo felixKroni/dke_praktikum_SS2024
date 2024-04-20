@@ -1,15 +1,10 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
-
+from app.database import Base
 
 
 class Fahrplan(Base):
     __tablename__ = 'fahrplan'
-
     id = Column(Integer, primary_key=True)
-    fahrplanname = Column(String)
-    Zeitintervall = Column(String)
-    fahrtdurchfuehrungen = relationship('Fahrtdurchfuerung', backref='fahrplan')
+    name = Column(String)
+    zug = relationship("Zug", back_populates="fahrplan")
