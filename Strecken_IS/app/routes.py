@@ -197,7 +197,7 @@ def strecke():
         db.session.commit()
         flash('Die Strecke wurde erfolgreich erstellt.')
         return redirect(url_for('strecke'))
-    strecken = Strecke.query.all()  # Alle Strecken abrufen
+    strecken = Strecke.query.options(joinedload(Strecke.abschnitte)).all()
     return render_template('strecke.html', form=form, strecken=strecken)
 
 @app.route('/strecke/delete/<name>', methods=['POST'])
@@ -215,3 +215,8 @@ def get_warnung(warnung_id):
     if warnung is None:
         return jsonify({'message': 'Warnung not found'}), 404
     return jsonify({'titel': warnung.titel, 'gueltigkeitsdatum': warnung.gueltigkeitsdatum})
+
+@app.errorhandler(500)
+def internal_error(error):
+    flash('Server Error: Achten Sie darauf, dass der Eintrag nicht bereits existiert und versuchen Sie die Eingabe erneut!.')
+    return redirect(url_for('index'))

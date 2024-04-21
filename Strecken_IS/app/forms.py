@@ -1,3 +1,5 @@
+from flask import flash
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, IntegerField, \
     DateField, TextAreaField
@@ -72,6 +74,7 @@ class AbschnittForm(FlaskForm):
     submit = SubmitField('Submit')
     def validate_endbahnhof_id(self, endbahnhof_id):
         if endbahnhof_id.data == self.startbahnhof_id.data:
+            flash('Startbahnhof und Endbahnhof können nicht identisch sein.')
             raise ValidationError('Startbahnhof und Endbahnhof können nicht identisch sein.')
 
 

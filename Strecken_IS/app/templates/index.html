@@ -1,47 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
-<head>
-    <!-- Andere Meta-Tags und Stile -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-</head>
+    <head>
+        <!-- Andere Meta-Tags und Stile -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    </head>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h1 class="mt-5 mb-4">Hi, {{ current_user.username }}!</h1>
-            <h2>Warnungen</h2>
-<div class="alert alert-danger" role="alert">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Titel</th>
-                <th>Startbahnhof</th>
-                <th>Endbahnhof</th>
-                <th>Gültigkeitsdatum</th>
-                <th>Beschreibung</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for warnung in warnungen %}
-            <tr>
-                <td>{{ warnung.titel }}</td>
-                <td>{{warnung.abschnitt.startbahnhof_id}}</td>
-                <td>{{warnung.abschnitt.endbahnhof_id}}</td>
-                <td>{{ warnung.gueltigkeitsdatum }}</td>
-                <td>{{ warnung.beschreibung }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="mt-5 mb-4">Hi, {{ current_user.username }}!</h1>
+                <h2>Aktive Warnungen:</h2>
+                <div class="alert alert-danger" role="alert">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Titel</th>
+                            <th>Startbahnhof</th>
+                            <th>Endbahnhof</th>
+                            <th>Gültigkeitsdatum</th>
+                            <th>Beschreibung</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for warnung in warnungen %}
+                            <tr>
+                                <td>{{ warnung.titel }}</td>
+                                <td>{{ warnung.abschnitt.startbahnhof_id }}</td>
+                                <td>{{ warnung.abschnitt.endbahnhof_id }}</td>
+                                <td>{{ warnung.gueltigkeitsdatum }}</td>
+                                <td>{{ warnung.beschreibung }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
         </div>
+        <h2>Strecken-Übersicht:</h2>
+        <!-- Karte -->
+        <div id="mapid" style="height: 400px; margin-top: 20px;"></div>
     </div>
-
-    <!-- Karte -->
-    <div id="mapid" style="height: 400px; margin-top: 20px;"></div>
-</div>
 
 <script>
     var mymap = L.map('mapid').setView([47.8095, 14.0119], 8);
@@ -50,39 +51,73 @@
     }).addTo(mymap);
 
     var abschnitte = [
-    {% for abschnitt in abschnitt %}
-    {
-        startbahnhof: {name: "{{ abschnitt.startbahnhof.name }}", coordinates: [{{ abschnitt.startbahnhof.latitude }}, {{ abschnitt.startbahnhof.longitude }}]},
-        endbahnhof: {name: "{{ abschnitt.endbahnhof.name }}", coordinates: [{{ abschnitt.endbahnhof.latitude }}, {{ abschnitt.endbahnhof.longitude }}]},
-        warnung: {{ abschnitt.warnung|lower }},
-        strecke_id: "{{ abschnitt.strecke_id }}",
-        maximale_geschwindigkeit: {{ abschnitt.maximale_geschwindigkeit }},
-        maximale_spurweite: {{ abschnitt.maximale_spurweite }},
-        nutzungsentgelt: {{ abschnitt.nutzungsentgelt }},
-        distanz: {{ abschnitt.distanz }}
-    }{% if not loop.last %},{% endif %}
-    {% endfor %}
-];
-console.log(abschnitte);
-for (var i = 0; i < abschnitte.length; i++) {
-    var startMarker = L.marker(abschnitte[i].startbahnhof.coordinates).addTo(mymap);
-    startMarker.bindPopup("<b>" + abschnitte[i].startbahnhof.name + "</b></b><br>Adresse: " + abschnitte[i].startbahnhof.adresse);
+        {% for abschnitt in abschnitt %}
+            {
+                startbahnhof: {
+                    name: "{{ abschnitt.startbahnhof.name }}",
+                    coordinates: [{{ abschnitt.startbahnhof.latitude }}, {{ abschnitt.startbahnhof.longitude }}]
+                },
+                endbahnhof: {
+                    name: "{{ abschnitt.endbahnhof.name }}",
+                    coordinates: [{{ abschnitt.endbahnhof.latitude }}, {{ abschnitt.endbahnhof.longitude }}]
+                },
+                warnung: {{ abschnitt.warnung|lower }},
+                strecke_id: "{{ abschnitt.strecke_id }}",
+                maximale_geschwindigkeit: {{ abschnitt.maximale_geschwindigkeit }},
+                maximale_spurweite: {{ abschnitt.maximale_spurweite }},
+                nutzungsentgelt: {{ abschnitt.nutzungsentgelt }},
+                distanz: {{ abschnitt.distanz }}
+            }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
 
-    var endMarker = L.marker(abschnitte[i].endbahnhof.coordinates).addTo(mymap);
-    endMarker.bindPopup("<b>" + abschnitte[i].endbahnhof.name + "</b><br>Adresse: " + abschnitte[i].endbahnhof.adresse);
+    console.log(abschnitte);
 
-    var color = abschnitte[i].warnung ? 'red' : 'green';
-    var polyline = L.polyline([abschnitte[i].startbahnhof.coordinates, abschnitte[i].endbahnhof.coordinates], {color: color}).addTo(mymap);
-   var abschnittInfo = "Startbahnhof: " + abschnitte[i].startbahnhof.name +
-                    "<br>Endbahnhof: " + abschnitte[i].endbahnhof.name +
-                    "<br>Warnung: " + abschnitte[i].warnung +
-                    "<br>Strecke: " + abschnitte[i].strecke_id +
-                    "<br>Maximale Geschwindigkeit: " + abschnitte[i].maximale_geschwindigkeit +
-                    "<br>Maximale Spurweite: " + abschnitte[i].maximale_spurweite +
-                    "<br>Nutzungsentgelt: " + abschnitte[i].nutzungsentgelt +
-                    "<br>Distanz: " + abschnitte[i].distanz;
-    polyline.bindPopup(abschnittInfo);
-}
+    var layerControl = L.control.layers(null, null, { collapsed: false }).addTo(mymap);
+
+    var group = {};
+    for (var i = 0; i < abschnitte.length; i++) {
+        var startMarker = L.marker(abschnitte[i].startbahnhof.coordinates);
+        startMarker.bindPopup("<b>" + abschnitte[i].startbahnhof.name + "</b></b><br>Adresse: " + abschnitte[i].startbahnhof.adresse);
+
+        var endMarker = L.marker(abschnitte[i].endbahnhof.coordinates);
+        endMarker.bindPopup("<b>" + abschnitte[i].endbahnhof.name + "</b><br>Adresse: " + abschnitte[i].endbahnhof.adresse);
+
+        var color = abschnitte[i].warnung ? 'red' : 'green';
+        var polyline = L.polyline([abschnitte[i].startbahnhof.coordinates, abschnitte[i].endbahnhof.coordinates], { color: color });
+
+        var abschnittInfo = "Startbahnhof: " + abschnitte[i].startbahnhof.name +
+            "<br>Endbahnhof: " + abschnitte[i].endbahnhof.name +
+            "<br>Warnung: " + abschnitte[i].warnung +
+            "<br>Strecke: " + abschnitte[i].strecke_id +
+            "<br>Maximale Geschwindigkeit: " + abschnitte[i].maximale_geschwindigkeit +
+            "<br>Maximale Spurweite: " + abschnitte[i].maximale_spurweite +
+            "<br>Nutzungsentgelt: " + abschnitte[i].nutzungsentgelt +
+            "<br>Distanz: " + abschnitte[i].distanz;
+
+        polyline.bindPopup(abschnittInfo);
+
+        if (!group[abschnitte[i].strecke_id]) {
+            group[abschnitte[i].strecke_id] = L.layerGroup();
+            layerControl.addOverlay(group[abschnitte[i].strecke_id], 'Strecke: ' + abschnitte[i].strecke_id);
+        }
+        startMarker.addTo(group[abschnitte[i].strecke_id]);
+        endMarker.addTo(group[abschnitte[i].strecke_id]);
+        polyline.addTo(group[abschnitte[i].strecke_id]);
+        layerControl._map.addLayer(group[abschnitte[i].strecke_id]);
+    }
 </script>
+
+
+
+<style>
+    .my-label {
+        background-color: white;
+        border: 1px solid black;
+        padding: 5px;
+        font-size: 12px;
+    }
+</style>
+
 
 {% endblock %}

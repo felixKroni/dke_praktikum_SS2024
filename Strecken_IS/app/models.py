@@ -67,6 +67,7 @@ class Warnung(db.Model):
 
 class Strecke(db.Model):
     name = db.Column(db.String(64), primary_key=True)
+    #abschnitte = relationship('Abschnitt', backref='strecke')
 
     def __repr__(self):
         return '<Strecke {}>'.format(self.name)

@@ -19,6 +19,7 @@
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Abschnitte</th>
                 {% if current_user.is_authenticated and current_user.role == 'admin' %}
                     <th>Aktionen</th>
                 {% endif %}
@@ -28,6 +29,11 @@
             {% for strecke in strecken %}
                 <tr>
                     <td>{{ strecke.name }}</td>
+                    <td>
+                        {% for abschnitt in strecke.abschnitte %}
+                            {{ abschnitt.startbahnhof.name }} - {{ abschnitt.endbahnhof.name }}<br>
+                        {% endfor %}
+                    </td>
                     {% if current_user.is_authenticated and current_user.role == 'admin' %}
                         <td>
                             <form method="POST" action="{{ url_for('delete_strecke',name=strecke.name) }}">
