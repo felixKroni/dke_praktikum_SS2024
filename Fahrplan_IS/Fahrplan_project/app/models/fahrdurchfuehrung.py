@@ -1,7 +1,7 @@
 
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean, Date
 from sqlalchemy.orm import relationship
-from app.database import Base
+from app.commons import Base
 
 
 class Fahrtdurchfuehrung(Base):

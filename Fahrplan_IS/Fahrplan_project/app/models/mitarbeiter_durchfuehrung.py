@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-from app.database import Base
+from app.commons import Base
 
 
 class MitarbeiterDurchfuehrung(Base):

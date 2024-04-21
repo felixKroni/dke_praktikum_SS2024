@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship, backref
-from app.database import Base
+from app.commons import Base
 
 
 class AbschnittHalteplan(Base):

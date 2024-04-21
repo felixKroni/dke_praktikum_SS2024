@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Table, Enum
 from sqlalchemy.orm import relationship
-from app.database import Base, zugeteiltermitarbeiter_association
+from app.commons import Base
 
 
 class Mitarbeiter(Base):
@@ -11,4 +11,3 @@ class Mitarbeiter(Base):
     username = Column(String)
     password = Column(String)
     rolle = Column(String)
-    zugeteilte_zuege = relationship("Zug", secondary=zugeteiltermitarbeiter_association, backref="mitarbeiter")
