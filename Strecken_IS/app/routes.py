@@ -126,7 +126,7 @@ def abschnitt():
         abschnitt = Abschnitt(startbahnhof_id=form.startbahnhof_id.data, endbahnhof_id=form.endbahnhof_id.data, maximale_geschwindigkeit=form.maximale_geschwindigkeit.data, maximale_spurweite=form.maximale_spurweite.data, nutzungsentgelt=form.nutzungsentgelt.data, distanz=form.distanz.data, strecke_id=form.strecke_id.data)
         strecke = Strecke.query.get_or_404(form.strecke_id.data)
         strecke.abschnitte.append(abschnitt)
-        if strecke.sort_abschnitte() is None and form.strecke_validieren.data == True:
+        if strecke.validate_strecke() is None and form.strecke_validieren.data == True:
             flash(
                 'Der Abschnitt konnte nicht hinzugefügt werden, da die Strecke {} nicht mehr zusammenhängend wäre oder es mehrdeutige Pfade gibt.'.format(
                     form.strecke_id.data))
@@ -206,7 +206,7 @@ def strecke():
         return redirect(url_for('strecke'))
     strecken = Strecke.query.options(joinedload(Strecke.abschnitte)).all()
     for strecke in strecken:
-        strecke.abschnitte = strecke.sort_abschnitte()
+        strecke.abschnitte = strecke.validate_strecke()
     return render_template('strecke.html', form=form, strecken=strecken)
 
 @app.route('/strecke/delete/<name>', methods=['POST'])

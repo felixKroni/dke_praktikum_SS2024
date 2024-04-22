@@ -56,6 +56,7 @@ class Abschnitt(db.Model):
     startbahnhof = relationship('Bahnhof', foreign_keys=[startbahnhof_id])
     endbahnhof = relationship('Bahnhof', foreign_keys=[endbahnhof_id])
     strecke = relationship('Strecke', back_populates='abschnitte', foreign_keys=[strecke_id])
+    warnungen = relationship('Warnung', back_populates='abschnitt',cascade='all, delete-orphan')
 
     def __repr__(self):
         return '<Abschnitt {}-{}>'.format(self.startbahnhof_id, self.endbahnhof_id)
@@ -67,7 +68,7 @@ class Warnung(db.Model):
     gueltigkeitsdatum = Column(Date)
     beschreibung = Column(String(256))
     abschnitt_id_warnung = Column(Integer, ForeignKey('abschnitt.abschnitt_id'))
-    abschnitt = relationship('Abschnitt', foreign_keys=[abschnitt_id_warnung])
+    abschnitt = relationship('Abschnitt', back_populates='warnungen', foreign_keys=[abschnitt_id_warnung])
 
     def __repr__(self):
         return '<Warnung {}>'.format(self.warnung_id)
@@ -75,9 +76,9 @@ class Warnung(db.Model):
 
 class Strecke(db.Model):
     name = Column(String(64), primary_key=True)
-    abschnitte = relationship('Abschnitt', back_populates='strecke')
+    abschnitte = relationship('Abschnitt', back_populates='strecke', cascade='all, delete-orphan')
 
-    def sort_abschnitte(self):
+    def validate_strecke(self):
         if not self.abschnitte or len(self.abschnitte) == 1:
             return []
         start_abschnitt = next(

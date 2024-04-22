@@ -28,7 +28,7 @@
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">Abschnitt</th>
+                <th scope="col">Strecke/Abschnitt</th>
                 <th scope="col">Titel</th>
                 <th scope="col">Gültigkeitsdatum</th>
                 <th scope="col">Beschreibung</th>
@@ -40,7 +40,7 @@
             <tbody>
             {% for warnung in warnungen %}
                 <tr>
-                    <td>{{ warnung.abschnitt_id_warnung }}</td>
+                    <td>{{ warnung.abschnitt.strecke.name }}: {{ warnung.abschnitt.startbahnhof_id }}-{{ warnung.abschnitt.endbahnhof_id }}</td>
                     <td>{{ warnung.titel }}</td>
                     <td>{{ warnung.gueltigkeitsdatum }}</td>
                     <td>{{ warnung.beschreibung }}</td>

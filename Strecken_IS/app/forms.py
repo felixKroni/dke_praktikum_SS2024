@@ -19,7 +19,7 @@ def get_bahnhof_choices():
 
 
 def get_abschnitt_choices():
-    return [(a.abschnitt_id, f"{a.startbahnhof_id}-{a.endbahnhof_id}") for a in Abschnitt.query.all()]
+    return [(a.abschnitt_id, f"{a.strecke_id}: {a.startbahnhof_id}-{a.endbahnhof_id}") for a in Abschnitt.query.all()]
 
 
 def get_strecke_choices():
@@ -80,7 +80,7 @@ class AbschnittForm(FlaskForm):
 
 
 class WarnungForm(FlaskForm):
-    abschnitt_id_warnung = SelectField('Abschnitt', choices=get_abschnitt_choices, validators=[DataRequired()])
+    abschnitt_id_warnung = SelectField('Strecke/Abschnitt', choices=get_abschnitt_choices, validators=[DataRequired()])
     titel = StringField('Titel', validators=[DataRequired()])
     gueltigkeitsdatum = DateField('Gültigkeitsdatum', format='%Y-%m-%d', validators=[DataRequired()])
     beschreibung = TextAreaField('Beschreibung', validators=[DataRequired()])
