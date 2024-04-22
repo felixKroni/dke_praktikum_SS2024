@@ -71,6 +71,7 @@ class AbschnittForm(FlaskForm):
     maximale_spurweite = SelectField('Maximale Spurweite [cm]', choices=[(140, '140'), (120, '120')], coerce=int, validators=[DataRequired()])
     nutzungsentgelt = IntegerField('Nutzungsentgelt [€]', validators=[DataRequired()])
     distanz = IntegerField('Distanz [km]', validators=[DataRequired()])
+    strecke_validieren = BooleanField('Strecke validieren', default=True)
     submit = SubmitField('Submit')
     def validate_endbahnhof_id(self, endbahnhof_id):
         if endbahnhof_id.data == self.startbahnhof_id.data:

@@ -2,9 +2,11 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey, ForeignKeyConstraint
-from sqlalchemy import Column, Integer, String, Date, Float
+from sqlalchemy import Column, Integer, String, Date, Float, Boolean
+
 from app import db
 from app import login
+
 
 class User(UserMixin, db.Model):
     id = Column(Integer, primary_key=True)
@@ -21,12 +23,14 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
     @login.user_loader
     def load_user(id):
         return db.session.get(User, int(id))
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
 
 class Bahnhof(db.Model):
     name = Column(String(64), primary_key=True)
@@ -37,6 +41,7 @@ class Bahnhof(db.Model):
     def __repr__(self):
         return '<Bahnhof {}>'.format(self.name)
 
+
 class Abschnitt(db.Model):
     abschnitt_id = Column(Integer, primary_key=True)
     startbahnhof_id = Column(String(64), ForeignKey('bahnhof.name'))
@@ -46,13 +51,15 @@ class Abschnitt(db.Model):
     maximale_spurweite = Column(Integer)
     nutzungsentgelt = Column(Integer)
     distanz = Column(Integer)
-    warnung = db.Column(db.Boolean)
+    warnung = Column(Boolean)
+
     startbahnhof = relationship('Bahnhof', foreign_keys=[startbahnhof_id])
     endbahnhof = relationship('Bahnhof', foreign_keys=[endbahnhof_id])
-    strecke = relationship('Strecke', foreign_keys=[strecke_id])
+    strecke = relationship('Strecke', back_populates='abschnitte', foreign_keys=[strecke_id])
 
     def __repr__(self):
         return '<Abschnitt {}-{}>'.format(self.startbahnhof_id, self.endbahnhof_id)
+
 
 class Warnung(db.Model):
     warnung_id = Column(Integer, primary_key=True)
@@ -65,9 +72,25 @@ class Warnung(db.Model):
     def __repr__(self):
         return '<Warnung {}>'.format(self.warnung_id)
 
+
 class Strecke(db.Model):
-    name = db.Column(db.String(64), primary_key=True)
-    #abschnitte = relationship('Abschnitt', backref='strecke')
+    name = Column(String(64), primary_key=True)
+    abschnitte = relationship('Abschnitt', back_populates='strecke')
+
+    def sort_abschnitte(self):
+        if not self.abschnitte or len(self.abschnitte) == 1:
+            return []
+        start_abschnitt = next(
+            (a for a in self.abschnitte if not any(b.endbahnhof == a.startbahnhof for b in self.abschnitte)), None)
+        if start_abschnitt is None:
+            return None
+        sorted_abschnitte = [start_abschnitt]
+        while len(sorted_abschnitte) < len(self.abschnitte):
+            next_abschnitte = [a for a in self.abschnitte if a.startbahnhof == sorted_abschnitte[-1].endbahnhof]
+            if not next_abschnitte or len(next_abschnitte) > 1:
+                return None
+            sorted_abschnitte.append(next_abschnitte[0])
+        return sorted_abschnitte
 
     def __repr__(self):
         return '<Strecke {}>'.format(self.name)

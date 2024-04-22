@@ -10,10 +10,7 @@
       <change beforePath="$PROJECT_DIR$/Strecken_IS/app/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Strecken_IS/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Strecken_IS/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/strecke.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/strecke.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/abschnitt.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/abschnitt.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -145,7 +142,7 @@
       <workItem from="1713259713421" duration="644000" />
       <workItem from="1713430552345" duration="4787000" />
       <workItem from="1713435433472" duration="3147000" />
-      <workItem from="1713508429680" duration="2925000" />
+      <workItem from="1713508429680" duration="8738000" />
     </task>
     <servers />
   </component>
