@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>Strecken</h1>
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control", placeholder="Name") }}
+                </div>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </form>
+        {% endif %}
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Abschnitte</th>
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                    <th>Aktionen</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for strecke in strecken %}
+                <tr>
+                    <td>{{ strecke.name }}</td>
+                    <td>
+                        {% for abschnitt in strecke.abschnitte %}
+                            {{ abschnitt.startbahnhof.name }} - {{ abschnitt.endbahnhof.name }}<br>
+                        {% endfor %}
+                    </td>
+                    {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                        <td>
+                            <form method="POST" action="{{ url_for('delete_strecke',name=strecke.name) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
+                            </form>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

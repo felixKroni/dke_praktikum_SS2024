@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>Warnung bearbeiten</h1>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.abschnitt_id_warnung.label(class="form-label") }}
+                {{ form.abschnitt_id_warnung(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.titel.label(class="form-label") }}
+                {{ form.titel(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.gueltigkeitsdatum.label(class="form-label") }}
+                {{ form.gueltigkeitsdatum(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.beschreibung.label(class="form-label") }}
+                {{ form.beschreibung(class="form-control") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+        </form>
+    </div>
+{% endblock %}

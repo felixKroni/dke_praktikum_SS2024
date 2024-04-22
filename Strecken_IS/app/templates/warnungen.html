@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1>Warnungen</h1>
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <form method="POST" class="mb-4">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.abschnitt_id_warnung.label(class="form-label") }}
+                    {{ form.abschnitt_id_warnung(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.titel.label(class="form-label") }}
+                    {{ form.titel(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.gueltigkeitsdatum.label(class="form-label") }}
+                    {{ form.gueltigkeitsdatum(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.beschreibung.label(class="form-label") }}
+                    {{ form.beschreibung(class="form-control") }}
+                </div>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </form>
+        {% endif %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Strecke/Abschnitt</th>
+                <th scope="col">Titel</th>
+                <th scope="col">Gültigkeitsdatum</th>
+                <th scope="col">Beschreibung</th>
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                    <th scope="col">Aktionen</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for warnung in warnungen %}
+                <tr>
+                    <td>{{ warnung.abschnitt.strecke.name }}: {{ warnung.abschnitt.startbahnhof_id }}-{{ warnung.abschnitt.endbahnhof_id }}</td>
+                    <td>{{ warnung.titel }}</td>
+                    <td>{{ warnung.gueltigkeitsdatum }}</td>
+                    <td>{{ warnung.beschreibung }}</td>
+                    {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                        <td>
+                            <div style="display: inline;">
+                                <form method="GET" action="{{ url_for('edit_warnung', warnung_id=warnung.warnung_id) }}"
+                                      style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Bearbeiten</button>
+                                </form>
+                            </div>
+                            <div style="display: inline;">
+                                <form method="POST"
+                                      action="{{ url_for('delete_warnung', warnung_id=warnung.warnung_id) }}"
+                                      style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
+                                </form>
+                            </div>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
