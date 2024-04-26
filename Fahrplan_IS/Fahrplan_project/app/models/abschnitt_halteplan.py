@@ -9,6 +9,6 @@ class AbschnittHalteplan(Base):
     halteplan_id = Column(Integer, ForeignKey('halteplan.id'), primary_key=True)
     reihung = Column(Integer)  # This column is used to determine the order
 
-    # Relationship backrefs
+    # Relationship backrefs                              # möglicherweise backpopulates verwenden
     abschnitt = relationship("Abschnitt", backref=backref("halteplan_associations"))
     halteplan = relationship("Halteplan", backref=backref("abschnitt_associations"))
