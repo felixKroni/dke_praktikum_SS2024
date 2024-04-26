@@ -4,7 +4,6 @@ from app.commons import Base
 
 
 class Fahrplan(Base):
-    __tablename__ = 'fahrplan'
+    __tablename__ = 'Fahrplan'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    zug = relationship("Zug", back_populates="fahrplan")

@@ -6,8 +6,8 @@ from app.models.abschnitt_halteplan import AbschnittHalteplan
 
 
 class Halteplan(Base):
-    __tablename__ = 'halteplan'
+    __tablename__ = 'Halteplan'
     id = Column(Integer, primary_key=True)
     name = Column(String)
     streckenName = Column(String)
-    abschnitte = relationship("AbschnittHalteplan", order_by=AbschnittHalteplan.reihung)
+    abschnitte = relationship("AbschnittHalteplan", order_by=AbschnittHalteplan.reihung, back_populates="halteplan")

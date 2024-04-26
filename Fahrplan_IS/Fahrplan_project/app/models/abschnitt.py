@@ -6,12 +6,12 @@ from app.models.abschnitt_halteplan import AbschnittHalteplan
 
 
 class Abschnitt(Base):
-    __tablename__ = 'abschnitt'
+    __tablename__ = 'Abschnitt'
     id = Column(Integer, primary_key=True)
     spurenweite = Column(Float)
     nutzungsentgeld = Column(Float)
     StartBahnhof = Column(String)
     EndBahnhof = Column(String)
-    halteplaene = relationship("AbschnittHalteplan", order_by=AbschnittHalteplan.reihung)
+    halteplaene = relationship("AbschnittHalteplan", order_by=AbschnittHalteplan.reihung, back_populates="abschnitt")
 
 

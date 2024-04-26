@@ -4,11 +4,10 @@ from app.commons import Base
 
 
 class AbschnittHalteplan(Base):
-    __tablename__ = 'abschnitt_halteplan'
-    abschnitt_id = Column(Integer, ForeignKey('abschnitt.id'), primary_key=True)
-    halteplan_id = Column(Integer, ForeignKey('halteplan.id'), primary_key=True)
-    reihung = Column(Integer)  # This column is used to determine the order
-
-    # Relationship backrefs                              # möglicherweise backpopulates verwenden
-    abschnitt = relationship("Abschnitt", backref=backref("halteplan_associations"))
-    halteplan = relationship("Halteplan", backref=backref("abschnitt_associations"))
+    __tablename__ = 'Abschnitt_halteplan'
+    abschnitt_id = Column(Integer, ForeignKey('Abschnitt.id'), primary_key=True)
+    halteplan_id = Column(Integer, ForeignKey('Halteplan.id'), primary_key=True)
+    reihung = Column(Integer)
+    # möglicherweise backpopulates verwenden statt backref
+    abschnitt = relationship("Abschnitt", back_populates="halteplaene")
+    halteplan = relationship("Halteplan", back_populates="abschnitte")

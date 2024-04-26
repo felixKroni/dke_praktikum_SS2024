@@ -4,10 +4,13 @@ from app.commons import Base
 
 
 class Mitarbeiter(Base):
-    __tablename__ = 'mitarbeiter'
+    __tablename__ = 'Mitarbeiter'
     id = Column(Integer, primary_key=True)
     name = Column(String)
     svnr = Column(String)
     username = Column(String)
     password = Column(String)
     rolle = Column(String)
+
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
