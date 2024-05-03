@@ -6,7 +6,11 @@
     <body>
         <div>
             <a href="/index">Home</a>
-            <a href="/login">Login</a>
+            {% if current_user.is_anonymous %}
+            <a href="{{ url_for('login') }}">Login</a>
+            {% else %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}
