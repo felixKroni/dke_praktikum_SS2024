@@ -6,6 +6,9 @@ from app import app, database
 from app.forms.loginForm import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 
+from app.forms.mitarbeiterRegistrationForm import MitarbeiterRegistrationForm
+from app.models.mitarbeiter import Mitarbeiter
+
 
 @app.route('/')
 @app.route('/index')
@@ -20,7 +23,7 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = database.get_controller('ma').get_mitarbeiter_by_username('hans')
+        user = database.get_controller('ma').get_mitarbeiter_by_username(form.username.data)
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
@@ -35,5 +38,20 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/registerMitarbeiter', methods=['GET', 'POST'])
+def registerMitarbeiter():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = MitarbeiterRegistrationForm()
+    if form.validate_on_submit():
+        user = Mitarbeiter(username=form.username.data, email=form.email.data, svnr=form.svnr.data, name=form.name.data, role=form.role.data)
+        user.set_password(form.password.data)
+        database.baseController.add(user)
+        #database.Session.commit()
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('login'))
+    return render_template('registerMitarbeiter.html', title='Register', form=form)
 
 

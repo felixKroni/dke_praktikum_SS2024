@@ -8,3 +8,6 @@ class MitarbeiterController(BaseController):
 
     def get_mitarbeiter_by_username(self, username):
         return self.session.query(Mitarbeiter).filter(Mitarbeiter.username == username).first()
+
+    def get_mitarbeiter_by_email(self, email):
+        return self.session.query(Mitarbeiter).filter(Mitarbeiter.email == email).first()

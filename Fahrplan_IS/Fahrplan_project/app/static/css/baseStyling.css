@@ -1,0 +1,51 @@
+/* General body styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    text-align: left;
+    color: #333;
+}
+
+/* Navbar styling */
+.navbar {
+    background-color: #333; /* Dark background for the navbar */
+    width: 100%; /* Full width */
+    padding: 10px 0; /* Padding around items */
+    display: flex;
+    justify-content: flex-start; /* Align items to the left */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+.navbar a {
+    color: white; /* Light text color */
+    padding: 8px 16px; /* Padding for clickable area */
+    text-decoration: none; /* No underlines */
+    font-weight: bold; /* Make it pop a bit */
+}
+
+.navbar a:hover {
+    background-color: #555; /* Slightly lighter on hover */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+/* Flash messages styling */
+ul {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    width: 100%;
+    text-align: center;
+}
+
+ul li {
+    color: #dc3545; /* Make messages stand out */
+    margin: 5px 0; /* Spacing between messages */
+}

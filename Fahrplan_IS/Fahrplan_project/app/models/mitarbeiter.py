@@ -11,6 +11,7 @@ class Mitarbeiter(Base, UserMixin):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     svnr = Column(String)
+    email = Column(String)
     username = Column(String)
     password = Column(String)
     role = Column(String)

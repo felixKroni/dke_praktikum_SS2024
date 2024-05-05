@@ -1,6 +1,4 @@
 /Fahrplan_IS/Fahrplan_project/app/data/database.db
-/Fahrplan_IS/Fahrplan_project/app/__pycache__/*
-/Fahrplan_IS/Fahrplan_project/.idea/*
 /Strecken_IS.zip
 /Strecken_IS/.idea/.gitignore
 /Strecken_IS/.idea/inspectionProfiles/profiles_settings.xml
@@ -8,5 +6,3 @@
 /Strecken_IS/.idea/modules.xml
 /Strecken_IS/.idea/Strecken_IS.iml
 /Strecken_IS/.idea/vcs.xml
-/Fahrplan_IS/Fahrplan_project/app/__pycache__/*
-/Fahrplan_IS/Fahrplan_project/app/forms/__pycache__/*
