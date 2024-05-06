@@ -43,8 +43,8 @@ def logout():
 @app.route('/registerMitarbeiter', methods=['GET', 'POST'])
 @login_required
 def registerMitarbeiter():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
+    #if current_user.is_authenticated:
+    #    return redirect(url_for('index'))
     form = MitarbeiterRegistrationForm()
     if form.validate_on_submit():
         user = Mitarbeiter(username=form.username.data, email=form.email.data, svnr=form.svnr.data, name=form.name.data, role=form.role.data)
