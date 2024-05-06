@@ -45,7 +45,7 @@ class Database:
         addedZug = self.baseController.add(newZug)
         print("Added Zug: " + str(addedZug))
 
-        newMitarbeiter = Mitarbeiter(name="Hansi Hanspeter", svnr="12345678", username="1", role="admin")
+        newMitarbeiter = Mitarbeiter(name="Miky", svnr="12345678", username="1", role="admin", email="miky.x@g2.at")
         newMitarbeiter.set_password("12")
         addedMitarbeiter = self.baseController.add(newMitarbeiter)
         print("Added Mitarbeiter: " + str(addedMitarbeiter))
