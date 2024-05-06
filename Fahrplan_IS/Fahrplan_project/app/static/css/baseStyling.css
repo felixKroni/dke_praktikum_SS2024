@@ -17,7 +17,7 @@ h1 {
 
 /* Navbar styling */
 .navbar {
-    background-color: #333; /* Dark background for the navbar */
+    background-color: #990000; /* Dark background for the navbar */
     width: 100%; /* Full width */
     padding: 10px 0; /* Padding around items */
     display: flex;
@@ -33,7 +33,7 @@ h1 {
 }
 
 .navbar a:hover {
-    background-color: #555; /* Slightly lighter on hover */
+    background-color: #cc0000; /* Slightly lighter on hover */
     transition: background-color 0.3s; /* Smooth transition */
 }
 
@@ -48,4 +48,41 @@ ul {
 ul li {
     color: #dc3545; /* Make messages stand out */
     margin: 5px 0; /* Spacing between messages */
+}
+
+.btn {
+    display: inline-block;
+    background-color: #990000;  /* Red background color */
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #800000; /* Darker red on hover */
+}
+
+.action-button {
+    padding: 4px 8px;
+    margin-right: 5px;
+    color: #333; /* Dark grey color for better visibility */
+    text-decoration: none; /* Remove underline */
+}
+
+.action-button:hover {
+    background-color: #f4f4f9; /* Light grey background on hover */
+}
+
+.delete {
+    color: red; /* Red color for delete action for immediate recognition */
+}
+
+/* Container to align the button to the left */
+.top-buttons {
+    justify-content: flex-start;
+    display: flex;
 }

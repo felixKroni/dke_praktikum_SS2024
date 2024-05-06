@@ -9,7 +9,7 @@ input[type="text"], input[type="email"], input[type="password"] {
 input[type="submit"] {
     width: 100%;
     padding: 10px;
-    background-color: #5c67f2;
+    background-color: #990000;
     border: none;
     border-radius: 4px;
     color: white;
@@ -18,7 +18,7 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-    background-color: #4a54e1;
+    background-color: #800000;
 }
 
 .errors {

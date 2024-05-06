@@ -41,6 +41,7 @@ def logout():
 
 
 @app.route('/registerMitarbeiter', methods=['GET', 'POST'])
+@login_required
 def registerMitarbeiter():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -55,3 +56,47 @@ def registerMitarbeiter():
     return render_template('registerMitarbeiter.html', title='Register', form=form)
 
 
+@app.route('/mitarbeiterList', methods=['GET'])
+@login_required
+def mitarbeiterList():
+    if current_user.is_authenticated:
+        return render_template('mitarbeiterList.html', title='Mitarbeiter', mitarbeiters=database.baseController.find_all(Mitarbeiter))
+    return redirect(url_for('index'))
+
+@app.route('/deleteMitarbeiter/<int:id>', methods=['GET', 'POST'])
+@login_required
+def deleteMitarbeiter(id):
+    if current_user.is_authenticated:
+        user = database.baseController.find_by_id(Mitarbeiter, id)
+        if user is not None:
+            database.baseController.delete(user)
+            flash('Mitarbeiter deleted')
+        return redirect(url_for('mitarbeiterList'))
+    return redirect(url_for('index'))
+
+@app.route('/editMitarbeiter/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editMitarbeiter(id):
+    if current_user.is_authenticated:
+        user = database.baseController.find_by_id(Mitarbeiter, id)
+        if user is not None:
+            form = MitarbeiterRegistrationForm()
+            form.username.data = user.username
+            form.email.data = user.email
+            form.svnr.data = user.svnr
+            form.name.data = user.name
+            form.role.data = user.role
+            form.submit.label.text = 'Update'
+            if form.validate_on_submit():
+                user.username = form.username.data
+                user.email = form.email.data
+                user.svnr = form.svnr.data
+                user.name = form.name.data
+                user.role = form.role.data
+                user.set_password(form.password.data)
+                database.baseController.update()
+                flash('Mitarbeiter updated')
+                return redirect(url_for('mitarbeiterList'))
+            return render_template('editMitarbeiter.html', title='Edit', form=form)
+        return redirect(url_for('mitarbeiterList'))
+    return redirect(url_for('index'))

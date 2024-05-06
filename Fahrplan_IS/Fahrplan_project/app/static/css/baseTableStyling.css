@@ -1,0 +1,19 @@
+table {
+    width: 100%;
+    border-collapse: collapse;  /* Ensures borders between cells are shared */
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd; /* Adds a light line under each row */
+}
+
+th {
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+tr:hover {
+    background-color: #f0f0f0;  /* Highlight rows on hover */
+}
