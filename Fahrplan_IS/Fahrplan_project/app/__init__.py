@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from flask import Flask
-from .config import Config
+from config import Config
 from .database import Database
 from flask_login import LoginManager
 
