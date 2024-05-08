@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if personenwagen == [] and triebwagen == [] %}
+        <p>Es kann kein Zug erstellt werden</p>
+        <p>Klicken Sie <a href="{{ url_for('createWagen') }}">Hier</a>, um neue Wagen zu erstellen.</p>
+    {% elif personenwagen == [] %}
+        <p>Zum Erstellen eines Zuges muss mindestens ein Personenwagen verfügbar sein!</p>
+        <p>Klicken Sie <a href="{{ url_for('createWagen', typ='Personenwagen') }}">Hier</a>, um neue Personenwagen zu erstellen.</p>
+
+    {% elif triebwagen == [] %}
+        <p>Zum Erstellen eines Zuges muss mindestens ein Triebwagen verfügbar sein!</p>
+        <p>Klicken Sie <a href="{{ url_for('createWagen', typ='Triebwagen') }}">Hier</a>, um neue Triebwagen zu erstellen.</p>
+
+    {% else %}
+    <div class="container">
+    <h2 class="text-center"> Neuen Zug erstellen: </h2>
+        <div class="col-md-6 mx-auto">
+            <form action="" method="post">
+                {{ form.csrf_token }}
+
+                <div class="form-group">
+                    <label for="zug_nummer">Zug Nummer</label>
+                    <input type="text" class="form-control" id="zug_nummer" name="zug_nummer" value="{{ form.zug_nummer.data or '' }}">
+                    {% if form.zug_nummer.errors %}
+                      <ul class="errors">
+                        {% for error in form.zug_nummer.errors %}
+                          <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="zug_name">Zug Name</label>
+                    <input type="text" class="form-control" id="zug_name" name="zug_name" value="{{ form.zug_name.data or '' }}">
+                    {% if form.zug_name.errors %}
+                      <ul class="errors">
+                        {% for error in form.zug_name.errors %}
+                          <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label><b>Triebwagen</b></label><br>
+                    {% for choice in form.triebwagen_nr.choices %}
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="triebwagen_{{ loop.index }}" name="triebwagen_nr" value="{{ choice[0] }}">
+                            <label class="form-check-label" for="triebwagen_{{ loop.index }}">{{ choice[1] }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <b>Personenwagen</b>
+                {% for p in personenwagen %}
+                    {% if p.zug_nummer == None %}
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" value="{{ p.wagennummer }}" name="personenwagenCheckbox">
+                            {{ p.wagennummer }} ({{ p.spurweite }} mm)
+                        </label>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+    {% endif %}
+{% endblock %}

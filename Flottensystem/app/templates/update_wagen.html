@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <div class="container">
+        {% if wagenart == 'Triebwagen' %}
+            <h2 class="text-center" >Triebwagen Update</h2><br>
+            <div class="col-md-6 mx-auto">
+                <form action="" method="post" novalidate>
+                {{ form.csrf_token }}
+
+                <div class="form-group">
+                    {{ form.wagennummer.label(class="form-label") }}
+                    {{ form.wagennummer(class="form-control") }}
+                    {% if form.wagennummer.errors %}
+                      <ul class="errors">
+                        {% for error in form.wagennummer.errors %}
+                          <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.maxZugkraft.label(class="form-label") }}
+                    {{ form.maxZugkraft(class="form-control") }}
+                    {% if form.maxZugkraft.errors %}
+                      <ul class="errors">
+                        {% for error in form.maxZugkraft.errors %}
+                          <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="spurweite" class="form-label">Spurweite</label>
+                    <select class="form-control" id="spurweite" name="spurweite">
+                        {% for choice in form.spurweite.choices %}
+                            <option value="{{ choice[0] }}">{{ choice[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.spurweite.errors %}
+                        <ul class="errors">
+                            {% for error in form.spurweite.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-secondary">Speichern</button>
+                </form>
+            </div>
+
+        {% elif wagenart == 'Personenwagen' %}
+            <h2 class="text-center" >Personenwagen Update</h2><br>
+            <div class="col-md-6 mx-auto">
+                <form action="" method="post" novalidate>
+                {{ form.csrf_token }}
+
+                <div class="form-group">
+                    {{ form.wagennummer.label(class="form-label") }}
+                    {{ form.wagennummer(class="form-control") }}
+                    {% if form.wagennummer.errors %}
+                      <ul class="errors">
+                        {% for error in form.wagennummer.errors %}
+                          <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.sitzanzahl.label(class="form-label") }}
+                    {{ form.sitzanzahl(class="form-control") }}
+                    {% if form.sitzanzahl.errors %}
+                      <ul class="errors">
+                        {% for error in form.sitzanzahl.errors %}
+                          <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.maximalgewicht.label(class="form-label") }}
+                    {{ form.maximalgewicht(class="form-control") }}
+                    {% if form.maximalgewicht.errors %}
+                      <ul class="errors">
+                        {% for error in form.maximalgewicht.errors %}
+                          <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="spurweite" class="form-label">Spurweite</label>
+                    <select class="form-control" id="spurweite" name="spurweite">
+                        {% for choice in form.spurweite.choices %}
+                            <option value="{{ choice[0] }}">{{ choice[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.spurweite.errors %}
+                        <ul class="errors">
+                            {% for error in form.spurweite.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-secondary">Speichern</button>
+
+                </form>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

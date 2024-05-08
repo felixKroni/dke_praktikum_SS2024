@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if triebwagen == [] and personenwagen == [] %}
+        <p>Es sind keine Wagen vorhanden!</p>
+        <a href="{{ url_for('index') }}">Zurück zur Home</a>
+    {% else %}
+        <h1 class="text-center" style="margin-top: 20px;" >Wagenübersicht</h1><br>
+        <div class="container">
+        <div class="scrollable">
+        {% if triebwagen != [] %}
+            <h2>Triebwagen</h2>
+            <table class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Wagennummer</th>
+                    <th>Spurweite</th>
+                    <th>MaxZugkraft</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+                {% for t in triebwagen %}
+                <tr>
+                    <td>{{ t.wagennummer }}</td>
+                    <td>{{ t.spurweite }}</td>
+                    <td>{{ t.maxZugkraft }}</td>
+                    <td>
+                        <div style="display: inline;">
+                        <button class="btn-custom">
+                            <a href="{{ url_for('updateWagen', wagennummer=t.wagennummer) }}" role="button">Update</a>
+                        </button>
+                        <form action="{{ url_for('deleteWagen', wagennummer=t.wagennummer) }}" method="post" style="display: inline;">
+                            <button type="submit" class="btn-custom" onclick="return confirm('Sind Sie sicher, dass Sie diesen Wagen löschen möchten?')">Löschen</button>
+                        </form>
+                        </div>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+
+        {% endif %}<br>
+
+        {% if personenwagen != [] %}
+            <h2>Personenwagen</h2>
+            <table class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
+                    <tr>
+                        <th>Wagennummer</th>
+                        <th>Spurweite</th>
+                        <th>Sitzanzahl</th>
+                        <th>Maximalgewicht</th>
+                         <th>Aktionen</th>
+                    </tr>
+            </thead>
+                    {% for p in personenwagen %}
+                    <tr>
+                        <td>{{ p.wagennummer }}</td>
+                        <td>{{ p.spurweite }}</td>
+                        <td>{{ p.sitzanzahl }}</td>
+                        <td>{{ p.maximalgewicht }}</td>
+                        <td>
+                            <div style="display: inline;">
+                            <button class="btn-custom">
+                                <a href="{{ url_for('updateWagen', wagennummer=p.wagennummer) }}" role="button">Update</a>
+                            </button>
+                            <form action="{{ url_for('deleteWagen', wagennummer=p.wagennummer) }}" method="post" style="display: inline;">
+                                <button type="submit" class="btn-custom" onclick="return confirm('Sind Sie sicher, dass Sie diesen Wagen löschen möchten?')">Löschen</button>
+                            </form>
+                            </div>
+
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </table>
+        {% endif %}
+        </div>
+        </div>
+    {% endif %}
+{% endblock %}

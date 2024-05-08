@@ -1,0 +1,12 @@
+.btn-custom {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn-custom:hover {
+    background-color: #0066cc;
+}

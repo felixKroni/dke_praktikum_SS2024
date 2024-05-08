@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if zug == [] %}
+        <p>Es sind keine Zug vorhanden!</p>
+        <a href="{{ url_for('index') }}">Zurück zur Home</a>
+    {% else %}
+
+        <h1 class="text-center" style="margin-top: 20px;">Zugübersicht</h1><br>
+        <div class="container">
+        <div class="scrollable">
+            <table class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Zugnnummer</th>
+                    <th>Zugname</th>
+                    <th>Triebwagen</th>
+                    <th>Personenwagen</th>
+                    <th>Spurweite</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+                {% for z in zug %}
+                <tr>
+                    <td>{{ z.zug_nummer }}</td>
+                    <td>{{ z.zug_name }}</td>
+                    <td>{{ z.triebwagen_nr }}</td>
+                    <td>
+                        {% for p in z.personenwagen.all() %}
+                            <ul class="list-unstyled">
+                                <li>{{ p.wagennummer }}</li>
+                            </ul>
+                        {% endfor %}
+                    </td>
+                    {% for p in z.personenwagen.all() %}
+                        {% if loop.first %}
+                            <td>{{ p.spurweite }} mm</td>
+                        {% endif %}
+                    {% endfor %}
+
+                    <td>
+                        <div style="display: inline;">
+                        <button class="btn-custom">
+                            <a href="{{ url_for('updateZug', zug_nummer=z.zug_nummer) }}" role="button">Update</a>
+                        </button>
+
+                        <form action="{{ url_for('deleteZug', zug_nummer=z.zug_nummer) }}" method="post" style="display: inline;">
+                            <button type="submit" class="btn-custom" onclick="return confirm('Sind Sie sicher, dass Sie diesen Zug löschen möchten?')">Löschen</button>
+                        </form>
+
+                        </div>
+
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </table>
+         </div>
+        </div>
+
+    {% endif %}
+{% endblock %}
