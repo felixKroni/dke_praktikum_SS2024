@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0c128973-c82d-4487-a9d6-dc1198604cfb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dke_praktikum_SS2024.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dke_praktikum_SS2024.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app.db" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strecken_IS/app/templates/warnungen.html" beforeDir="false" afterPath="$PROJECT_DIR$/Strecken_IS/app/templates/warnungen.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +50,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;Patrick&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -63,7 +60,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.__init__">
+  <component name="RunManager">
     <configuration name="__init__" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="dke_praktikum_SS2024" />
       <option name="ENV_FILES" value="" />
@@ -110,19 +107,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.__init__" />
-        <item itemvalue="Python.api" />
-      </list>
-    </recent_temporary>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-python-sdk-d68999036c7f-b11f5e8da5ad-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.14475.56" />
-      </set>
-    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -143,6 +127,8 @@
       <workItem from="1713430552345" duration="4787000" />
       <workItem from="1713435433472" duration="3147000" />
       <workItem from="1713508429680" duration="11626000" />
+      <workItem from="1715176984303" duration="4000" />
+      <workItem from="1715177512601" duration="30000" />
     </task>
     <servers />
   </component>
