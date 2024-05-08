@@ -5,7 +5,7 @@ from config import Config
 from .database import Database
 from flask_login import LoginManager
 
-db_path = Path('.') / 'app' / 'data' / 'database.db'
+db_path = Path('.') / 'app' / 'database.db'
 database = Database(db_path)
 app = Flask(__name__)
 app.config.from_object(Config)
