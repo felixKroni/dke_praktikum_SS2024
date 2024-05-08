@@ -6,6 +6,7 @@ from app import app, database
 from app.forms.loginForm import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 
+from app.forms.mitarbeiterEditForm import MitarbeiterEditForm
 from app.forms.mitarbeiterRegistrationForm import MitarbeiterRegistrationForm
 from app.models.mitarbeiter import Mitarbeiter
 
@@ -51,8 +52,8 @@ def registerMitarbeiter():
         user.set_password(form.password.data)
         database.baseController.add(user)
         #database.Session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
+        flash('Congratulations, you registered user: ' + user.username)
+        return redirect(url_for('mitarbeiterList'))
     return render_template('registerMitarbeiter.html', title='Register', form=form)
 
 
@@ -80,23 +81,29 @@ def editMitarbeiter(id):
     if current_user.is_authenticated:
         user = database.baseController.find_by_id(Mitarbeiter, id)
         if user is not None:
-            form = MitarbeiterRegistrationForm()
-            form.username.data = user.username
-            form.email.data = user.email
-            form.svnr.data = user.svnr
-            form.name.data = user.name
-            form.role.data = user.role
-            form.submit.label.text = 'Update'
-            if form.validate_on_submit():
-                user.username = form.username.data
-                user.email = form.email.data
-                user.svnr = form.svnr.data
-                user.name = form.name.data
-                user.role = form.role.data
-                user.set_password(form.password.data)
-                database.baseController.update()
-                flash('Mitarbeiter updated')
+            if request.method == 'GET':
+                form = MitarbeiterEditForm()
+                form.username.data = user.username
+                form.email.data = user.email
+                form.svnr.data = user.svnr
+                form.name.data = user.name
+                form.role.data = user.role
+                form.submit.label.text = 'Update'
+            else:
+                form = MitarbeiterEditForm(request.form)
+                if form.validate_on_submit():
+                    user.username = form.username.data
+                    user.email = form.email.data
+                    user.svnr = form.svnr.data
+                    user.name = form.name.data
+                    user.role = form.role.data
+                    user.set_password(form.password.data)
+                    database.baseController.update_by_id(Mitarbeiter, user.id, user.__dict__)
+                    flash('Mitarbeiter updated')
                 return redirect(url_for('mitarbeiterList'))
+
             return render_template('editMitarbeiter.html', title='Edit', form=form)
+        else:
+            flash('No user found with id ' + id)
         return redirect(url_for('mitarbeiterList'))
     return redirect(url_for('index'))

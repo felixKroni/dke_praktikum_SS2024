@@ -14,8 +14,20 @@ class BaseController:
         self.session.delete(instance)
         self.session.commit()
 
-    def update(self):
+    def commit(self):
         self.session.commit()
+
+    def update(self, instance, new_data):
+        for key, value in new_data.items():
+            setattr(instance, key, value)
+        self.session.commit()
+
+    def update_by_id(self, model, id, new_data):
+        instance = self.find_by_id(model, id)
+        if instance:
+            self.update(instance, new_data)
+        else:
+            print(f"No instance found with id {id}.")
 
     def find_by_id(self, model, id):
         return self.session.query(model).filter(model.id == id).first()
