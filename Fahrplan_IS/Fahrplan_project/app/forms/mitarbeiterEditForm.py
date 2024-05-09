@@ -13,5 +13,5 @@ class MitarbeiterEditForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+        'Passwort wiederholen', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Edit')

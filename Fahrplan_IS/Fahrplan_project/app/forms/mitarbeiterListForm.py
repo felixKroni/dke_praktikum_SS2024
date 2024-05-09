@@ -1,2 +1,0 @@
-class MitarbeiterListForm(FlaskForm):
-    mit

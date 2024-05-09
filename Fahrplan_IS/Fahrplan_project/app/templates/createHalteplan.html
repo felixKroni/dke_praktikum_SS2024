@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Create New Halteplan</h1>
+    <h1>Neuen Halteplan erstellen</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
@@ -18,11 +18,22 @@
         </p>
         <p>
             {{ form.streckenName.label }}<br>
-            {{ form.streckenName(size=32) }}<br>
+            {{ form.streckenName(size=form.streckenName.choices|length) }}<br>
             {% for error in form.streckenName.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+        <p>
+            {{ form.haltepunkte.label }}<br>
+            {{ form.haltepunkte(size=form.haltepunkte.choices|length) }}<br>
+            {% for error in form.haltepunkte.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+
         <p>{{ form.submit() }}</p>
     </form>
+
+
 {% endblock %}

@@ -29,7 +29,7 @@ def login():
     if form.validate_on_submit():
         user = database.get_controller('ma').get_mitarbeiter_by_username(form.username.data)
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('Falscher Benutzername oder Passwort')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -57,7 +57,7 @@ def registerMitarbeiter():
         user.set_password(form.password.data)
         database.baseController.add(user)
         # database.Session.commit()
-        flash('Congratulations, you registered user: ' + user.username)
+        flash('Mitarbeiter ' + user.username + ' wurde erfolgreich erstellt')
         return redirect(url_for('mitarbeiterList'))
     return render_template('registerMitarbeiter.html', title='Register', form=form)
 
@@ -78,7 +78,7 @@ def deleteMitarbeiter(id):
         user = database.baseController.find_by_id(Mitarbeiter, id)
         if user is not None:
             database.baseController.delete(user)
-            flash('Mitarbeiter deleted')
+            flash('Mitarbeiter erfolgreich gelöscht')
         return redirect(url_for('mitarbeiterList'))
     return redirect(url_for('index'))
 
@@ -107,12 +107,12 @@ def editMitarbeiter(id):
                     user.role = form.role.data
                     user.set_password(form.password.data)
                     database.baseController.update_by_id(Mitarbeiter, user.id, user.__dict__)
-                    flash('Mitarbeiter updated')
+                    flash('Mitarbeiter erfolgreich geändert')
                 return redirect(url_for('mitarbeiterList'))
 
             return render_template('editMitarbeiter.html', title='Edit', form=form)
         else:
-            flash('No user found with id ' + id)
+            flash('Kein Mitarbeiter mit dieser ID gefunden ' + id)
         return redirect(url_for('mitarbeiterList'))
     return redirect(url_for('index'))
 
@@ -128,19 +128,16 @@ def halteplanList():
 @app.route('/createHalteplan', methods=['GET', 'POST'])
 @login_required
 def createHalteplan():
-    if request.form is None:
-        form = HalteplanCreateForm()
-        strecken_list = [('strecke1', 'Orient Express Route'), ('strecke2', 'Westbahn')] #TODO get from strecken system
-        form.streckenName.choices = strecken_list
-        return render_template('createHalteplan.html', title='Create Halteplan', form=form)
 
-    form = request.form
+    form = HalteplanCreateForm(request.form)
+    strecken_list = ['Orient Route', 'Westbahn'] #TODO get from strecken system
+    form.streckenName.choices = strecken_list
     if form.validate_on_submit():
         new_halteplan = Halteplan(name=form.name.data, streckenName=form.streckenName.data)
         database.baseController.add(new_halteplan)
-        flash('New Halteplan created successfully')
+        flash('Erfolgreich neuen Halteplan erstellt')
         return redirect(url_for('halteplanList'))
-    return render_template('createHalteplan.html', title='Create Halteplan', form=form)
+    return render_template('createHalteplan.html', title='Halteplan erstellen', form=form)
 
 
 @app.route('/editHalteplan/<int:id>', methods=['GET', 'POST'])
@@ -149,6 +146,8 @@ def editHalteplan(id):
     halteplan = database.baseController.find_by_id(Halteplan, id)
     if halteplan is not None:
         form = HalteplanEditForm(request.form)
+        strecken_list = ['Orient Express Route', 'Westbahn']  # TODO get from strecken system
+        form.streckenName.choices = strecken_list
         if request.method == 'GET':
             form.name.data = halteplan.name
             form.streckenName.data = halteplan.streckenName
@@ -156,7 +155,7 @@ def editHalteplan(id):
             halteplan.name = form.name.data
             halteplan.streckenName = form.streckenName.data
             database.baseController.update_by_id(Halteplan, id, halteplan.__dict__)
-            flash('Halteplan updated successfully')
+            flash('Halteplan erfolgreich geändert')
             return redirect(url_for('halteplanList'))
         return render_template('editHalteplan.html', form=form, title='Edit Halteplan')
     else:
@@ -172,7 +171,7 @@ def deleteHalteplan(id):
         #TODO delete all accordinng Fahrpläne and Fahrtdurchführungen
         database.baseController.delete_multiple(halteplan.abschnitte)
         database.baseController.delete(halteplan)
-        flash('Halteplan deleted')
+        flash('Halteplan gelöscht')
     else:
-        flash('No Halteplan found with ID: {}'.format(id))
+        flash('Kein Halteplan wurde mit dieser ID gefunden: {}'.format(id))
     return redirect(url_for('halteplanList'))

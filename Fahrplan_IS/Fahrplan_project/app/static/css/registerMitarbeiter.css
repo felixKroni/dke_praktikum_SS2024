@@ -1,4 +1,4 @@
-input[type="text"], input[type="email"], input[type="password"] {
+input[type="text"], input[type="email"], input[type="password"], select {
     width: calc(100% - 22px);
     padding: 10px;
     border: 1px solid #ddd;
@@ -51,4 +51,15 @@ label {
 label[for="remember_me"] {
     display: inline-block;
     vertical-align: middle;
+}
+
+select {
+    display: block; /* Makes sure the select box is a block element */
+
+    cursor: pointer; /* Gives a pointer cursor on hover */
+}
+
+input[type="checkbox"] {
+    margin-right: 10px; /* Space between checkbox and label */
+    cursor: pointer; /* Pointer cursor on hover */
 }

@@ -13,15 +13,15 @@ class MitarbeiterRegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Register')
+        'Passwort wiederholen', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Registrieren')
 
     def validate_username(self, username):
         user = database.get_controller('ma').get_mitarbeiter_by_username(username.data)
         if user is not None:
-            raise ValidationError('Please use a different username.')
+            raise ValidationError('Bitte benutze einen anderen Benutzernamen.')
 
     def validate_email(self, email):
         user = database.get_controller('ma').get_mitarbeiter_by_email(email.data)
         if user is not None:
-            raise ValidationError('Please use a different email address.')
+            raise ValidationError('Bitte benutze eine andere Email-Adresse.')
