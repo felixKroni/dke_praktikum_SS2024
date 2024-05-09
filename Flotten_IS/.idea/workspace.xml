@@ -4,20 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ff886b68-f995-4081-85a2-45966a1767b6" name="Changes" comment="" />
+    <list default="true" id="fa62f52f-1ea9-4f2a-81c0-2f70f774de25" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Flask Main" />
-        <option value="Python Script" />
-        <option value="HTML File" />
-      </list>
-    </option>
   </component>
   <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
     <envs>
@@ -33,42 +24,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;lananhph020&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">
-    <option name="selectedUrlAndAccountId">
-      <UrlAndAccount>
-        <option name="accountId" value="e906d34c-fb84-4f4d-b66e-4239f69bf105" />
-        <option name="url" value="https://github.com/lananhph020/Flottensystem.git" />
-      </UrlAndAccount>
-    </option>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
-  </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 0
-}</component>
-  <component name="ProjectId" id="2fSRZc7Y174QOQ0KOoALyjWwwRH" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 5
+}]]></component>
+  <component name="ProjectId" id="2gEB8nRcZsM8Oo57zEWuUQY6qUD" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Flask server.Flottensystem.executor": "Run",
-    "Python.340354d60283_users_table.executor": "Run",
-    "Python.models.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "LanAnh__Flotten",
-    "last_opened_file_path": "/Users/phamlananh/Documents/GitHub/dke_praktikum_SS2024/Flottensystem",
+    "last_opened_file_path": "/Users/phamlananh/Documents/GitHub/dke_praktikum_SS2024/Flotten_IS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -78,81 +49,6 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/app/templates/errors" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Flask server.Flottensystem">
-    <configuration name="340354d60283_users_table" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Flottensystem" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/migrations/versions" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/migrations/versions/340354d60283_users_table.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="models" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Flottensystem" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/models.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Flottensystem" type="Python.FlaskServer">
-      <module name="Flottensystem" />
-      <option name="target" value="$PROJECT_DIR$/flottensystem.py" />
-      <option name="targetType" value="PATH" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="launchJavascriptDebuger" value="false" />
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.models" />
-        <item itemvalue="Python.340354d60283_users_table" />
-      </list>
-    </recent_temporary>
-  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -163,112 +59,16 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="ff886b68-f995-4081-85a2-45966a1767b6" name="Changes" comment="" />
-      <created>1713792549621</created>
+      <changelist id="fa62f52f-1ea9-4f2a-81c0-2f70f774de25" name="Changes" comment="" />
+      <created>1715252701044</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1713792549621</updated>
-      <workItem from="1713792553499" duration="576000" />
-      <workItem from="1713793274946" duration="88000" />
-      <workItem from="1713793378546" duration="657000" />
-      <workItem from="1713794120791" duration="309000" />
-      <workItem from="1713794481203" duration="300000" />
-      <workItem from="1713794808222" duration="84000" />
-      <workItem from="1713794923188" duration="228000" />
-      <workItem from="1713795379412" duration="487000" />
-      <workItem from="1713795875797" duration="195000" />
-      <workItem from="1713796105068" duration="116000" />
-      <workItem from="1713796237322" duration="884000" />
-      <workItem from="1713797166318" duration="20000" />
-      <workItem from="1713797221786" duration="1835000" />
-      <workItem from="1713800096247" duration="334000" />
-      <workItem from="1713800542536" duration="50000" />
-      <workItem from="1713800607753" duration="129000" />
-      <workItem from="1713800760329" duration="191000" />
-      <workItem from="1713810180670" duration="1354000" />
-      <workItem from="1713811583934" duration="143000" />
-      <workItem from="1713811748134" duration="195000" />
-      <workItem from="1713871179324" duration="98000" />
-      <workItem from="1713871303592" duration="10000" />
-      <workItem from="1713871363058" duration="4675000" />
-      <workItem from="1713960767231" duration="2729000" />
-      <workItem from="1713964386400" duration="1638000" />
-      <workItem from="1713966046524" duration="689000" />
-      <workItem from="1713966751598" duration="509000" />
-      <workItem from="1713967295420" duration="722000" />
-      <workItem from="1713968020898" duration="57000" />
-      <workItem from="1713968080325" duration="44000" />
-      <workItem from="1713968127100" duration="1727000" />
-      <workItem from="1714034179873" duration="827000" />
-      <workItem from="1714035223959" duration="4466000" />
-      <workItem from="1714046506001" duration="155000" />
-      <workItem from="1714046663992" duration="682000" />
-      <workItem from="1714047349273" duration="84000" />
-      <workItem from="1714047435843" duration="61000" />
-      <workItem from="1714047899207" duration="680000" />
-      <workItem from="1714048583727" duration="431000" />
-      <workItem from="1714049017982" duration="1014000" />
-      <workItem from="1714050036539" duration="248000" />
-      <workItem from="1714050287509" duration="9038000" />
-      <workItem from="1714060256027" duration="4153000" />
-      <workItem from="1714129966904" duration="10458000" />
-      <workItem from="1714143067398" duration="11117000" />
-      <workItem from="1714218701385" duration="9265000" />
-      <workItem from="1714228653308" duration="358000" />
-      <workItem from="1714229038223" duration="434000" />
-      <workItem from="1714229476135" duration="747000" />
-      <workItem from="1714230228703" duration="282000" />
-      <workItem from="1714230514203" duration="176000" />
-      <workItem from="1714230746147" duration="2793000" />
-      <workItem from="1714233549414" duration="99000" />
-      <workItem from="1714233664461" duration="293000" />
-      <workItem from="1714308462089" duration="1933000" />
-      <workItem from="1714310426003" duration="1419000" />
-      <workItem from="1714314499350" duration="3253000" />
-      <workItem from="1714318404797" duration="20000" />
-      <workItem from="1714318468083" duration="173000" />
-      <workItem from="1714318653047" duration="611000" />
-      <workItem from="1714328787210" duration="27000" />
-      <workItem from="1714389419923" duration="1028000" />
-      <workItem from="1714391586970" duration="2385000" />
-      <workItem from="1714394036497" duration="8000" />
-      <workItem from="1714395042481" duration="1268000" />
-      <workItem from="1714396315788" duration="472000" />
-      <workItem from="1714396791904" duration="941000" />
-      <workItem from="1714397739028" duration="7759000" />
-      <workItem from="1714417429813" duration="4452000" />
-      <workItem from="1714466357471" duration="877000" />
-      <workItem from="1714467242155" duration="9221000" />
-      <workItem from="1715005889789" duration="315000" />
-      <workItem from="1715007676356" duration="757000" />
-      <workItem from="1715090838428" duration="618000" />
-      <workItem from="1715091710096" duration="1871000" />
-      <workItem from="1715166398656" duration="980000" />
-      <workItem from="1715172704091" duration="432000" />
-      <workItem from="1715173340968" duration="67000" />
-      <workItem from="1715173555668" duration="1360000" />
-      <workItem from="1715174972265" duration="797000" />
-      <workItem from="1715180619501" duration="325000" />
+      <updated>1715252701044</updated>
+      <workItem from="1715252702413" duration="844000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Flottensystem$models.coverage" NAME="models Coverage Results" MODIFIED="1714051118326" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
-    <SUITE FILE_PATH="coverage/Flottensystem$340354d60283_users_table.coverage" NAME="340354d60283_users_table Coverage Results" MODIFIED="1714037342409" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/migrations/versions" />
-    <SUITE FILE_PATH="coverage/Flottensystem$Flottensystem.coverage" NAME="Flottensystem Coverage Results" MODIFIED="1715180813469" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
