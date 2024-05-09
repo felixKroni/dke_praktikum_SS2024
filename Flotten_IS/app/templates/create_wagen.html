@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
+    <div class="container" style="margin-bottom: 20px;">
         {% if wagenart == 'Triebwagen' %}
-            <h2 class="text-center" style="margin-bottom: 20px;" >Triebwagen erstelen:</h2><br>
+            <h2 class="text-center" style="margin-bottom: 20px;" >Triebwagen erstellen</h2><br>
 
             <div class="col-md-6 mx-auto">
                 <form action="" method="post" novalidate>
@@ -59,7 +59,7 @@
 
 
         {% elif wagenart == 'Personenwagen' %}
-            <h2 class="text-center" style="margin-bottom: 20px;">Personenwagen erstellen:</h2><br>
+            <h2 class="text-center" style="margin-bottom: 20px;">Personenwagen erstellen</h2><br>
             <div class="col-md-6 mx-auto">
                 <form action="" method="post" novalidate>
                 {{ form.csrf_token }}

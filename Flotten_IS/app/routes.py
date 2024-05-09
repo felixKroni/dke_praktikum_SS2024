@@ -42,6 +42,7 @@ def login():
     return render_template('login.html', title='homepage', form=form)
 
 
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -165,12 +166,16 @@ def createZug():
     personenwagen = Personenwagen.query.all()
     form = ZugForm()
 
-    form.triebwagen_nr.choices = [(t.wagennummer, str(t.wagennummer) + " (" + str(t.spurweite) + " mm)") for t in Triebwagen.query.filter_by(zug=None)]
+    form.triebwagen_nr.choices = [(t.wagennummer, str(t.wagennummer) + " (" + str(t.spurweite) + " mm - " + str(t.maxZugkraft) + " Tonnen)" ) for t in Triebwagen.query.filter_by(zug=None)]
 
     if form.validate_on_submit():
+        if not form.triebwagen_nr.data:
+            flash('Bitte wählen Sie einen Triebwagen aus!')
+            return redirect(url_for('createZug'))
+
         personenwagenListe = request.form.getlist('List_PW')
         if personenwagenListe == []:
-            flash('Fehler: Ein Zug benötigt mindestens einen Personenwagen!')
+            flash('Bitte wählen Sie einen Personenwagen aus!')
             return redirect(url_for('createZug'))
 
         wagen = []
@@ -178,15 +183,22 @@ def createZug():
             w = Personenwagen.query.filter_by(wagennummer=liste).first()
 
             if w.zug is not None:
-                flash('Fehler: Der Personenwagen wurde bereits verwendet!'.format(w.wagennummer))
+                flash('Der Personenwagen wurde bereits verwendet!'.format(w.wagennummer))
                 return redirect(url_for('createZug'))
 
             wagen.append(w)
 
+        total_weight = sum(w.maximalgewicht for w in wagen)
+        triebwagen = Triebwagen.query.filter_by(wagennummer=form.triebwagen_nr.data).first()
+
+        if total_weight > triebwagen.maxZugkraft:
+            flash('Warnung! Der Triebwagen hat nicht genug Zugkraft, um alle Personenwagen zu ziehen!')
+            return redirect(url_for('createZug'))
+
         spurweite = Triebwagen.query.filter_by(wagennummer=form.triebwagen_nr.data).first().spurweite
         for w in wagen:
             if spurweite != w.spurweite:
-                flash('Wagen müssen gleiche Spurweite haben!')
+                flash('Warnung! Wagen müssen gleiche Spurweite haben!')
                 return redirect(url_for('createZug'))
 
         zug = Zug(zug_nummer=form.zug_nummer.data, zug_name=form.zug_name.data, triebwagen_nr=form.triebwagen_nr.data, personenwagen=wagen)
@@ -212,13 +224,17 @@ def updateZug(zug_nummer):
     for t in Triebwagen.query.filter_by(zug=None):
         aktZug.append(t)
 
-    form.triebwagen_nr.choices = [(t.wagennummer, str(t.wagennummer) + " (" + str(t.spurweite) + " mm)") for t in
+    form.triebwagen_nr.choices = [(t.wagennummer, str(t.wagennummer) + " (" + str(t.spurweite) + " mm - " + str(t.maxZugkraft) + " Tonnen)" ) for t in
                                   aktZug]
 
     if form.validate_on_submit():
+        if not form.triebwagen_nr.data:
+            flash('Bitte wählen Sie einen Triebwagen aus!')
+            return redirect(url_for('createZug'))
+
         personenwagenListe = request.form.getlist('List_PW')
         if personenwagenListe == []:
-            flash('Fehler: Ein Zug benötigt mindestens einen Personenwagen!')
+            flash('Bitte wählen Sie einen Personenwagen aus!')
             return redirect(url_for('updateZug', zug_nummer=zug_nummer))
 
         wagen = []
@@ -226,10 +242,17 @@ def updateZug(zug_nummer):
             w = Personenwagen.query.filter_by(wagennummer=liste).first()
 
             if w.zug is not None and w.zug_nummer != zug.zug_nummer:
-                flash('Fehler: Der Personenwagen mit der Wagennummer {} ist bereits einem Zug zugeordnet!'.format(
+                flash('Der Personenwagen {} ist bereits einem Zug zugeordnet!'.format(
                     w.zug_nummer))
                 return redirect(url_for('updateZug', zug_nummer=zug_nummer))
             wagen.append(w)
+
+        total_weight = sum(w.maximalgewicht for w in wagen)
+        triebwagen = Triebwagen.query.filter_by(wagennummer=form.triebwagen_nr.data).first()
+
+        if total_weight > triebwagen.maxZugkraft:
+            flash('Warnung! Der Triebwagen hat nicht genug Zugkraft, um alle Personenwagen zu ziehen!')
+            return redirect(url_for('updateZug', zug_nummer=zug_nummer))
 
         spurweite = Triebwagen.query.filter_by(wagennummer=form.triebwagen_nr.data).first().spurweite
         for w in wagen:
@@ -263,7 +286,7 @@ def deleteZug(zug_nummer):
     db.session.delete(zug)
     db.session.commit()
 
-    flash('Löschen des Zuges mit der Zugnummer {} wurde erfolgreich durchgeführt'.format(zug_nummer))
+    flash('Zug {} wurde erfolgreich gelöscht!'.format(zug_nummer))
     return redirect(url_for('zugOverview'))
 
 @app.route('/api/züge', methods=['GET'])
@@ -280,5 +303,7 @@ def get_zug():
             'personenwagen': [pw.wagennummer for pw in zug.personenwagen]
         })
     return jsonify(zug_data)
+
+
 
 
