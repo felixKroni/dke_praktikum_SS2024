@@ -5,7 +5,7 @@
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\felix\Desktop\JKU\6_Semester\Praktikum DKE\Fahrplan_IS\Fahrplan_project\app\data\database.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:C:\Users\felix\Desktop\JKU\6_Semester\Praktikum DKE\Fahrplan_IS\Fahrplan_project\app\database.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

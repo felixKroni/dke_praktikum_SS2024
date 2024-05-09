@@ -14,6 +14,15 @@ class BaseController:
         self.session.delete(instance)
         self.session.commit()
 
+    def delete_multiple(self, instances):
+        for instance in instances:
+            self.session.delete(instance)
+        self.session.commit()
+
+    def delete_all(self, model):
+        self.session.query(model).delete()
+        self.session.commit()
+
     def commit(self):
         self.session.commit()
 
