@@ -279,3 +279,5 @@ def get_zug():
             'personenwagen': [pw.wagennummer for pw in zug.personenwagen]
         })
     return jsonify(zug_data)
+
+
