@@ -92,6 +92,7 @@ def createWagen(typ):
         flash(typ + ' wurde erfolgreich erstellt!')
         return redirect(url_for('wagenOverview'))
 
+
     return render_template('create_wagen.html', title=typ + ' erstellen', wagenart=typ, form=form)
 
 @app.route('/Wagen_bearbeiten/<wagennummer>', methods=['GET', 'POST'])
@@ -146,7 +147,7 @@ def deleteWagen(wagennummer):
                 db.session.delete(zug)
 
     db.session.commit()
-    flash('Wagen mit der Wagennummer {} wurde erfolgreich gelöscht!'.format(wagennummer))
+    flash('{} wurde erfolgreich gelöscht!'.format(wagennummer))
     return redirect(url_for('wagenOverview'))
 
 @app.route('/Zugübersicht')
@@ -167,7 +168,7 @@ def createZug():
     form.triebwagen_nr.choices = [(t.wagennummer, str(t.wagennummer) + " (" + str(t.spurweite) + " mm)") for t in Triebwagen.query.filter_by(zug=None)]
 
     if form.validate_on_submit():
-        personenwagenListe = request.form.getlist('personenwagenCheckbox')
+        personenwagenListe = request.form.getlist('List_PW')
         if personenwagenListe == []:
             flash('Fehler: Ein Zug benötigt mindestens einen Personenwagen!')
             return redirect(url_for('createZug'))
@@ -215,7 +216,7 @@ def updateZug(zug_nummer):
                                   aktZug]
 
     if form.validate_on_submit():
-        personenwagenListe = request.form.getlist('personenwagenCheckbox')
+        personenwagenListe = request.form.getlist('List_PW')
         if personenwagenListe == []:
             flash('Fehler: Ein Zug benötigt mindestens einen Personenwagen!')
             return redirect(url_for('updateZug', zug_nummer=zug_nummer))
