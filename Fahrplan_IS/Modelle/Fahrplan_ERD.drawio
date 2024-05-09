@@ -1,0 +1,71 @@
+<mxfile host="Electron" modified="2024-04-09T19:17:48.104Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.0.4 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="-Ny-EapLqMKXpvZzfUuo" version="24.0.4" type="device">
+  <diagram name="Seite-1" id="j5Kou3qg_qNPWXI2ujsc">
+    <mxGraphModel dx="989" dy="577" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="GPlIpSJsRvUw2aR0bLCb-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;" parent="1" source="C5batHd30FwwxVv-121K-2" target="hF3Ueoy39lwhL7Okv0nt-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="C5batHd30FwwxVv-121K-2" value="Fahrplan" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="354" y="653" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="hF3Ueoy39lwhL7Okv0nt-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERone;endFill=0;startArrow=ERone;startFill=0;" parent="1" source="C5batHd30FwwxVv-121K-3" target="C5batHd30FwwxVv-121K-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="C5batHd30FwwxVv-121K-3" value="Halteplan" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="354" y="497" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="GPlIpSJsRvUw2aR0bLCb-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=ERmany;endFill=0;startArrow=ERmany;startFill=0;" parent="1" source="hF3Ueoy39lwhL7Okv0nt-2" target="GPlIpSJsRvUw2aR0bLCb-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ndXL8mZYKNqR9BssLrHB-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=ERone;endFill=0;startArrow=ERmany;startFill=0;" edge="1" parent="1" source="hF3Ueoy39lwhL7Okv0nt-2" target="ndXL8mZYKNqR9BssLrHB-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hF3Ueoy39lwhL7Okv0nt-2" value="Fahrtdurchführung" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="563" y="653" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="hF3Ueoy39lwhL7Okv0nt-6" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="104" y="467" width="250" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="hF3Ueoy39lwhL7Okv0nt-1" value="Haltepunkte" style="rounded=1;whiteSpace=wrap;html=1;" parent="hF3Ueoy39lwhL7Okv0nt-6" vertex="1">
+          <mxGeometry x="6" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="hF3Ueoy39lwhL7Okv0nt-5" value="Aus Strecken Informationssystem" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="hF3Ueoy39lwhL7Okv0nt-6" vertex="1">
+          <mxGeometry x="6" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="hF3Ueoy39lwhL7Okv0nt-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=ERmany;endFill=0;startArrow=ERmany;startFill=0;" parent="1" source="hF3Ueoy39lwhL7Okv0nt-1" target="C5batHd30FwwxVv-121K-3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GPlIpSJsRvUw2aR0bLCb-2" value="Mitarbeiter" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="563" y="870" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="GPlIpSJsRvUw2aR0bLCb-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;endArrow=none;endFill=0;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="623" y="790" as="targetPoint" />
+            <mxPoint x="553.0000000000002" y="790" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GPlIpSJsRvUw2aR0bLCb-4" value="Mitarbeiter bei Fahrtdurchführung" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="760" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ndXL8mZYKNqR9BssLrHB-1" value="Zug" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="563" y="515" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ndXL8mZYKNqR9BssLrHB-3" value="Aus Flotten Informationssystem" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="563" y="485" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ndXL8mZYKNqR9BssLrHB-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;dashed=1;" edge="1" parent="1" source="ndXL8mZYKNqR9BssLrHB-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="290" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ndXL8mZYKNqR9BssLrHB-4" value="Haltepunkt von Halteplan" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="575" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
