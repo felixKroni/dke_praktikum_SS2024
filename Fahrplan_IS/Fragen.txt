@@ -1,0 +1,3 @@
+Ein Halteplan hat genau einen Fahrplan. Kann ein Fahrplan mehrere Haltepläne haben? Braucht ein Fahrplan info über einen Halteplan?
+
+Ist der Preis zwischen zwei Bahnhöfen EIN (einstellbarer) Wert oder kann für jeden Streckenabschnitt ein eigener Preis festgelegt werden?

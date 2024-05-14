@@ -1,0 +1,19 @@
+IsAdmin Checkbox überlegen,
+
+
+Create New Halteplan wird aufgerufen
+GetAllStrecken() : List<Strings> ausgeführt im createHalteplan01
+Strecken kommen in Dropdown
+Strecke wird ausgewählt
+Weiter button wird gedrückt --> Weiter zur Haltestellen auswahl (chooseHaltestellen.html)
+GetAllAbschnitteByStreckenName(choosenStrecke) : List<Strecke> 
+Aus der Liste von Abschnitten werden die Startbahnhöfe ausgewählt -> in Checkboxen 
+Checkboxen können ausgewählt werden.
+//Wie Speichern? -> Selected Checkboxes in Abschnitte umwandeln. Diese Abschnitte zu Halteplan speichern
+Weiter button wird gedrückt --> Weiter zur Preismodifikation (choosePrices.html)
+GetAbschnittDataBetween(Haltepunkt1, Haltepunk2) : Abschnitt
+Preise bekommen aus Abschnitt. --> Anzeigen (aber als Input field)
+Weiter Button wird geklickt (Preise Updaten in den Abschnitten wenn geändert) --> Weiter zur Fahrplan erstellung (createFahrplan.html)
+
+
+
