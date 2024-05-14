@@ -73,6 +73,7 @@ class Personenwagen(Wagen):
 
 
 class Zug(db.Model):
+    __table_args__ = {'extend_existing': True}
     zug_nummer = db.Column(db.String, primary_key=True)
     zug_name = db.Column(db.String, nullable=False)
     triebwagen_nr = db.Column(db.Integer, db.ForeignKey('triebwagen.wagennummer', onupdate='CASCADE', ondelete='CASCADE'),
