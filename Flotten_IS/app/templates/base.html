@@ -55,7 +55,7 @@
       </li>
 
     </ul>
-    <form class="form-inline my-2 my-lg-0">
+    <form class="form-inline my-2 my-lg-0" >
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
@@ -67,7 +67,23 @@
     </ul>
 
   </div>
+
 </nav>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="container">
+            <div class="alert alert-info" role="alert">
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+
     {% block content %} {% endblock %}
 
 </body>

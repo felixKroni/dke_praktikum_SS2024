@@ -4,7 +4,7 @@
 {% block content %}
     <div class="container">
         {% if wagenart == 'Triebwagen' %}
-            <h2 class="text-center" >Triebwagen Update</h2><br>
+            <h2 class="text-center" >Triebwagen Aktualisieren</h2><br>
             <div class="col-md-6 mx-auto">
                 <form action="" method="post" novalidate>
                 {{ form.csrf_token }}
@@ -54,7 +54,7 @@
             </div>
 
         {% elif wagenart == 'Personenwagen' %}
-            <h2 class="text-center" >Personenwagen Update</h2><br>
+            <h2 class="text-center" >Personenwagen Aktualisieren</h2><br>
             <div class="col-md-6 mx-auto">
                 <form action="" method="post" novalidate>
                 {{ form.csrf_token }}

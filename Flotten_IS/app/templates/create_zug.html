@@ -14,7 +14,7 @@
 
     {% else %}
     <div class="container">
-    <h2 class="text-center"> Neuen Zug erstellen: </h2>
+    <h2 class="text-center" style="margin-bottom: 20px;"> Neuen Zug erstellen </h2>
         <div class="col-md-6 mx-auto">
             <form action="" method="post">
                 {{ form.csrf_token }}
@@ -43,6 +43,8 @@
                     {% endif %}
                 </div>
 
+                <h3 class="text-center" style="margin-bottom: 20px;"> verfügbare Wagen </h3>
+
                 <div class="form-group">
                     <label><b>Triebwagen</b></label><br>
                     {% for choice in form.triebwagen_nr.choices %}
@@ -53,13 +55,13 @@
                     {% endfor %}
                 </div>
 
-                <b>Personenwagen</b>
+                <b>Personenwagen</b><br>
                 {% for p in personenwagen %}
                     {% if p.zug_nummer == None %}
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" value="{{ p.wagennummer }}" name="personenwagenCheckbox">
-                            {{ p.wagennummer }} ({{ p.spurweite }} mm)
+                            <input type="checkbox" value="{{ p.wagennummer }}" name="List_PW">
+                            {{ p.wagennummer }} ({{ p.spurweite }} mm - {{ p.maximalgewicht }} Tonnen)
                         </label>
                     </div>
                     {% endif %}

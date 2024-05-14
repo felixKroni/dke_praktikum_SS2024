@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="container">
-        <h2 class="text-center">Zug Update</h2><br>
+        <h2 class="text-center">Zug Aktualisieren</h2><br>
         <div class="col-md-6 mx-auto">
             <form action="" method="post" novalidate>
                 {{ form.csrf_token }}
@@ -31,6 +31,8 @@
                     {% endif %}
                 </div>
 
+                <h3 class="text-center" style="margin-bottom: 20px;"> verfügbare Wagen </h3>
+
                 <div class="form-group">
                     <label><b>Triebwagen</b></label><br>
                     {% for choice in form.triebwagen_nr.choices %}
@@ -47,8 +49,8 @@
                     {% if p.zug_nummer == None or p.zug_nummer == zug.zug_nummer %}
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" value="{{ p.wagennummer }}" name="personenwagenCheckbox" {% if p.zug_nummer == zug.zug_nummer %} checked {% endif %}>
-                                {{ p.wagennummer }} ({{ p.spurweite }} mm)
+                                <input type="checkbox" value="{{ p.wagennummer }}" name="List_PW" {% if p.zug_nummer == zug.zug_nummer %} checked {% endif %}>
+                                {{ p.wagennummer }} ({{ p.spurweite }} mm - {{ p.maximalgewicht }} Tonnen)
                                 {% if p.zug_nummer == zug.zug_nummer %}
                                 {% endif %}
                             </label>
