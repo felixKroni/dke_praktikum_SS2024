@@ -22,8 +22,13 @@ class User(UserMixin, db.Model):
 
     role: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64))
 
+
+
     def set_role(self, role):
         self.role = role
+
+    def set_role(self, is_admin):
+        self.role = is_admin
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

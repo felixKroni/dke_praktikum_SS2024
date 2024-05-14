@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0c128973-c82d-4487-a9d6-dc1198604cfb" name="Changes" comment="" />
+    <list default="true" id="0c128973-c82d-4487-a9d6-dc1198604cfb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Flotten_IS/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Flotten_IS/app/models.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,6 +21,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="LanAnh_Flotten" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -47,7 +54,7 @@
     "Python.strecken_is.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "LanAnh__Flotten",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/phamlananh/Documents/GitHub/dke_praktikum_SS2024",
     "node.js.detected.package.eslint": "true",
@@ -109,6 +116,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.__init__" />
+        <item itemvalue="Python.api" />
+        <item itemvalue="Python.__init__" />
+        <item itemvalue="Python.api" />
+        <item itemvalue="Python.__init__" />
       </list>
     </recent_temporary>
   </component>
@@ -141,6 +152,7 @@
       <workItem from="1715176984303" duration="4000" />
       <workItem from="1715177512601" duration="30000" />
       <workItem from="1715253978778" duration="156000" />
+      <workItem from="1715694944819" duration="191000" />
     </task>
     <servers />
   </component>
@@ -152,7 +164,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Flottensystem_Projekt$flottensystem.coverage" NAME="flottensystem Coverage Results" MODIFIED="1715254071300" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Flotten_IS" />
-    <SUITE FILE_PATH="coverage/Flottensystem_Projekt$__init__.coverage" NAME="__init__ Coverage Results" MODIFIED="1715254083168" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Flotten_IS/app" />
+    <SUITE FILE_PATH="coverage/Flottensystem_Projekt$__init__.coverage" NAME="__init__ Coverage Results" MODIFIED="1715695130744" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Strecken_IS/app" />
     <SUITE FILE_PATH="coverage/dke_praktikum_SS2024$strecken_is.coverage" NAME="strecken_is Coverage Results" MODIFIED="1710507647234" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Strecken_IS" />
     <SUITE FILE_PATH="coverage/dke_praktikum_SS2024$api.coverage" NAME="api Coverage Results" MODIFIED="1710929708680" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Strecken_IS/app" />
     <SUITE FILE_PATH="coverage/dke_praktikum_SS2024$__init__.coverage" NAME="__init__ Coverage Results" MODIFIED="1713435086928" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Strecken_IS/app" />
