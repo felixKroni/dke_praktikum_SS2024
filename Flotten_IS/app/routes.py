@@ -72,29 +72,31 @@ def wagenOverview():
     return render_template('wagenoverview.html', title='Wagenübersicht', triebwagen=triebwagen, personenwagen=personenwagen)
 
 
-
 @app.route('/Wagen_erstellen/<typ>', methods=['GET', 'POST'])
 @login_required
 def createWagen(typ):
-    global wagen
-    if typ == 'Triebwagen':
-        form = TriebwagenForm()
-    else:
-        form = PersonenwagenForm()
+    form = TriebwagenForm() if typ == 'Triebwagen' else PersonenwagenForm()
 
     if form.validate_on_submit():
+        wagen_data = {
+            'wagennummer': form.wagennummer.data,
+            'spurweite': form.spurweite.data
+        }
         if typ == 'Triebwagen':
-            wagen = Triebwagen(wagennummer=form.wagennummer.data, spurweite=form.spurweite.data, maxZugkraft=form.maxZugkraft.data)
-        elif typ == 'Personenwagen':
-            wagen = Personenwagen(wagennummer=form.wagennummer.data, spurweite=form.spurweite.data, sitzanzahl=form.sitzanzahl.data,
-                                  maximalgewicht=form.maximalgewicht.data)
+            wagen_data['maxZugkraft'] = form.maxZugkraft.data
+            wagen = Triebwagen(**wagen_data)
+        else:
+            wagen_data['sitzanzahl'] = form.sitzanzahl.data
+            wagen_data['maximalgewicht'] = form.maximalgewicht.data
+            wagen = Personenwagen(**wagen_data)
+
         db.session.add(wagen)
         db.session.commit()
         flash(typ + ' wurde erfolgreich erstellt!')
         return redirect(url_for('wagenOverview'))
 
-
     return render_template('create_wagen.html', title=typ + ' erstellen', wagenart=typ, form=form)
+
 
 @app.route('/Wagen_bearbeiten/<wagennummer>', methods=['GET', 'POST'])
 @login_required
@@ -105,18 +107,14 @@ def updateWagen(wagennummer):
         flash('Es wurde kein Waggon unter der Wagennummer {} gefunden!'.format(wagennummer))
         return redirect(url_for('wagenOverview'))
 
-    elif type(wagen) == Triebwagen:
-        typ = 'Triebwagen'
-        form = UpdateTriebwagenForm(wagen.wagennummer)
-    else:
-        typ = 'Personenwagen'
-        form = UpdatePersonenwagenForm(wagen.wagennummer)
+    typ = 'Triebwagen' if isinstance(wagen, Triebwagen) else 'Personenwagen'
+    form = UpdateTriebwagenForm(wagennummer) if isinstance(wagen, Triebwagen) else UpdatePersonenwagenForm(wagennummer)
 
     if form.validate_on_submit():
         wagen.wagennummer = form.wagennummer.data
         wagen.spurweite = form.spurweite.data
 
-        if type(wagen) == Triebwagen:
+        if isinstance(wagen, Triebwagen):
             wagen.maxZugkraft = form.maxZugkraft.data
         else:
             wagen.sitzanzahl = form.sitzanzahl.data
@@ -129,13 +127,14 @@ def updateWagen(wagennummer):
     elif request.method == 'GET':
         form.wagennummer.data = wagen.wagennummer
         form.spurweite.data = wagen.spurweite
-        if type(wagen) == Triebwagen:
+        if isinstance(wagen, Triebwagen):
             form.maxZugkraft.data = wagen.maxZugkraft
         else:
             form.sitzanzahl.data = wagen.sitzanzahl
             form.maximalgewicht.data = wagen.maximalgewicht
 
     return render_template('update_wagen.html', title='Wagen update', wagenart=typ, form=form)
+
 
 @app.route('/Wagen_löschen/<wagennummer>', methods=['POST'])
 @login_required
@@ -300,7 +299,7 @@ def get_zug():
             'zug_nummer': z.zug_nummer,
             'zug_name': z.zug_name,
             'triebwagen_nr': z.triebwagen_nr,
-            'personenwagen': [pw.wagennummer for pw in zug.personenwagen]
+            'personenwagen': [pw.wagennummer for pw in z.personenwagen]
         })
     return jsonify(zug_data)
 

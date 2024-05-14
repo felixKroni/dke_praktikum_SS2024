@@ -38,8 +38,6 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
-
-
 class Wagen(db.Model, AbstractConcreteBase):
     __table_args__ = {'extend_existing': True}
     wagennummer = db.Column(db.String, primary_key=True)
@@ -47,6 +45,8 @@ class Wagen(db.Model, AbstractConcreteBase):
 
     def __repr__(self):
         return '<Wagen-Nr.: {}>'.format(self.wagennummer)
+
+
 
 class Triebwagen(Wagen):
     __tablename__ = 'triebwagen'
