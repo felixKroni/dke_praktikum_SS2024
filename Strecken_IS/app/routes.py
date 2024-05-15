@@ -218,14 +218,17 @@ def delete_strecke(name):
     flash('Die Strecke wurde erfolgreich gelöscht.')
     return redirect(url_for('strecke'))
 
-@app.route('/api/warnung/<int:warnung_id>', methods=['GET'])
-def get_warnung(warnung_id):
-    warnung = Warnung.query.get(warnung_id)
-    if warnung is None:
-        return jsonify({'message': 'Warnung not found'}), 404
-    return jsonify({'titel': warnung.titel, 'gueltigkeitsdatum': warnung.gueltigkeitsdatum})
-
 @app.errorhandler(500)
 def internal_error(error):
     flash('Server Error: Achten Sie darauf, dass der Eintrag nicht bereits existiert und versuchen Sie die Eingabe erneut!.')
     return redirect(url_for('index'))
+
+@app.route('/api/strecken/<string:strecke_name>', methods=['GET'])
+def get_strecken_sortiert(strecke_name):
+    strecke = Strecke.query.get_or_404(strecke_name)
+    return jsonify(strecke.to_dict() if strecke.abschnitte is not None else {})
+
+@app.route('/api/strecken', methods=['GET'])
+def get_strecken_namen():
+    strecken = Strecke.query.all()
+    return jsonify([strecke.name for strecke in strecken])
