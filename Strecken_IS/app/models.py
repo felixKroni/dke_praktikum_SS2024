@@ -38,6 +38,14 @@ class Bahnhof(db.Model):
     latitude = Column(Float)
     longitude = Column(Float)
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'adresse': self.adresse,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+        }
+
     def __repr__(self):
         return '<Bahnhof {}>'.format(self.name)
 
@@ -56,10 +64,22 @@ class Abschnitt(db.Model):
     startbahnhof = relationship('Bahnhof', foreign_keys=[startbahnhof_id])
     endbahnhof = relationship('Bahnhof', foreign_keys=[endbahnhof_id])
     strecke = relationship('Strecke', back_populates='abschnitte', foreign_keys=[strecke_id])
-    warnungen = relationship('Warnung', back_populates='abschnitt',cascade='all, delete-orphan')
+    warnungen = relationship('Warnung', back_populates='abschnitt', cascade='all, delete-orphan')
 
     def __repr__(self):
         return '<Abschnitt {}-{}>'.format(self.startbahnhof_id, self.endbahnhof_id)
+
+    def to_dict(self):
+        return {
+            'name': self.startbahnhof_id + '-' + self.endbahnhof_id,
+            'abschnitt_id': self.abschnitt_id,
+            'startbahnhof_id': self.startbahnhof_id,
+            'endbahnhof_id': self.endbahnhof_id,
+            'maximale_geschwindigkeit' : self.maximale_geschwindigkeit,
+            'nutzungsentgelt': self.nutzungsentgelt,
+            'distanz': self.distanz,
+            'maximale_spurweite': self.maximale_spurweite
+        }
 
 
 class Warnung(db.Model):
@@ -77,6 +97,14 @@ class Warnung(db.Model):
 class Strecke(db.Model):
     name = Column(String(64), primary_key=True)
     abschnitte = relationship('Abschnitt', back_populates='strecke', cascade='all, delete-orphan')
+
+    def to_dict(self):
+        sorted_abschnitte = self.validate_strecke()
+        if sorted_abschnitte is None:
+            return None
+        return {
+            'abschnitte': [abschnitt.to_dict() for abschnitt in sorted_abschnitte]
+        }
 
     def validate_strecke(self):
         if not self.abschnitte or len(self.abschnitte) == 1:
