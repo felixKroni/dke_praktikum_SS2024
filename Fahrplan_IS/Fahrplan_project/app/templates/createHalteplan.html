@@ -23,13 +23,6 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <p>
-            {{ form.haltepunkte.label }}<br>
-            {{ form.haltepunkte(size=form.haltepunkte.choices|length) }}<br>
-            {% for error in form.haltepunkte.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
 
 
         <p>{{ form.submit() }}</p>
