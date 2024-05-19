@@ -34,3 +34,13 @@ class HalteplanController(BaseController):
             return True
         else:
             return False
+
+
+    def get_abschnitte(self, id):
+        halteplan = self.session.query(Halteplan).get(id)
+        if halteplan is not None:
+            abschnitt_halteplan_list = halteplan.abschnitte
+            abschnitt_halteplan_list = sorted(abschnitt_halteplan_list, key=lambda abschnitt_halteplan: abschnitt_halteplan.reihung)
+            return [abschnitt_halteplan.abschnitt for abschnitt_halteplan in abschnitt_halteplan_list]
+        else:
+            return None

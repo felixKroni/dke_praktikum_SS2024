@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/registerMitarbeiter.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h1>Preise festlegen</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        {% for abschnitt in form.abschnitte %}
+            <div class="abschnitt-row">
+                <label>
+                    {{ abschnitt.StartBahnhof }} - {{ abschnitt.EndBahnhof }}
+                </label>
+                <input type="number" name="nutzungsentgelt_{{ abschnitt.id }}" value="{{ abschnitt.nutzungsentgelt }}" step="0.01" required>
+            </div>
+        {% endfor %}
+        <div class="form-buttons">
+            <button type="submit" class="btn">Erstellen</button>
+            <a href="{{ request.referrer or url_for('chooseHaltestellen') }}" class="btn">Zurück</a>
+        </div>
+    </form>
+{% endblock %}

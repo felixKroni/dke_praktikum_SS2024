@@ -4,7 +4,7 @@ import requests
 from flask import render_template, flash, redirect, url_for, request, session
 
 from app import app, database
-from app.forms.halteplanCreateForm import HalteplanCreateForm, HalteplanChooseHaltepunktForm
+from app.forms.halteplanCreateForm import HalteplanCreateForm, HalteplanChooseHaltepunktForm, HalteplanChoosePricesForm
 from app.forms.halteplanEditForm import HalteplanEditForm
 from app.forms.loginForm import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
@@ -163,9 +163,28 @@ def chooseHaltestellen():
             end_bahnhof = haltepunkte[i + 1]
             create_abschnitt(start_bahnhof, end_bahnhof, selectedStrecke, halteplan.id, i)
 
-        flash('Erfolgreich neuen Halteplan erstellt')
-        return redirect(url_for('halteplanList'))
+        return redirect(url_for('choosePrices', halteplan_id=halteplan.id))
     return render_template('chooseHaltestellen.html', title='Haltestellen auswählen', form=form)
+
+
+@app.route('/choosePrices/<int:halteplan_id>', methods=['GET', 'POST'])
+@login_required
+def choosePrices(halteplan_id):
+    form = HalteplanChoosePricesForm(request.form)
+    abschnitte = database.get_controller('hp').get_abschnitte(halteplan_id)
+    if form.validate_on_submit():
+        for abschnitt in abschnitte:
+            nutzungsentgelt = request.form.get('nutzungsentgelt_' + str(abschnitt.id))
+            if nutzungsentgelt:
+                # Update logic here
+                abschnitt.nutzungsentgelt = float(nutzungsentgelt)
+                database.baseController.update_by_id(Abschnitt, abschnitt.id, abschnitt.__dict__)
+                # Save to database
+        flash('Preise erfolgreich aktualisiert.')
+        return redirect(url_for('halteplanList'))
+
+    form.abschnitte = abschnitte
+    return render_template('choosePrices.html', title='Preise festlegen', form=form)
 
 
 @app.route('/editHalteplan/<int:id>', methods=['GET', 'POST'])
@@ -174,6 +193,7 @@ def editHalteplan(id):
     halteplan = database.baseController.find_by_id(Halteplan, id)
     if halteplan is not None:
         form = HalteplanEditForm(request.form)
+        form.halteplan_id = id
         strecken_list = get_strecken()
         form.streckenName.choices = strecken_list
         form.haltepunkte.choices = get_haltepunkte_names(halteplan.streckenName)
@@ -275,6 +295,8 @@ def create_abschnitt(start_bahnhof, end_bahnhof, strecke_name, halteplan_id, rei
         if abschnitt['startbahnhof_id'] == start_bahnhof and is_between is False:
             is_between = True
             total_nutzungsentgelt += abschnitt['nutzungsentgelt']
+            if abschnitt['endbahnhof_id'] == end_bahnhof:
+                break
 
         elif abschnitt['endbahnhof_id'] == end_bahnhof and is_between is True:
             total_nutzungsentgelt += abschnitt['nutzungsentgelt']

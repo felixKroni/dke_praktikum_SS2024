@@ -61,6 +61,7 @@ class Database:
         print("Added Mitarbeiter: " + str(addedMitarbeiter))
 
         #Abschnitt Data
+        """
         abschnitt1 = Abschnitt(spurenweite=1.435, nutzungsentgelt=100.0, StartBahnhof="Wien", EndBahnhof="Budapest")
         abschnitt2 = Abschnitt(spurenweite=1.435, nutzungsentgelt=100.0, StartBahnhof="Budapest", EndBahnhof="Sofia")
         abschnitt3 = Abschnitt(spurenweite=1.435, nutzungsentgelt=100.0, StartBahnhof="Sofia", EndBahnhof="Istanbul")
@@ -83,7 +84,7 @@ class Database:
         self.baseController.add(wien_budapest)
         self.baseController.add(budapest_sofia)
         self.baseController.add(sofia_istanbul)
-
+        """
 
         #Commit
         self.Session.commit()

@@ -8,7 +8,7 @@ from wtforms.fields.choices import SelectMultipleField
 class HalteplanCreateForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     streckenName = SelectField('Strecken Name', choices=[], validators=[DataRequired()])
-    submit = SubmitField('Create Halteplan')
+    submit = SubmitField('Halteplan Erstellen')
 
 
 
@@ -17,9 +17,14 @@ class HalteplanCreateForm(FlaskForm):
 class HalteplanChooseHaltepunktForm(FlaskForm):
     haltepunkte = SelectMultipleField('Haltepunkte', choices=[], validators=[DataRequired()])
 
-    submit = SubmitField('Choose Haltepunkte')
+    submit = SubmitField('Haltepunkte festlegen')
 
 
     def validate_haltepunkte(self, haltepunkte):
         if len(haltepunkte.data) < 2:
-            raise ValidationError('Please select at least 2 Haltepunkte.')
+            raise ValidationError('Bitte zumindest zwei Haltepunkte auswählen.')
+
+
+
+class HalteplanChoosePricesForm(FlaskForm):
+    submit = SubmitField('Preise festlegen')
