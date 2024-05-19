@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Fahrplan{% endblock %}
+
+{% block content %}
+  <h1>Confirm Fahrplan</h1>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <p>
+      <strong>Fahrplan Details:</strong>
+      <!-- Display Fahrplan details here -->
+    </p>
+    <p>{{ form.submit() }}</p>
+  </form>
+{% endblock %}

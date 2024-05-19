@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Days{% endblock %}
+
+{% block content %}
+  <h1>Choose Days for the Fahrplan</h1>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.choice.label }}<br>
+      {{ form.choice() }}
+    </p>
+    <p>{{ form.submit() }}</p>
+  </form>
+{% endblock %}

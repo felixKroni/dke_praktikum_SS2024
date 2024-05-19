@@ -1,9 +1,12 @@
+import datetime
 from urllib.parse import urlsplit
 
 import requests
 from flask import render_template, flash, redirect, url_for, request, session
 
 from app import app, database
+from app.forms.fahrplanForm import ChooseDaysForm, SpecificDateForm, \
+    WeeklyDaysForm, ConfirmFahrplanForm, FahrplanForm
 from app.forms.halteplanCreateForm import HalteplanCreateForm, HalteplanChooseHaltepunktForm, HalteplanChoosePricesForm
 from app.forms.halteplanEditForm import HalteplanEditForm
 from app.forms.loginForm import LoginForm
@@ -13,6 +16,8 @@ from app.forms.mitarbeiterEditForm import MitarbeiterEditForm
 from app.forms.mitarbeiterRegistrationForm import MitarbeiterRegistrationForm
 from app.models.abschnitt import Abschnitt
 from app.models.abschnitt_halteplan import AbschnittHalteplan
+from app.models.fahrdurchfuehrung import Fahrtdurchfuehrung
+from app.models.fahrplan import Fahrplan
 from app.models.halteplan import Halteplan
 from app.models.mitarbeiter import Mitarbeiter
 
@@ -248,6 +253,90 @@ def deleteHalteplan(id):
 
 
 
+@app.route('/createFahrplan', methods=['GET', 'POST'])
+@login_required
+def createFahrplan():
+    form = FahrplanForm(request.form)
+
+    if form.validate_on_submit():
+        name = form.name.data
+        gueltig_von = form.gueltig_von.data
+        gueltig_bis = form.gueltig_bis.data
+        new_fahrplan = Fahrplan(name=name, gueltig_von=gueltig_von, gueltig_bis=gueltig_bis)
+        new_fahrplan = database.baseController.add(new_fahrplan)
+
+        return redirect(url_for('chooseDays', fahrplanId=new_fahrplan.id))
+    return render_template('createFahrplan.html', title='Fahrplan erstellen', form=form)
+
+@app.route('/chooseDays/<int:fahrplanId>', methods=['GET', 'POST'])
+@login_required
+def chooseDays(fahrplanId):
+    form = ChooseDaysForm()
+
+    if form.validate_on_submit():
+        choice = form.choice.data
+        if choice == 'specific':
+            return redirect(url_for('specificDates', fahrplanId=fahrplanId))
+        elif choice == 'weekly':
+            return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
+    return render_template('chooseDays.html', form=form)
+
+@app.route('/specificDates/<int:fahrplanId>', methods=['GET', 'POST'])
+@login_required
+def specificDates(fahrplanId):
+    form = SpecificDateForm()
+    if form.validate_on_submit():
+        # Save specific dates and times to session or process as needed
+        return redirect(url_for('confirmFahrplan'))
+    return render_template('specificDates.html', form=form)
+
+@app.route('/weeklyDays/<int:fahrplanId>', methods=['GET', 'POST'])
+@login_required
+def weeklyDays(fahrplanId):
+    form = WeeklyDaysForm(request.form)
+    if form.validate_on_submit():
+        # TODO Züge aus Zugsystem nehmen
+        fahrplan = database.baseController.find_by_id(Fahrplan, fahrplanId)
+        if fahrplan is not None:
+            weekday = form.weekdays.data
+            time = form.time.data
+            fahrplan_startDate = fahrplan.gueltig_von
+            fahrplan_endDate = fahrplan.gueltig_bis
+
+
+            while fahrplan_startDate <= fahrplan_endDate:
+                startZeit = get_date_of_next_weekday(fahrplan_startDate, weekday)
+                startZeit = datetime.datetime.combine(startZeit, datetime.time())
+                print(startZeit)
+                startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+                #new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False, )
+                #database.baseController.add(new_fahrtdurchfuehrung)
+                # Create FahrtdurchführungHalteplan
+                # Create FahrtdurchführungAbschnitt
+                fahrplan_startDate += datetime.timedelta(hours=int(time['interval']))
+                pass
+
+            pass
+
+        if 'new' in request.form:
+            # Save the current time and add a new time input field
+            return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
+        return redirect(url_for('confirmFahrplan'))
+    else:
+        print(form.errors)
+    return render_template('weeklyDays.html', form=form)
+
+@app.route('/confirmFahrplan/<int:fahrplanId>', methods=['GET', 'POST'])
+@login_required
+def confirmFahrplan(fahrplanId):
+    form = ConfirmFahrplanForm()
+    if form.validate_on_submit():
+        # Finalize and save the Fahrplan
+        flash('Fahrplan successfully created!')
+        return redirect(url_for('index'))
+    return render_template('confirmFahrplan.html', form=form)
+
+
 
 
 
@@ -321,6 +410,7 @@ def create_abschnitt(start_bahnhof, end_bahnhof, strecke_name, halteplan_id, rei
 
 
 
+
 def formatAbschnittDTO_to_abschnitt(abschnittDTO):
     return {
         'spurenweite': abschnittDTO['maximale_spurweite'],
@@ -329,3 +419,31 @@ def formatAbschnittDTO_to_abschnitt(abschnittDTO):
         'EndBahnhof': abschnittDTO['endbahnhof_id']
 
     }
+
+
+def get_date_of_next_weekday(start_date, weekday):
+    weekday_numbers = {
+        'montag': 0,
+        'dienstag': 1,
+        'mittwoch': 2,
+        'donnerstag': 3,
+        'freitag': 4,
+        'samstag': 5,
+        'sonntag': 6
+    }
+
+    # Convert the weekday name to a weekday number
+    target_weekday = weekday_numbers[weekday.lower()]
+
+    # Get the weekday number for the start date
+    start_weekday = start_date.weekday()
+
+    # Calculate how many days to add to get the next occurrence of the target weekday
+    days_ahead = target_weekday - start_weekday
+    if days_ahead <= 0:  # If it's the same day or the target weekday has already passed for this week
+        days_ahead += 7
+
+    # Calculate the next occurrence date by adding the calculated days to the start date
+    next_occurrence_date = start_date + datetime.timedelta(days=days_ahead)
+
+    return next_occurrence_date

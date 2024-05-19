@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Specify Weekdays{% endblock %}
+
+{% block content %}
+  <h1>Specify Weekdays and Times</h1>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    {{ form.time.hidden_tag() }}
+    <div>
+      {{ form.weekdays.label }}<br>
+      {{ form.weekdays() }}<br>
+        {% for error in form.weekdays.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+    </div>
+    <div>
+      <h2>Specify Times</h2>
+      <p>{{ form.time.start_time.label }} {{ form.time.start_time() }}</p>
+      <p>{{ form.time.end_time.label }} {{ form.time.end_time() }}</p>
+      <p>{{ form.time.interval.label }} {{ form.time.interval() }} Stunden</p>
+    </div>
+    <p>{{ form.submit() }}</p>
+    <p>{{ form.new() }}</p>
+  </form>
+{% endblock %}
