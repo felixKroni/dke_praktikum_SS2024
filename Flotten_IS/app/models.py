@@ -20,12 +20,15 @@ class User(UserMixin, db.Model):
                                              unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
-    role: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64))
-
-
+    is_admin: so.Mapped[Optional[bool]] = so.mapped_column(sa.Boolean)
+    wartungen = db.relationship('Wartung', back_populates='mitarbeiter', lazy='dynamic')
 
     def set_role(self, role):
         self.role = role
+
+    def set_admin(self, is_admin):
+        self.is_admin = is_admin
+
 
     def set_role(self, is_admin):
         self.role = is_admin
@@ -85,5 +88,25 @@ class Zug(db.Model):
                               unique=True, nullable=False)
     personenwagen = db.relationship('Personenwagen', backref='zug', lazy='dynamic')
 
+    wartungen = db.relationship('Wartung', back_populates='zug', lazy='dynamic')
+
     def __repr__(self):
         return '<Zugnummer: {}>'.format(self.zug_nummer)
+
+
+
+
+class Wartung(db.Model):
+    __table_args__ = (sa.UniqueConstraint('mitarbeiter_id', 'start_time', name='uq_mitarbeiter_time'), {'extend_existing': True})
+    wartung_nr = db.Column(db.String, primary_key=True)
+    mitarbeiter_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    zug_nummer = db.Column(db.String, db.ForeignKey('zug.zug_nummer', ondelete='CASCADE'), nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+
+    mitarbeiter = db.relationship("User", back_populates="wartungen")
+    zug = db.relationship("Zug", back_populates="wartungen")
+
+    def __repr__(self):
+        return '<Wartung: Wartung-Nr {}, Mitarbeiter {}, Zugnummer {}, Start: {}, End: {}>'.format(
+            self.wartung_nr, self.mitarbeiter_id, self.zug_nummer, self.start_time, self.end_time)

@@ -4,24 +4,39 @@ import sqlalchemy as sa
 from app import db
 from flask import request
 from urllib.parse import urlsplit
-from app.forms import LoginForm, RegistrationForm, TriebwagenForm, PersonenwagenForm, UpdateTriebwagenForm, UpdatePersonenwagenForm, ZugForm, UpdateZugForm
+from app.forms import LoginForm, TriebwagenForm, PersonenwagenForm, UpdateTriebwagenForm, UpdatePersonenwagenForm, ZugForm, UpdateZugForm, CreateUserForm, UpdateUserForm, WartungForm, UpdateWartungForm
 from flask_login import logout_user
 from flask_login import login_required
 from flask import redirect, url_for
 from flask import jsonify
+from functools import wraps
 
-from app.models import User, Wagen, Triebwagen, Personenwagen, Zug
+from app.models import User, Wagen, Triebwagen, Personenwagen, Zug, Wartung
 
 
 
 from app import app
 
+
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_admin:
+            flash('Sie dürfen nicht auf diese Seite zugreifen!')
+            return redirect(url_for('zugOverview'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+'''
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
     zug = Zug.query.order_by('zug_name').all()
     return render_template('zugoverview.html', title='Home', zug=zug)
+'''
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -37,43 +52,96 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
-            next_page = url_for('index')
+            next_page = url_for('zugOverview')
         return redirect(next_page)
     return render_template('login.html', title='homepage', form=form)
-
 
 
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = RegistrationForm()
+
+@app.route('/createUser', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def createUser():
+    form = CreateUserForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, is_admin=form.is_admin.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+        flash('User created successfully!')
+        return redirect(url_for('userOverview'))
+    return render_template('create_user.html', title='Create User', form=form)
 
+
+@app.route('/userOverview')
+@login_required
+def userOverview():
+    users = User.query.all()
+    return render_template('useroverview.html', users=users)
+
+@app.route('/updateUser/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def updateUser(user_id):
+    user = User.query.get_or_404(user_id)
+    if current_user.id == user.id:
+        flash('Sie können sich selbst nicht aktualisieren oder löschen.')
+        return redirect(url_for('userOverview'))
+
+    form = UpdateUserForm(obj=user)
+    if form.validate_on_submit():
+        new_username = form.username.data
+        existing_user = User.query.filter(User.username == new_username).first()
+        if existing_user and existing_user.id != user_id:
+            flash('Benutzername existiert bereits. Bitte wählen Sie einen anderen!', 'error')
+            return redirect(request.url)
+
+        existing_user = User.query.filter(User.email == form.email.data).first()
+        if existing_user and existing_user.id != user_id:
+            flash('Email existiert bereits. Bitte wählen Sie einen anderen!', 'error')
+            return redirect(request.url)
+
+        user.username = form.username.data
+        user.email = form.email.data
+        user.is_admin = form.is_admin.data
+        if form.password.data:
+            user.set_password(form.password.data)
+        db.session.commit()
+        flash('Änderungen wurden erfolgreich durchgeführt!')
+        return redirect(url_for('userOverview'))
+    return render_template('update_user.html', title='Update User', form=form)
+
+@app.route('/deleteUser/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def deleteUser(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.id == current_user.id:
+        flash('Sie können sich selbst nicht löschen.')
+        return redirect(url_for('userOverview'))
+
+    db.session.delete(user)
+    db.session.commit()
+    flash('User wurde erfolgreich gelöscht!')
+    return redirect(url_for('userOverview'))
 
 
 @app.route('/wagenOverview')
 @login_required
 def wagenOverview():
-    triebwagen = Triebwagen.query.all()
-    personenwagen = Personenwagen.query.all()
-    return render_template('wagenoverview.html', title='Wagenübersicht', triebwagen=triebwagen, personenwagen=personenwagen)
+        triebwagen = Triebwagen.query.all()
+        personenwagen = Personenwagen.query.all()
+        return render_template('wagenoverview.html', title='Wagenübersicht', triebwagen=triebwagen, personenwagen=personenwagen)
 
 
 @app.route('/Wagen_erstellen/<typ>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def createWagen(typ):
     form = TriebwagenForm() if typ == 'Triebwagen' else PersonenwagenForm()
 
@@ -100,11 +168,12 @@ def createWagen(typ):
 
 @app.route('/Wagen_bearbeiten/<wagennummer>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def updateWagen(wagennummer):
     wagen = Wagen.query.filter_by(wagennummer=wagennummer).first()
 
     if wagen is None:
-        flash('Es wurde kein Waggon unter der Wagennummer {} gefunden!'.format(wagennummer))
+        flash('Es wurde kein Wagenn unter der Wagennummer {} gefunden!'.format(wagennummer))
         return redirect(url_for('wagenOverview'))
 
     typ = 'Triebwagen' if isinstance(wagen, Triebwagen) else 'Personenwagen'
@@ -138,6 +207,7 @@ def updateWagen(wagennummer):
 
 @app.route('/Wagen_löschen/<wagennummer>', methods=['POST'])
 @login_required
+@admin_required
 def deleteWagen(wagennummer):
     wagen = Wagen.query.filter_by(wagennummer=wagennummer).first()
     db.session.delete(wagen)
@@ -150,6 +220,7 @@ def deleteWagen(wagennummer):
     flash('{} wurde erfolgreich gelöscht!'.format(wagennummer))
     return redirect(url_for('wagenOverview'))
 
+@app.route('/')
 @app.route('/Zugübersicht')
 @login_required
 def zugOverview():
@@ -160,6 +231,7 @@ def zugOverview():
 
 @app.route('/Zug_erstellen', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def createZug():
     triebwagen = Triebwagen.query.all()
     personenwagen = Personenwagen.query.all()
@@ -210,6 +282,7 @@ def createZug():
 
 @app.route('/Zug_bearbeiten/<zug_nummer>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def updateZug(zug_nummer):
     zug = Zug.query.filter_by(zug_nummer=zug_nummer).first()
     if zug is None:
@@ -277,6 +350,7 @@ def updateZug(zug_nummer):
 
 @app.route('/Zug_löschen/<zug_nummer>', methods=['POST'])
 @login_required
+@admin_required
 def deleteZug(zug_nummer):
 
     zug = Zug.query.filter_by(zug_nummer=zug_nummer).first()
@@ -287,6 +361,7 @@ def deleteZug(zug_nummer):
 
     flash('Zug {} wurde erfolgreich gelöscht!'.format(zug_nummer))
     return redirect(url_for('zugOverview'))
+
 
 @app.route('/api/züge', methods=['GET'])
 def get_zug():
@@ -299,10 +374,104 @@ def get_zug():
             'zug_nummer': z.zug_nummer,
             'zug_name': z.zug_name,
             'triebwagen_nr': z.triebwagen_nr,
-            'personenwagen': [pw.wagennummer for pw in z.personenwagen]
+            'personenwagen': [pw.wagennummer for pw in z.personenwagen],
+            'spurweite': z.triebwagen.spurweite
         })
     return jsonify(zug_data)
 
 
+
+@app.route('/wartungOverview')
+@login_required
+def wartungOverview():
+    wartungen = Wartung.query.all()
+    return render_template('wartungoverview.html', wartungen=wartungen)
+
+
+@app.route('/createWartung', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def createWartung():
+    form = WartungForm()
+    form.mitarbeiter_id.choices = [(u.id, u.username) for u in User.query.filter_by(is_admin=False).all()]
+    form.zug_nummer.choices = [(z.zug_nummer, z.zug_name) for z in Zug.query.all()]
+
+    if form.validate_on_submit():
+
+        mitarbeiter_id = form.mitarbeiter_id.data
+        start_time = form.start_time.data
+        end_time = form.end_time.data
+        existing_wartung = Wartung.query.filter_by(mitarbeiter_id=mitarbeiter_id).filter(
+            (Wartung.start_time <= start_time) & (Wartung.end_time >= start_time) |
+            (Wartung.start_time <= end_time) & (Wartung.end_time >= end_time)
+        ).first()
+
+        if existing_wartung:
+            flash('Warning: Der ausgewählte Mitarbeiter hat bereits eine Wartung in diesem Zeitraum!')
+            return redirect(url_for('createWartung'))
+
+        wartung = Wartung(
+            wartung_nr = form.wartung_nr.data,
+            mitarbeiter_id=form.mitarbeiter_id.data,
+            zug_nummer=form.zug_nummer.data,
+            start_time=form.start_time.data,
+            end_time=form.end_time.data
+        )
+        db.session.add(wartung)
+        db.session.commit()
+        flash('Wartung wurde erfolgreich erstellt!')
+        return redirect(url_for('wartungOverview'))
+
+    return render_template('create_wartung.html', form=form)
+
+
+@app.route('/updateWartung/<wartung_nr>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def updateWartung(wartung_nr):
+    wartung = Wartung.query.filter_by(wartung_nr=wartung_nr).first()
+    if wartung is None:
+        flash('Wartung nicht gefunden!')
+        return redirect(url_for('wartungOverview'))
+
+    form = UpdateWartungForm(
+        original_wartung_nr=wartung.wartung_nr,
+        original_mitarbeiter_id=wartung.mitarbeiter_id,
+        original_zug_nummer=wartung.zug_nummer,
+        original_start_time=wartung.start_time,
+        original_end_time=wartung.end_time,
+        obj=wartung
+    )
+
+    form.mitarbeiter_id.choices = [(u.id, u.username) for u in User.query.filter_by(is_admin=False).all()]
+    form.zug_nummer.choices = [(z.zug_nummer, z.zug_name) for z in Zug.query.all()]
+
+    if form.validate_on_submit():
+        wartung.wartung_nr = form.wartung_nr.data
+        wartung.mitarbeiter_id = form.mitarbeiter_id.data
+        wartung.zug_nummer = form.zug_nummer.data
+        wartung.start_time = form.start_time.data
+        wartung.end_time = form.end_time.data
+        db.session.commit()
+        flash('Wartung wurde erfolgreich aktualisiert!')
+        return redirect(url_for('wartungOverview'))
+
+    return render_template('update_wartung.html', form=form, wartung=wartung)
+
+
+
+@app.route('/deleteWartung/<wartung_nr>', methods=['POST'])
+@login_required
+@admin_required
+def deleteWartung(wartung_nr):
+    wartung = Wartung.query.filter_by(wartung_nr=wartung_nr).first()
+    if wartung is None:
+        flash('Wartung nicht gefunden!')
+        return redirect(url_for('wartungOverview'))
+
+    db.session.delete(wartung)
+    db.session.commit()
+    flash('Wartung wurde erfolgreich gelöscht!')
+    return redirect(url_for('wartungOverview'))
 
 

@@ -16,7 +16,9 @@
                     <th>Wagennummer</th>
                     <th>Spurweite</th>
                     <th>MaxZugkraft</th>
-                    <th>Aktionen</th>
+                    {% if current_user.is_admin %}
+                        <th>Aktionen</th>
+                    {% endif %}
                 </tr>
             </thead>
                 {% for t in triebwagen %}
@@ -24,17 +26,18 @@
                     <td>{{ t.wagennummer }}</td>
                     <td>{{ t.spurweite }}</td>
                     <td>{{ t.maxZugkraft }}</td>
-                    <td>
-                        <div style="display: inline;">
-                        <button class="btn-custom">
-                            <a href="{{ url_for('updateWagen', wagennummer=t.wagennummer) }}" role="button">Update</a>
-                        </button>
-                        <form action="{{ url_for('deleteWagen', wagennummer=t.wagennummer) }}" method="post" style="display: inline;">
-                            <button type="submit" class="btn-custom" onclick="return confirm('Sind Sie sicher, dass Sie diesen Wagen löschen möchten?')">Löschen</button>
-                        </form>
-                        </div>
-
-                    </td>
+                    {% if current_user.is_admin %}
+                        <td>
+                            <div style="display: inline;">
+                            <button class="btn-custom">
+                                <a href="{{ url_for('updateWagen', wagennummer=t.wagennummer) }}" role="button">Update</a>
+                            </button>
+                            <form action="{{ url_for('deleteWagen', wagennummer=t.wagennummer) }}" method="post" style="display: inline;">
+                                <button type="submit" class="btn-custom" onclick="return confirm('Sind Sie sicher, dass Sie diesen Wagen löschen möchten?')">Löschen</button>
+                            </form>
+                            </div>
+                         </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </table>
@@ -50,7 +53,9 @@
                         <th>Spurweite</th>
                         <th>Sitzanzahl</th>
                         <th>Maximalgewicht</th>
-                         <th>Aktionen</th>
+                        {% if current_user.is_admin %}
+                            <th>Aktionen</th>
+                        {% endif %}
                     </tr>
             </thead>
                     {% for p in personenwagen %}
@@ -59,6 +64,7 @@
                         <td>{{ p.spurweite }}</td>
                         <td>{{ p.sitzanzahl }}</td>
                         <td>{{ p.maximalgewicht }}</td>
+                        {% if current_user.is_admin %}
                         <td>
                             <div style="display: inline;">
                             <button class="btn-custom">
@@ -68,8 +74,8 @@
                                 <button type="submit" class="btn-custom" onclick="return confirm('Sind Sie sicher, dass Sie diesen Wagen löschen möchten?')">Löschen</button>
                             </form>
                             </div>
-
                         </td>
+                     {% endif %}
 
                     </tr>
                     {% endfor %}
