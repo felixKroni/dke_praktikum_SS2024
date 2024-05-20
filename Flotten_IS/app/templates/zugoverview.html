@@ -19,7 +19,9 @@
                     <th>Triebwagen</th>
                     <th>Personenwagen</th>
                     <th>Spurweite</th>
-                    <th>Aktionen</th>
+                    {% if current_user.is_admin %}
+                        <th>Aktionen</th>
+                    {% endif %}
                 </tr>
             </thead>
                 {% for z in zug %}
@@ -40,6 +42,7 @@
                         {% endif %}
                     {% endfor %}
 
+                    {% if current_user.is_admin %}
                     <td>
                         <div style="display: inline;">
                         <button class="btn-custom">
@@ -51,8 +54,9 @@
                         </form>
 
                         </div>
-
                     </td>
+                    {% endif %}
+
                 </tr>
 
                 {% endfor %}

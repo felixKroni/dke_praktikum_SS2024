@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container" style="margin-bottom: 20px;">
+    <h2 class="text-center" style="margin-bottom: 20px;">Wartung Update</h2><br>
+    <div class="col-md-6 mx-auto">
+        <form method="POST">
+            {{ form.csrf_token }}
+            <div class="form-group">
+                {{ form.hidden_tag() }}
+
+                <div>
+                    {{ form.wartung_nr.label(class="form-control-label") }}<br>
+                    {{ form.wartung_nr(class="form-control", size=32) }}
+                    {% for error in form.wartung_nr.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.zug_nummer.label(class="form-label") }}<br>
+                    {{ form.zug_nummer(class="form-control") }}
+                    {% for error in form.zug_nummer.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.mitarbeiter_id.label(class="form-label") }}<br>
+                    {{ form.mitarbeiter_id(class="form-control") }}
+                    {% for error in form.mitarbeiter_id.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.start_time.label(class="form-control-label") }}<br>
+                    <div class="input-group date" id="start_time_picker">
+                        {{ form.start_time(class="form-control", size=32) }}
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </div>
+                    </div>
+                    {% for error in form.start_time.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.end_time.label(class="form-control-label") }}<br>
+                    <div class="input-group date" id="end_time_picker">
+                        {{ form.end_time(class="form-control", size=32) }}
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </div>
+                    </div>
+                    {% for error in form.end_time.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div><br>
+
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}
