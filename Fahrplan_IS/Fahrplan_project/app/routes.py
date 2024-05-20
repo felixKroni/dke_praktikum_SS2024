@@ -302,18 +302,33 @@ def weeklyDays(fahrplanId):
             time = form.time.data
             fahrplan_startDate = fahrplan.gueltig_von
             fahrplan_endDate = fahrplan.gueltig_bis
+            #fahrplan_startDate = datetime.datetime.combine(startZeit, datetime.time())
+            fahrplan_endDate = fahrplan_endDate.replace(hour=23, minute=59, second=59)
+            start_time = time['start_time']
+            end_time = time['end_time']
 
 
-            while fahrplan_startDate <= fahrplan_endDate:
-                startZeit = get_date_of_next_weekday(fahrplan_startDate, weekday)
-                startZeit = datetime.datetime.combine(startZeit, datetime.time())
-                print(startZeit)
-                startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
-                #new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False, )
-                #database.baseController.add(new_fahrtdurchfuehrung)
-                # Create FahrtdurchführungHalteplan
-                # Create FahrtdurchführungAbschnitt
-                fahrplan_startDate += datetime.timedelta(hours=int(time['interval']))
+            startZeit = get_date_of_next_weekday(fahrplan_startDate, weekday)
+            startZeit = datetime.datetime.combine(startZeit, datetime.time()) # convert to datetime object
+            startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+            print('Erster Tag: '+str(startZeit))
+
+            while startZeit <= fahrplan_endDate:
+                if startZeit.weekday() == weekday_converter(weekday):
+                    if start_time <= startZeit.time() <= end_time:
+                        print(startZeit)
+                        new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False, )
+                        database.baseController.add(new_fahrtdurchfuehrung)
+                    startZeit += datetime.timedelta(hours=int(time['interval']))
+                else:
+                    print('Nicht der richtige Wochentag: ' + str(startZeit))
+                    print('Suche neuen Wochentag')
+                    startZeit = get_date_of_next_weekday(startZeit, weekday)
+                    startZeit = datetime.datetime.combine(startZeit, datetime.time())  # convert to datetime object
+                    startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+
+
+
                 pass
 
             pass
@@ -321,7 +336,7 @@ def weeklyDays(fahrplanId):
         if 'new' in request.form:
             # Save the current time and add a new time input field
             return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
-        return redirect(url_for('confirmFahrplan'))
+        return redirect(url_for('confirmFahrplan', fahrplanId=fahrplanId))
     else:
         print(form.errors)
     return render_template('weeklyDays.html', form=form)
@@ -409,20 +424,26 @@ def create_abschnitt(start_bahnhof, end_bahnhof, strecke_name, halteplan_id, rei
     database.baseController.commit()
 
 
-
-
-def formatAbschnittDTO_to_abschnitt(abschnittDTO):
-    return {
-        'spurenweite': abschnittDTO['maximale_spurweite'],
-        'nutzungsentgelt': abschnittDTO['nutzungsentgelt'],
-        'StartBahnhof': abschnittDTO['startbahnhof_id'],
-        'EndBahnhof': abschnittDTO['endbahnhof_id']
-
-    }
-
-
 def get_date_of_next_weekday(start_date, weekday):
-    weekday_numbers = {
+    # Convert the weekday name to a weekday number
+    target_weekday = weekday_converter(weekday)
+
+    # Get the weekday number for the start date
+    start_weekday = start_date.weekday()
+
+    # Calculate how many days to add to get the next occurrence of the target weekday
+    days_ahead = target_weekday - start_weekday
+    if days_ahead < 0:
+        days_ahead += 7
+
+    # Calculate the next occurrence date by adding the calculated days to the start date
+    next_occurrence_date = start_date + datetime.timedelta(days=days_ahead)
+
+    return next_occurrence_date
+
+
+def weekday_converter(weekday):
+    return {
         'montag': 0,
         'dienstag': 1,
         'mittwoch': 2,
@@ -430,20 +451,4 @@ def get_date_of_next_weekday(start_date, weekday):
         'freitag': 4,
         'samstag': 5,
         'sonntag': 6
-    }
-
-    # Convert the weekday name to a weekday number
-    target_weekday = weekday_numbers[weekday.lower()]
-
-    # Get the weekday number for the start date
-    start_weekday = start_date.weekday()
-
-    # Calculate how many days to add to get the next occurrence of the target weekday
-    days_ahead = target_weekday - start_weekday
-    if days_ahead <= 0:  # If it's the same day or the target weekday has already passed for this week
-        days_ahead += 7
-
-    # Calculate the next occurrence date by adding the calculated days to the start date
-    next_occurrence_date = start_date + datetime.timedelta(days=days_ahead)
-
-    return next_occurrence_date
+    }.get(weekday, 99)
