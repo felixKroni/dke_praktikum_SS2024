@@ -1,15 +1,23 @@
+import datetime
 from urllib.parse import urlsplit
 
-from flask import render_template, flash, redirect, url_for, request
+import requests
+from flask import render_template, flash, redirect, url_for, request, session
 
 from app import app, database
-from app.forms.halteplanCreateForm import HalteplanCreateForm
+from app.forms.fahrplanForm import ChooseDaysForm, SpecificDateForm, \
+    WeeklyDaysForm, ConfirmFahrplanForm, FahrplanForm
+from app.forms.halteplanCreateForm import HalteplanCreateForm, HalteplanChooseHaltepunktForm, HalteplanChoosePricesForm
 from app.forms.halteplanEditForm import HalteplanEditForm
 from app.forms.loginForm import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 
 from app.forms.mitarbeiterEditForm import MitarbeiterEditForm
 from app.forms.mitarbeiterRegistrationForm import MitarbeiterRegistrationForm
+from app.models.abschnitt import Abschnitt
+from app.models.abschnitt_halteplan import AbschnittHalteplan
+from app.models.fahrdurchfuehrung import Fahrtdurchfuehrung
+from app.models.fahrplan import Fahrplan
 from app.models.halteplan import Halteplan
 from app.models.mitarbeiter import Mitarbeiter
 
@@ -130,14 +138,58 @@ def halteplanList():
 def createHalteplan():
 
     form = HalteplanCreateForm(request.form)
-    strecken_list = ['Orient Route', 'Westbahn'] #TODO get from strecken system
-    form.streckenName.choices = strecken_list
+    form.streckenName.choices = get_strecken()
     if form.validate_on_submit():
-        new_halteplan = Halteplan(name=form.name.data, streckenName=form.streckenName.data)
-        database.baseController.add(new_halteplan)
-        flash('Erfolgreich neuen Halteplan erstellt')
-        return redirect(url_for('halteplanList'))
+        session['form_data'] = {
+            'name': form.name.data,
+            'streckenName': form.streckenName.data
+        }
+        #new_halteplan = Halteplan(name=form.name.data, streckenName=form.streckenName.data)
+        #database.baseController.add(new_halteplan)
+        #flash('Erfolgreich neuen Halteplan erstellt')
+        return redirect(url_for('chooseHaltestellen'))
     return render_template('createHalteplan.html', title='Halteplan erstellen', form=form)
+
+@app.route('/chooseHaltestellen', methods=['GET', 'POST'])
+@login_required
+def chooseHaltestellen():
+    form_data = session.get('form_data', {})
+    form = HalteplanChooseHaltepunktForm(request.form)
+    selectedStrecke = form_data.get('streckenName')
+    halteplanName = form_data.get('name')
+    form.haltepunkte.choices = get_haltepunkte_names(selectedStrecke)
+    if form.validate_on_submit():
+        halteplan = Halteplan(name=halteplanName, streckenName=selectedStrecke)
+        halteplan = database.baseController.add(halteplan)
+
+        haltepunkte = form.haltepunkte.data
+        for i in range(len(haltepunkte) - 1):
+            start_bahnhof = haltepunkte[i]
+            end_bahnhof = haltepunkte[i + 1]
+            create_abschnitt(start_bahnhof, end_bahnhof, selectedStrecke, halteplan.id, i)
+
+        return redirect(url_for('choosePrices', halteplan_id=halteplan.id))
+    return render_template('chooseHaltestellen.html', title='Haltestellen auswählen', form=form)
+
+
+@app.route('/choosePrices/<int:halteplan_id>', methods=['GET', 'POST'])
+@login_required
+def choosePrices(halteplan_id):
+    form = HalteplanChoosePricesForm(request.form)
+    abschnitte = database.get_controller('hp').get_abschnitte(halteplan_id)
+    if form.validate_on_submit():
+        for abschnitt in abschnitte:
+            nutzungsentgelt = request.form.get('nutzungsentgelt_' + str(abschnitt.id))
+            if nutzungsentgelt:
+                # Update logic here
+                abschnitt.nutzungsentgelt = float(nutzungsentgelt)
+                database.baseController.update_by_id(Abschnitt, abschnitt.id, abschnitt.__dict__)
+                # Save to database
+        flash('Preise erfolgreich aktualisiert.')
+        return redirect(url_for('halteplanList'))
+
+    form.abschnitte = abschnitte
+    return render_template('choosePrices.html', title='Preise festlegen', form=form)
 
 
 @app.route('/editHalteplan/<int:id>', methods=['GET', 'POST'])
@@ -146,15 +198,38 @@ def editHalteplan(id):
     halteplan = database.baseController.find_by_id(Halteplan, id)
     if halteplan is not None:
         form = HalteplanEditForm(request.form)
-        strecken_list = ['Orient Express Route', 'Westbahn']  # TODO get from strecken system
+        form.halteplan_id = id
+        strecken_list = get_strecken()
         form.streckenName.choices = strecken_list
+        form.haltepunkte.choices = get_haltepunkte_names(halteplan.streckenName)
         if request.method == 'GET':
             form.name.data = halteplan.name
             form.streckenName.data = halteplan.streckenName
+            haltepunkte = []
+            for abschnitt_halteplan in halteplan.abschnitte:
+                abschnitt = database.baseController.find_by_id(Abschnitt, abschnitt_halteplan.abschnitt_id)
+                haltepunkte.append(abschnitt.StartBahnhof)
+                haltepunkte.append(abschnitt.EndBahnhof)
+            #Remove duplicates
+            haltepunkte = list(set(haltepunkte))
+            form.haltepunkte.data = haltepunkte
         elif form.validate_on_submit():
             halteplan.name = form.name.data
             halteplan.streckenName = form.streckenName.data
+
+            #remove existing abschnitte
+            database.get_controller('hp').delete_abschnitt_relations(halteplan.id)
+
+            #insert the new ones
+            haltepunkte = form.haltepunkte.data
+            for i in range(len(haltepunkte) - 1):
+                start_bahnhof = haltepunkte[i]
+                end_bahnhof = haltepunkte[i + 1]
+                create_abschnitt(start_bahnhof, end_bahnhof, halteplan.streckenName , halteplan.id, i)
+
+
             database.baseController.update_by_id(Halteplan, id, halteplan.__dict__)
+
             flash('Halteplan erfolgreich geändert')
             return redirect(url_for('halteplanList'))
         return render_template('editHalteplan.html', form=form, title='Edit Halteplan')
@@ -169,9 +244,211 @@ def deleteHalteplan(id):
     halteplan = database.baseController.find_by_id(Halteplan, id)
     if halteplan is not None:
         #TODO delete all accordinng Fahrpläne and Fahrtdurchführungen
-        database.baseController.delete_multiple(halteplan.abschnitte)
-        database.baseController.delete(halteplan)
+        database.get_controller('hp').delete_abschnitt_relations_with_halteplan(halteplan.id)
         flash('Halteplan gelöscht')
     else:
         flash('Kein Halteplan wurde mit dieser ID gefunden: {}'.format(id))
     return redirect(url_for('halteplanList'))
+
+
+
+
+@app.route('/createFahrplan', methods=['GET', 'POST'])
+@login_required
+def createFahrplan():
+    form = FahrplanForm(request.form)
+
+    if form.validate_on_submit():
+        name = form.name.data
+        gueltig_von = form.gueltig_von.data
+        gueltig_bis = form.gueltig_bis.data
+        new_fahrplan = Fahrplan(name=name, gueltig_von=gueltig_von, gueltig_bis=gueltig_bis)
+        new_fahrplan = database.baseController.add(new_fahrplan)
+
+        return redirect(url_for('chooseDays', fahrplanId=new_fahrplan.id))
+    return render_template('createFahrplan.html', title='Fahrplan erstellen', form=form)
+
+@app.route('/chooseDays/<int:fahrplanId>', methods=['GET', 'POST'])
+@login_required
+def chooseDays(fahrplanId):
+    form = ChooseDaysForm()
+
+    if form.validate_on_submit():
+        choice = form.choice.data
+        if choice == 'specific':
+            return redirect(url_for('specificDates', fahrplanId=fahrplanId))
+        elif choice == 'weekly':
+            return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
+    return render_template('chooseDays.html', form=form)
+
+@app.route('/specificDates/<int:fahrplanId>', methods=['GET', 'POST'])
+@login_required
+def specificDates(fahrplanId):
+    form = SpecificDateForm()
+    if form.validate_on_submit():
+        # Save specific dates and times to session or process as needed
+        return redirect(url_for('confirmFahrplan'))
+    return render_template('specificDates.html', form=form)
+
+@app.route('/weeklyDays/<int:fahrplanId>', methods=['GET', 'POST'])
+@login_required
+def weeklyDays(fahrplanId):
+    form = WeeklyDaysForm(request.form)
+    if form.validate_on_submit():
+        # TODO Züge aus Zugsystem nehmen
+        fahrplan = database.baseController.find_by_id(Fahrplan, fahrplanId)
+        if fahrplan is not None:
+            weekday = form.weekdays.data
+            time = form.time.data
+            fahrplan_startDate = fahrplan.gueltig_von
+            fahrplan_endDate = fahrplan.gueltig_bis
+            #fahrplan_startDate = datetime.datetime.combine(startZeit, datetime.time())
+            fahrplan_endDate = fahrplan_endDate.replace(hour=23, minute=59, second=59)
+            start_time = time['start_time']
+            end_time = time['end_time']
+
+
+            startZeit = get_date_of_next_weekday(fahrplan_startDate, weekday)
+            startZeit = datetime.datetime.combine(startZeit, datetime.time()) # convert to datetime object
+            startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+            print('Erster Tag: '+str(startZeit))
+
+            while startZeit <= fahrplan_endDate:
+                if startZeit.weekday() == weekday_converter(weekday):
+                    if start_time <= startZeit.time() <= end_time:
+                        print(startZeit)
+                        new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False, )
+                        database.baseController.add(new_fahrtdurchfuehrung)
+                    startZeit += datetime.timedelta(hours=int(time['interval']))
+                else:
+                    print('Nicht der richtige Wochentag: ' + str(startZeit))
+                    print('Suche neuen Wochentag')
+                    startZeit = get_date_of_next_weekday(startZeit, weekday)
+                    startZeit = datetime.datetime.combine(startZeit, datetime.time())  # convert to datetime object
+                    startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+
+
+
+                pass
+
+            pass
+
+        if 'new' in request.form:
+            # Save the current time and add a new time input field
+            return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
+        return redirect(url_for('confirmFahrplan', fahrplanId=fahrplanId))
+    else:
+        print(form.errors)
+    return render_template('weeklyDays.html', form=form)
+
+@app.route('/confirmFahrplan/<int:fahrplanId>', methods=['GET', 'POST'])
+@login_required
+def confirmFahrplan(fahrplanId):
+    form = ConfirmFahrplanForm()
+    if form.validate_on_submit():
+        # Finalize and save the Fahrplan
+        flash('Fahrplan successfully created!')
+        return redirect(url_for('index'))
+    return render_template('confirmFahrplan.html', form=form)
+
+
+
+
+
+###########################
+# REST requests
+def get_strecken():
+    response = requests.get("http://127.0.0.1:5001/api/strecken")
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
+def get_all_haltepunkte_of_strecke(strecke_name):
+    response = requests.get("http://127.0.0.1:5001/api/strecken/" + str(strecke_name))
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
+def get_haltepunkte_names(strecke_name):
+    response = requests.get("http://127.0.0.1:5001/api/strecken/" + str(strecke_name))
+    if response.status_code == 200:
+        abschnitte = response.json().get('abschnitte', [])
+        names = [abschnitt['startbahnhof_id'] for abschnitt in abschnitte]
+        names.append(abschnitte[-1]['endbahnhof_id'])
+        return names
+    else:
+        return None
+
+#####
+# db functions
+
+
+#create abschnitt by combining start and end bahnhof
+def create_abschnitt(start_bahnhof, end_bahnhof, strecke_name, halteplan_id, reihung):
+    start_bahnhof = str(start_bahnhof)
+    end_bahnhof = str(end_bahnhof)
+    strecke_name = str(strecke_name)
+    all_abschnitte = get_all_haltepunkte_of_strecke(strecke_name)
+
+    total_nutzungsentgelt = 0
+    is_between = False
+    all_abschnitte = all_abschnitte['abschnitte']
+    for abschnitt in all_abschnitte:
+        if abschnitt['startbahnhof_id'] == start_bahnhof and is_between is False:
+            is_between = True
+            total_nutzungsentgelt += abschnitt['nutzungsentgelt']
+            if abschnitt['endbahnhof_id'] == end_bahnhof:
+                break
+
+        elif abschnitt['endbahnhof_id'] == end_bahnhof and is_between is True:
+            total_nutzungsentgelt += abschnitt['nutzungsentgelt']
+            is_between = False
+            break
+
+        elif is_between is True:
+            total_nutzungsentgelt += abschnitt['nutzungsentgelt']
+
+    new_abschnitt = Abschnitt(spurenweite=500, #TODO richtige werte ermitteln für spurenbreite
+                              nutzungsentgelt=total_nutzungsentgelt, StartBahnhof=start_bahnhof, EndBahnhof=end_bahnhof)
+
+    new_abschnitt = database.baseController.add(new_abschnitt)
+
+
+    halteplan = database.baseController.find_by_id(Halteplan, halteplan_id)
+
+    new_abschnitt_halteplan = AbschnittHalteplan(abschnitt_id=new_abschnitt.id, halteplan_id=halteplan.id, reihung=reihung)
+    database.baseController.add(new_abschnitt_halteplan)
+
+    database.baseController.commit()
+
+
+def get_date_of_next_weekday(start_date, weekday):
+    # Convert the weekday name to a weekday number
+    target_weekday = weekday_converter(weekday)
+
+    # Get the weekday number for the start date
+    start_weekday = start_date.weekday()
+
+    # Calculate how many days to add to get the next occurrence of the target weekday
+    days_ahead = target_weekday - start_weekday
+    if days_ahead < 0:
+        days_ahead += 7
+
+    # Calculate the next occurrence date by adding the calculated days to the start date
+    next_occurrence_date = start_date + datetime.timedelta(days=days_ahead)
+
+    return next_occurrence_date
+
+
+def weekday_converter(weekday):
+    return {
+        'montag': 0,
+        'dienstag': 1,
+        'mittwoch': 2,
+        'donnerstag': 3,
+        'freitag': 4,
+        'samstag': 5,
+        'sonntag': 6
+    }.get(weekday, 99)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, DateTime
 from sqlalchemy.orm import relationship
 from app.commons import Base
 
@@ -7,3 +7,6 @@ class Fahrplan(Base):
     __tablename__ = 'Fahrplan'
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    gueltig_von = Column(DateTime)
+    gueltig_bis = Column(DateTime)
+    fahrtdurchfuehrungen = relationship('Fahrtdurchfuehrung', backref='fahrplan')

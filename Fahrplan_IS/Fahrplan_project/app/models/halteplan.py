@@ -11,3 +11,5 @@ class Halteplan(Base):
     name = Column(String)
     streckenName = Column(String)
     abschnitte = relationship("AbschnittHalteplan", order_by=AbschnittHalteplan.reihung, back_populates="halteplan")
+    fahrplan_id = Column(Integer, ForeignKey('Fahrplan.id'))
+    fahrplan = relationship("Fahrplan")

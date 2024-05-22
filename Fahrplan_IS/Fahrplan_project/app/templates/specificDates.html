@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Specify Dates{% endblock %}
+
+{% block content %}
+  <h1>Specify Dates and Times</h1>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <div>
+      {{ form.dates.label }}<br>
+      {% for date in form.dates %}
+        {{ date }}<br>
+      {% endfor %}
+    </div>
+    <div>
+      <h2>Specify Times</h2>
+      {% for time in form.times %}
+        <div>
+          {{ time.start_time.label }} {{ time.start_time() }}<br>
+          {{ time.end_time.label }} {{ time.end_time() }}<br>
+          {{ time.interval.label }} {{ time.interval() }}
+        </div>
+      {% endfor %}
+    </div>
+    <p>{{ form.submit() }}</p>
+    <p>{{ form.new() }}</p>
+  </form>
+{% endblock %}

@@ -9,7 +9,7 @@ class Abschnitt(Base):
     __tablename__ = 'Abschnitt'
     id = Column(Integer, primary_key=True)
     spurenweite = Column(Float)
-    nutzungsentgeld = Column(Float)
+    nutzungsentgelt = Column(Float)
     StartBahnhof = Column(String)
     EndBahnhof = Column(String)
     halteplaene = relationship("AbschnittHalteplan", order_by=AbschnittHalteplan.reihung, back_populates="abschnitt")

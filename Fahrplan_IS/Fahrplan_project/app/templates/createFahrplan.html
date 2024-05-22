@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/registerMitarbeiter.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h1>Neuen Fahrplan erstellen</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}<br>
+            {% for error in form.name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.gueltig_von.label }}<br>
+            {{ form.gueltig_von(type='date') }}<br>
+            {% for error in form.gueltig_von.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.gueltig_bis.label }}<br>
+            {{ form.gueltig_bis(type='date') }}<br>
+            {% for error in form.gueltig_bis.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+
+        <p>{{ form.submit() }}</p>
+    </form>
+
+
+{% endblock %}
