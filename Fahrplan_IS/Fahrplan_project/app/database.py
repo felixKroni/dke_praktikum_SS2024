@@ -43,11 +43,11 @@ class Database:
         __init__(db_path)
 
     def insert_testdata(self):
-        self.Session.query(Mitarbeiter).delete()
+        """self.Session.query(Mitarbeiter).delete()
         self.Session.query(Zug).delete()
         self.Session.query(Abschnitt).delete()
         self.Session.query(Halteplan).delete()
-        self.Session.query(AbschnittHalteplan).delete()
+        self.Session.query(AbschnittHalteplan).delete()"""
 
         #Zug Data
         newZug = Zug(name="ICE 123", spurenweite=1435)

@@ -2,14 +2,58 @@
 
 {% block title %}Confirm Fahrplan{% endblock %}
 
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/baseTableStyling.css') }}">
+{% endblock %}
+
 {% block content %}
   <h1>Confirm Fahrplan</h1>
   <form method="post">
     {{ form.hidden_tag() }}
     <p>
       <strong>Fahrplan Details:</strong>
-      <!-- Display Fahrplan details here -->
+      Fahrplan Name: {{ form.fahrplan.name }} <br>
+        gültig von: {{ form.fahrplan.gueltig_von }} <br>
+        bis: {{ form.fahrplan.gueltig_bis }} <br>
+      Halteplan: {{ form.fahrplan.halteplan.name }} <br>
+
+      <strong>Fahrtdurchführungen:</strong>
+
     </p>
+      <table>
+        <thead>
+            <tr>
+                <th>Startzeit</th>
+                <th>Ausgefallen</th>
+                <th>Verspaetung</th>
+                <th>Preis</th>
+                <th>Zug</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fahrt in form.fahrplan.fahrtdurchfuehrungen %}
+            <tr>
+                <td>{{ fahrt.startZeit }}</td>
+                <td>{{ fahrt.ausfall }}</td>
+                <td>{{ fahrt.verspaetung }}</td>
+                <td>{{ fahrt.preis }}</td>
+                <td>{{ fahrt.zug.name }}</td>
+                <td>
+                    <!-- Edit button -->
+                    <a href="{{ url_for('editFahrtdurchfuehrung', id=fahrt.id) }}" class="action-button">
+                        &#x270E;
+                    </a>
+                    <!-- Delete button -->
+                    <a href="{{ url_for('deleteFahrtdurchfuehrung', id=fahrt.id) }}" class="action-button delete">
+                        &#x2715;
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     <p>{{ form.submit() }}</p>
   </form>
 {% endblock %}

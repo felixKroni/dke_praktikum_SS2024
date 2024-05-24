@@ -12,12 +12,9 @@ class FahrplanForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     gueltig_von = DateField('Gültig von', validators=[DataRequired()])
     gueltig_bis = DateField('Gültig bis', validators=[DataRequired()])
-    submit = SubmitField('Fahrplan Erstellen')
-
-
-class ChooseDaysForm(FlaskForm):
+    halteplan_selection = SelectField('zugehörigen Halteplan auswählen', choices=[], validators=[DataRequired()])
     choice = SelectField('Typ wählen', choices=[('specific', 'Spezifische Tage'), ('weekly', 'Wochentage')], validators=[DataRequired()])
-    submit = SubmitField('Bestätigen')
+    submit = SubmitField('Fahrplan Erstellen')
 
 
 class TimeSpecificationForm(FlaskForm):
@@ -52,5 +49,6 @@ class WeeklyDaysForm(FlaskForm):
 
 
 class ConfirmFahrplanForm(FlaskForm):
+    fahrplan = []
     submit = SubmitField('Confirm')
 

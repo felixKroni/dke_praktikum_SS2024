@@ -31,6 +31,19 @@
             {% endfor %}
         </p>
 
+        <p>
+            {{  form.halteplan_selection.label }}<br>
+            {{ form.halteplan_selection() }}<br>
+            {% for error in form.halteplan_selection.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+          {{ form.choice.label }}<br>
+          {{ form.choice() }}
+        </p>
+
 
         <p>{{ form.submit() }}</p>
     </form>

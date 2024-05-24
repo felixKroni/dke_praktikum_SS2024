@@ -2,10 +2,11 @@ import datetime
 from urllib.parse import urlsplit
 
 import requests
-from flask import render_template, flash, redirect, url_for, request, session
+from flask import render_template, flash, redirect, url_for, request, session, jsonify
+from sqlalchemy.orm import joinedload
 
 from app import app, database
-from app.forms.fahrplanForm import ChooseDaysForm, SpecificDateForm, \
+from app.forms.fahrplanForm import SpecificDateForm, \
     WeeklyDaysForm, ConfirmFahrplanForm, FahrplanForm
 from app.forms.halteplanCreateForm import HalteplanCreateForm, HalteplanChooseHaltepunktForm, HalteplanChoosePricesForm
 from app.forms.halteplanEditForm import HalteplanEditForm
@@ -257,29 +258,27 @@ def deleteHalteplan(id):
 @login_required
 def createFahrplan():
     form = FahrplanForm(request.form)
+    data = database.baseController.find_all(Halteplan)
+    form.halteplan_selection.choices = [(halteplan.id, halteplan.name + ' - ' + halteplan.streckenName) for halteplan in data]
 
     if form.validate_on_submit():
         name = form.name.data
         gueltig_von = form.gueltig_von.data
         gueltig_bis = form.gueltig_bis.data
-        new_fahrplan = Fahrplan(name=name, gueltig_von=gueltig_von, gueltig_bis=gueltig_bis)
+        selected_halteplan_id = form.halteplan_selection.data
+        hp = database.baseController.find_by_id(Halteplan, selected_halteplan_id)
+        new_fahrplan = Fahrplan(name=name, gueltig_von=gueltig_von, gueltig_bis=gueltig_bis, halteplan=hp,
+                                halteplan_id=hp.id)
         new_fahrplan = database.baseController.add(new_fahrplan)
 
-        return redirect(url_for('chooseDays', fahrplanId=new_fahrplan.id))
-    return render_template('createFahrplan.html', title='Fahrplan erstellen', form=form)
 
-@app.route('/chooseDays/<int:fahrplanId>', methods=['GET', 'POST'])
-@login_required
-def chooseDays(fahrplanId):
-    form = ChooseDaysForm()
-
-    if form.validate_on_submit():
         choice = form.choice.data
         if choice == 'specific':
-            return redirect(url_for('specificDates', fahrplanId=fahrplanId))
+            return redirect(url_for('specificDates', fahrplanId=new_fahrplan.id))
         elif choice == 'weekly':
-            return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
-    return render_template('chooseDays.html', form=form)
+            return redirect(url_for('weeklyDays', fahrplanId=new_fahrplan.id))
+    return render_template('createFahrplan.html', title='Fahrplan erstellen', form=form)
+
 
 @app.route('/specificDates/<int:fahrplanId>', methods=['GET', 'POST'])
 @login_required
@@ -345,12 +344,49 @@ def weeklyDays(fahrplanId):
 @login_required
 def confirmFahrplan(fahrplanId):
     form = ConfirmFahrplanForm()
+    fahrplan = database.baseController.find_by_id(Fahrplan, fahrplanId)
+    if fahrplan is not None:
+        form.fahrplan = fahrplan
     if form.validate_on_submit():
-        # Finalize and save the Fahrplan
+
         flash('Fahrplan successfully created!')
         return redirect(url_for('index'))
     return render_template('confirmFahrplan.html', form=form)
 
+
+@app.route('/fahrplanList', methods=['GET'])
+@login_required
+def fahrplanList():
+    pass
+
+@app.route('/deleteFahrplan/<int:id>', methods=['GET', 'POST'])
+@login_required
+def deleteFahrplan(id):
+    pass
+
+
+@app.route('/editFahrplan/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editFahrplan(id):
+    pass
+
+
+@app.route('/fahrtdurchfuehrungList', methods=['GET'])
+@login_required
+def fahrtdurchfuehrungList():
+    pass
+
+
+@app.route('/deleteFahrtdurchfuehrung/<int:id>', methods=['GET', 'POST'])
+@login_required
+def deleteFahrtdurchfuehrung(id):
+    pass
+
+
+@app.route('/editFahrtdurchfuehrung/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editFahrtdurchfuehrung(id):
+    pass
 
 
 
@@ -380,6 +416,24 @@ def get_haltepunkte_names(strecke_name):
         return names
     else:
         return None
+
+# API´s
+@app.route('/api/all_halteplaen_data', methods=['GET'])
+def all_halteplaen_data():
+    halteplaene = database.Session.query(Halteplan).options(
+        joinedload(Halteplan.abschnitte).joinedload(AbschnittHalteplan.abschnitt),
+        joinedload(Halteplan.fahrplan).joinedload(Fahrplan.fahrtdurchfuehrungen)
+    ).all()
+
+    result = []
+    for halteplan in halteplaene:
+        result.append(serialize_halteplan(halteplan))
+
+    return jsonify({'halteplaene': result})
+
+
+
+
 
 #####
 # db functions
@@ -452,3 +506,61 @@ def weekday_converter(weekday):
         'samstag': 5,
         'sonntag': 6
     }.get(weekday, 99)
+
+
+def serialize_halteplan(halteplan):
+    return {
+        'id': halteplan.id,
+        'name': halteplan.name,
+        'streckenName': halteplan.streckenName,
+        'abschnitte': [serialize_abschnitt_halteplan(ah) for ah in halteplan.abschnitte],
+        'fahrplan': serialize_fahrplan(halteplan.fahrplan) if halteplan.fahrplan else None
+    }
+
+
+def serialize_abschnitt_halteplan(abschnitt_halteplan):
+    return {
+        'abschnitt_id': abschnitt_halteplan.abschnitt_id,
+        'halteplan_id': abschnitt_halteplan.halteplan_id,
+        'reihung': abschnitt_halteplan.reihung,
+        'abschnitt': serialize_abschnitt(abschnitt_halteplan.abschnitt)
+    }
+
+
+def serialize_abschnitt(abschnitt):
+    return {
+        'id': abschnitt.id,
+        'spurenweite': abschnitt.spurenweite,
+        'nutzungsentgelt': abschnitt.nutzungsentgelt,
+        'StartBahnhof': abschnitt.StartBahnhof,
+        'EndBahnhof': abschnitt.EndBahnhof
+    }
+
+
+def serialize_fahrplan(fahrplan):
+    return {
+        'id': fahrplan.id,
+        'name': fahrplan.name,
+        'gueltig_von': fahrplan.gueltig_von.isoformat() if fahrplan.gueltig_von else None,
+        'gueltig_bis': fahrplan.gueltig_bis.isoformat() if fahrplan.gueltig_bis else None,
+        'fahrtdurchfuehrungen': [serialize_fahrtdurchfuehrung(fd) for fd in fahrplan.fahrtdurchfuehrungen]
+    }
+
+
+def serialize_fahrtdurchfuehrung(fahrtdurchfuehrung):
+    return {
+        'id': fahrtdurchfuehrung.id,
+        'startZeit': fahrtdurchfuehrung.startZeit.isoformat() if fahrtdurchfuehrung.startZeit else None,
+        'ausfall': fahrtdurchfuehrung.ausfall,
+        'verspaetung': fahrtdurchfuehrung.verspaetung,
+        'preis': fahrtdurchfuehrung.preis,
+        'zug_id': fahrtdurchfuehrung.zug_id,
+        'mitarbeiter': [serialize_mitarbeiter_durchfuehrung(md) for md in fahrtdurchfuehrung.mitarbeiter]
+    }
+
+
+def serialize_mitarbeiter_durchfuehrung(mitarbeiter_durchfuehrung):
+    return {
+        'mitarbeiter_id': mitarbeiter_durchfuehrung.mitarbeiter_id,
+        'durchfuehrung_id': mitarbeiter_durchfuehrung.durchfuehrung_id
+    }

@@ -8,7 +8,6 @@ class Fahrtdurchfuehrung(Base):
     __tablename__ = 'Fahrtdurchfuehrung'
     id = Column(Integer, primary_key=True)
     startZeit = Column(DateTime)
-    tag = Column(Date)
     ausfall = Column(Boolean)
     verspaetung = Column(Boolean)
     preis = Column(Float)

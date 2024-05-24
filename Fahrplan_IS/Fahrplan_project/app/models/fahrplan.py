@@ -10,3 +10,5 @@ class Fahrplan(Base):
     gueltig_von = Column(DateTime)
     gueltig_bis = Column(DateTime)
     fahrtdurchfuehrungen = relationship('Fahrtdurchfuehrung', backref='fahrplan')
+    halteplan_id = Column(Integer, ForeignKey('Halteplan.id'))
+    halteplan = relationship("Halteplan", back_populates="fahrplan")
