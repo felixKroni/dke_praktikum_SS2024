@@ -55,10 +55,12 @@
             {
                 startbahnhof: {
                     name: "{{ abschnitt.startbahnhof.name }}",
+                        adresse: "{{abschnitt.startbahnhof.adresse}}",
                     coordinates: [{{ abschnitt.startbahnhof.latitude }}, {{ abschnitt.startbahnhof.longitude }}]
                 },
                 endbahnhof: {
                     name: "{{ abschnitt.endbahnhof.name }}",
+                        adresse: "{{abschnitt.endbahnhof.adresse}}",
                     coordinates: [{{ abschnitt.endbahnhof.latitude }}, {{ abschnitt.endbahnhof.longitude }}]
                 },
                 warnung: {{ abschnitt.warnung|lower }},
