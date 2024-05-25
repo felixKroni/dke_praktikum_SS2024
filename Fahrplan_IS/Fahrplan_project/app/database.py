@@ -7,8 +7,10 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from app.commons import Base
 from app.controllers.abschnittController import AbschnittController
 from app.controllers.baseController import BaseController
+from app.controllers.durchfuehrungController import DurchfuehrungController
 from app.controllers.halteplanController import HalteplanController
 from app.controllers.mitarbeiterController import MitarbeiterController
+from app.controllers.mitarbeiter_durchfuehrungController import MitarbeiterDurchfuehrungController
 from app.controllers.zugController import ZugController
 from app.models.abschnitt import Abschnitt
 from app.models.abschnitt_halteplan import AbschnittHalteplan
@@ -52,9 +54,9 @@ class Database:
         fake = Faker()
 
         #Zug Data
-        newZug = Zug(name=fake.name(), spurenweite=550)
+        """newZug = Zug(name=fake.name(), spurenweite=550)
         addedZug = self.baseController.add(newZug)
-        print("Added Zug: " + str(addedZug))
+        print("Added Zug: " + str(addedZug))"""
 
         #Mitarbeiter Data
         if self.get_controller("ma").get_mitarbeiter_by_username("1") is None:
@@ -106,6 +108,10 @@ class Database:
             return HalteplanController(self.Session)
         elif name == 'ab':
             return AbschnittController(self.Session)
+        elif name == "df":
+            return DurchfuehrungController(self.Session)
+        elif name == "ma_df":
+            return MitarbeiterDurchfuehrungController(self.Session)
         else:
             raise ValueError(f"No controller found for name: {name}")
 

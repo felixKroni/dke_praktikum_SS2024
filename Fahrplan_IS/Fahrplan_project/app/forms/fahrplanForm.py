@@ -44,7 +44,7 @@ class SpecificDateForm(FlaskForm):
 class WeeklyDaysForm(FlaskForm):
     weekdays = SelectField('Weekdays', choices=[('montag', 'Montag'), ('' 'dienstag', 'Dienstag'), ('mittwoch', 'Mittwoch'), ('donnerstag', 'Donnerstag'), ('freitag', 'Freitag'), ('samstag', 'Samstag'), ('sonntag', 'Sonntag')], validators=[DataRequired()])
     time = FormField(TimeInputForm)
-    submit = SubmitField('Speichern')
+    submit = SubmitField('Speichern und Abschließen')
     new = SubmitField('Speichern und neue Zeit hinzufügen')
 
 

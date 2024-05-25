@@ -8,6 +8,7 @@ from sqlalchemy.orm import joinedload
 from app import app, database
 from app.forms.fahrplanForm import SpecificDateForm, \
     WeeklyDaysForm, ConfirmFahrplanForm, FahrplanForm
+from app.forms.fahrtdurchfuehrungForm import EditFahrtdurchfuehrungForm
 from app.forms.halteplanCreateForm import HalteplanCreateForm, HalteplanChooseHaltepunktForm, HalteplanChoosePricesForm
 from app.forms.halteplanEditForm import HalteplanEditForm
 from app.forms.loginForm import LoginForm
@@ -21,6 +22,8 @@ from app.models.fahrdurchfuehrung import Fahrtdurchfuehrung
 from app.models.fahrplan import Fahrplan
 from app.models.halteplan import Halteplan
 from app.models.mitarbeiter import Mitarbeiter
+from app.models.mitarbeiter_durchfuehrung import MitarbeiterDurchfuehrung
+from app.models.zug import Zug
 
 
 @app.route('/')
@@ -66,7 +69,7 @@ def registerMitarbeiter():
         user.set_password(form.password.data)
         database.baseController.add(user)
         # database.Session.commit()
-        flash('Mitarbeiter ' + user.username + ' wurde erfolgreich erstellt')
+        flash('Mitarbeiter ' + user.name + ' wurde erfolgreich erstellt')
         return redirect(url_for('mitarbeiterList'))
     return render_template('registerMitarbeiter.html', title='Register', form=form)
 
@@ -213,6 +216,7 @@ def editHalteplan(id):
                 haltepunkte.append(abschnitt.EndBahnhof)
             #Remove duplicates
             haltepunkte = list(set(haltepunkte))
+
             form.haltepunkte.data = haltepunkte
         elif form.validate_on_submit():
             halteplan.name = form.name.data
@@ -333,6 +337,7 @@ def weeklyDays(fahrplanId):
             pass
 
         if 'new' in request.form:
+            print('New')
             # Save the current time and add a new time input field
             return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
         return redirect(url_for('confirmFahrplan', fahrplanId=fahrplanId))
@@ -389,7 +394,45 @@ def deleteFahrtdurchfuehrung(id):
 @app.route('/editFahrtdurchfuehrung/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editFahrtdurchfuehrung(id):
-    pass
+    form = EditFahrtdurchfuehrungForm(request.form)
+    form.zug_selection.choices = [(zug.id, zug.name) for zug in database.baseController.find_all(Zug)]
+    form.mitarbeiter_selection.choices = [(ma.id, ma.name) for ma in database.baseController.find_all(Mitarbeiter)]
+    if request.method == 'GET':
+        fahrtdurchfuehrung = database.baseController.find_by_id(Fahrtdurchfuehrung, id)
+        form.startZeit.data = fahrtdurchfuehrung.startZeit
+        form.ausfall.data = fahrtdurchfuehrung.ausfall
+        form.verspaetung.data = fahrtdurchfuehrung.verspaetung
+        form.preis.data = fahrtdurchfuehrung.preis
+        form.zug_selection.data = str(fahrtdurchfuehrung.zug_id)
+        form.mitarbeiter_selection.data = [str(md.mitarbeiter_id) for md in fahrtdurchfuehrung.mitarbeiter]
+        return render_template('editFahrtdurchfuehrung.html', form=form)
+    else:
+        if form.validate_on_submit():
+            new_fahrtdurchfuehrung = database.baseController.find_by_id(Fahrtdurchfuehrung, id)
+            new_fahrtdurchfuehrung.startZeit = form.startZeit.data
+            new_fahrtdurchfuehrung.ausfall = form.ausfall.data
+            new_fahrtdurchfuehrung.verspaetung = form.verspaetung.data
+            new_fahrtdurchfuehrung.preis = form.preis.data
+            new_fahrtdurchfuehrung.zug_id = form.zug_selection.data
+
+
+            mitarbeiter_ids = form.mitarbeiter_selection.data
+            database.get_controller('df').remove_all_mitarbeiterdurchfuehrungen_of_fahrtdurchfuehrung(id)
+            for mitarbeiter_id in mitarbeiter_ids:
+                mitarbeiter_id = int(mitarbeiter_id)
+                new_mitarbeiter_durchfuehrung = MitarbeiterDurchfuehrung(mitarbeiter_id=mitarbeiter_id, fahrtdurchfuehrung_id=new_fahrtdurchfuehrung.id)
+                new_mitarbeiter_durchfuehrung = database.baseController.add(new_mitarbeiter_durchfuehrung)
+                new_fahrtdurchfuehrung.mitarbeiter.append(new_mitarbeiter_durchfuehrung)
+
+            database.baseController.update_by_id(Fahrtdurchfuehrung, id, new_fahrtdurchfuehrung.__dict__)
+            flash('Fahrtdurchführung erfolgreich geändert')
+            referrer_url = request.referrer
+            if referrer_url and referrer_url.startswith(request.url_root + 'confirmFahrplan'):
+                return redirect(referrer_url)
+            else:
+                return redirect(url_for('fahrtdurchfuehrungList'))
+    return redirect(url_for('fahrtdurchfuehrungList'))
+
 
 
 
