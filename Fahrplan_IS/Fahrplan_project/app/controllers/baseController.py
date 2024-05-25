@@ -14,6 +14,14 @@ class BaseController:
         self.session.delete(instance)
         self.session.commit()
 
+    def delete_by_id(self, model, id):
+        instance = self.find_by_id(model, id)
+        if instance:
+            self.session.delete(instance)
+            self.session.commit()
+        else:
+            print(f"No instance found with id {id}.")
+
     def delete_multiple(self, instances):
         for instance in instances:
             self.session.delete(instance)

@@ -369,7 +369,14 @@ def fahrplanList():
 @app.route('/deleteFahrplan/<int:id>', methods=['GET', 'POST'])
 @login_required
 def deleteFahrplan(id):
-    pass
+    fahrplan = database.baseController.find_by_id(Fahrplan, id)
+    if fahrplan is not None:
+        for fahrtdurchfuehrung in fahrplan.fahrtdurchfuehrungen:
+            database.get_controller('df').remove_all_mitarbeiterdurchfuehrungen_of_fahrtdurchfuehrung(fahrtdurchfuehrung.id)
+            database.baseController.delete_by_id(Fahrtdurchfuehrung, fahrtdurchfuehrung.id)
+        database.baseController.delete_by_id(Fahrplan, id)
+        flash('Fahrplan erfolgreich gelöscht')
+        return redirect(url_for('fahrplanList'))
 
 
 @app.route('/editFahrplan/<int:id>', methods=['GET', 'POST'])
@@ -388,7 +395,10 @@ def fahrtdurchfuehrungList():
 @app.route('/deleteFahrtdurchfuehrung/<int:id>', methods=['GET', 'POST'])
 @login_required
 def deleteFahrtdurchfuehrung(id):
-    pass
+    database.get_controller('df').remove_all_mitarbeiterdurchfuehrungen_of_fahrtdurchfuehrung(id)
+    database.baseController.delete_by_id(Fahrtdurchfuehrung, id)
+    flash('Fahrtdurchführung erfolgreich gelöscht')
+    return redirect(url_for('fahrtdurchfuehrungList'))
 
 
 @app.route('/editFahrtdurchfuehrung/<int:id>', methods=['GET', 'POST'])
