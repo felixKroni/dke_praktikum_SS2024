@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from faker import Faker
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -48,17 +49,19 @@ class Database:
         self.Session.query(Abschnitt).delete()
         self.Session.query(Halteplan).delete()
         self.Session.query(AbschnittHalteplan).delete()"""
+        fake = Faker()
 
         #Zug Data
-        newZug = Zug(name="ICE 123", spurenweite=1435)
+        newZug = Zug(name=fake.name(), spurenweite=550)
         addedZug = self.baseController.add(newZug)
         print("Added Zug: " + str(addedZug))
 
         #Mitarbeiter Data
-        newMitarbeiter = Mitarbeiter(name="Miky", svnr="12345678", username="1", role="admin", email="miky.x@g2.at")
-        newMitarbeiter.set_password("12")
-        addedMitarbeiter = self.baseController.add(newMitarbeiter)
-        print("Added Mitarbeiter: " + str(addedMitarbeiter))
+        if self.get_controller("ma").get_mitarbeiter_by_username("1") is None:
+            newMitarbeiter = Mitarbeiter(name="Caps", svnr="12345678", username="1", role="admin", email="caps.claps@g2.at")
+            newMitarbeiter.set_password("12")
+            addedMitarbeiter = self.baseController.add(newMitarbeiter)
+            print("Added Mitarbeiter: " + str(addedMitarbeiter))
 
         #Abschnitt Data
         """

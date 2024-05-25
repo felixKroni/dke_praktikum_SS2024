@@ -13,8 +13,9 @@
             {% else %}
             <a href="{{ url_for('logout') }}">Logout</a>
             <a href="{{ url_for('mitarbeiterList') }}">Mitarbeiter</a>
-            <a href="{{ url_for('halteplanList') }}">Halteplan</a>
-            <a href="{{ url_for('createFahrplan') }}">Fahrplan erstellen</a>
+            <a href="{{ url_for('halteplanList') }}">Haltepläne</a>
+            <a href="{{ url_for('fahrplanList') }}">Fahrpläne</a>
+            <a href="{{ url_for('fahrtdurchfuehrungList') }}">Fahrtdurchführungen</a>
             {% endif %}
         </div>
         <hr>

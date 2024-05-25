@@ -357,7 +357,9 @@ def confirmFahrplan(fahrplanId):
 @app.route('/fahrplanList', methods=['GET'])
 @login_required
 def fahrplanList():
-    pass
+    fahrplaene = database.baseController.find_all(Fahrplan)
+    return render_template('fahrplanList.html', title='Fahrpläne', fahrplaene=fahrplaene)
+
 
 @app.route('/deleteFahrplan/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -374,7 +376,8 @@ def editFahrplan(id):
 @app.route('/fahrtdurchfuehrungList', methods=['GET'])
 @login_required
 def fahrtdurchfuehrungList():
-    pass
+    fahrplaene = database.baseController.find_all(Fahrplan)
+    return render_template('fahrtdurchfuehrungList.html', title='Fahrtdurchführungen', fahrplaene=fahrplaene)
 
 
 @app.route('/deleteFahrtdurchfuehrung/<int:id>', methods=['GET', 'POST'])

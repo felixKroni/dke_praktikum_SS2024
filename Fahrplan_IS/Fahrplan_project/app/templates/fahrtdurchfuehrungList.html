@@ -1,26 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}Confirm Fahrplan{% endblock %}
-
 {% block head %}
     {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/baseTableStyling.css') }}">
 {% endblock %}
 
 {% block content %}
-  <h1>Confirm Fahrplan</h1>
-  <form method="post">
-    {{ form.hidden_tag() }}
-    <p>
-      <strong>Fahrplan Details:</strong> <br>
-      Fahrplan Name: {{ form.fahrplan.name }} <br>
-        gültig von: {{ form.fahrplan.gueltig_von }} <br>
-        bis: {{ form.fahrplan.gueltig_bis }} <br>
-      Halteplan: {{ form.fahrplan.halteplan.name }} <br>
+    <h1>Fahrtdurchführungs Liste</h1>
+    {% for fahrplan in fahrplaene %}
 
-      <strong>Fahrtdurchführungen:</strong>
+        <div class="fahrplan-details">
+            <p>
+              <strong>Fahrplan Details:</strong> <br>
+              Fahrplan Name: {{ fahrplan.name }} <br>
+                gültig von: {{ fahrplan.gueltig_von }} <br>
+                bis: {{ fahrplan.gueltig_bis }} <br>
+              Halteplan: {{ fahrplan.halteplan.name }} <br>
 
-    </p>
+              <strong>Fahrtdurchführungen:</strong>
+
+            </p>
+        </div>
       <table>
         <thead>
             <tr>
@@ -33,7 +33,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for fahrt in form.fahrplan.fahrtdurchfuehrungen %}
+            {% for fahrt in fahrplan.fahrtdurchfuehrungen %}
             <tr>
                 <td>{{ fahrt.startZeit }}</td>
                 <td>{{ fahrt.ausfall }}</td>
@@ -54,6 +54,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <p>{{ form.submit() }}</p>
-  </form>
+
+    {% endfor %}
+
 {% endblock %}
