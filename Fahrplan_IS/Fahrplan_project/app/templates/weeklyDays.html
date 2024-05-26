@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Specify Weekdays{% endblock %}
+{% block title %}Wochentag spezifizieren{% endblock %}
 
 {% block head %}
     {{ super() }}
@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Specify Weekdays and Times</h1>
+  <h1>Wochentage und Zeiten angeben</h1>
   <form method="post">
     {{ form.hidden_tag() }}
     {{ form.time.hidden_tag() }}

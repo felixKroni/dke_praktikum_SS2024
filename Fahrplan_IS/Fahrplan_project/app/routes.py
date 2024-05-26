@@ -287,10 +287,41 @@ def createFahrplan():
 @app.route('/specificDates/<int:fahrplanId>', methods=['GET', 'POST'])
 @login_required
 def specificDates(fahrplanId):
-    form = SpecificDateForm()
+    form = SpecificDateForm(request.form)
+    fahrplan = database.baseController.find_by_id(Fahrplan, fahrplanId)
+    form.gueltig_von = fahrplan.gueltig_von
+    form.gueltig_bis = fahrplan.gueltig_bis
+
     if form.validate_on_submit():
-        # Save specific dates and times to session or process as needed
-        return redirect(url_for('confirmFahrplan'))
+        # TODO Züge aus Zugsystem nehmen
+
+        if fahrplan is not None:
+            time = form.time.data
+            date = datetime.datetime.combine(form.date.data, datetime.time()) #format to datetime just to be sure
+
+            fahrplan_startDate = fahrplan.gueltig_von
+            start_time = time['start_time']
+            end_time = time['end_time']
+
+            if end_time is None:
+                single_time = date.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+                new_single_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=single_time,
+                                                                   ausfall=False, verspaetung=False)
+                database.baseController.add(new_single_fahrtdurchfuehrung)
+
+            else:
+                startZeit = date.replace(hour=start_time.hour, minute=start_time.minute)
+                while startZeit.time() <= end_time:
+                    print(startZeit.time())
+                    new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False)
+                    database.baseController.add(new_fahrtdurchfuehrung)
+                    startZeit += datetime.timedelta(hours=int(time['interval']))
+                pass
+
+            if 'new' in request.form:
+                flash('Zeit erfolgreich hinzugefügt')
+                return redirect(url_for('specificDates', fahrplanId=fahrplanId))
+        return redirect(url_for('confirmFahrplan', fahrplanId=fahrplanId))
     return render_template('specificDates.html', form=form)
 
 @app.route('/weeklyDays/<int:fahrplanId>', methods=['GET', 'POST'])
@@ -310,36 +341,40 @@ def weeklyDays(fahrplanId):
             start_time = time['start_time']
             end_time = time['end_time']
 
-
-            startZeit = get_date_of_next_weekday(fahrplan_startDate, weekday)
-            startZeit = datetime.datetime.combine(startZeit, datetime.time()) # convert to datetime object
-            startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
-            print('Erster Tag: '+str(startZeit))
-
-            while startZeit <= fahrplan_endDate:
-                if startZeit.weekday() == weekday_converter(weekday):
-                    if start_time <= startZeit.time() <= end_time:
-                        print(startZeit)
-                        new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False, )
-                        database.baseController.add(new_fahrtdurchfuehrung)
-                    startZeit += datetime.timedelta(hours=int(time['interval']))
-                else:
-                    print('Nicht der richtige Wochentag: ' + str(startZeit))
-                    print('Suche neuen Wochentag')
-                    startZeit = get_date_of_next_weekday(startZeit, weekday)
-                    startZeit = datetime.datetime.combine(startZeit, datetime.time())  # convert to datetime object
-                    startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
-
-
-
+            if end_time is None:
+                single_time = get_date_of_next_weekday(fahrplan_startDate, weekday)
+                single_time = datetime.datetime.combine(single_time, datetime.time())  # convert to datetime object
+                single_time = single_time.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+                new_single_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=single_time,
+                                                                   ausfall=False, verspaetung=False )
+                database.baseController.add(new_single_fahrtdurchfuehrung)
                 pass
 
-            pass
+            else:
+                startZeit = get_date_of_next_weekday(fahrplan_startDate, weekday)
+                startZeit = datetime.datetime.combine(startZeit, datetime.time()) # convert to datetime object
+                startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+                print('Erster Tag: '+str(startZeit))
 
-        if 'new' in request.form:
-            print('New')
-            # Save the current time and add a new time input field
-            return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
+                while startZeit <= fahrplan_endDate:
+                    if startZeit.weekday() == weekday_converter(weekday):
+                        if start_time <= startZeit.time() <= end_time:
+                            print(startZeit)
+                            new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False )
+                            database.baseController.add(new_fahrtdurchfuehrung)
+                        startZeit += datetime.timedelta(hours=int(time['interval']))
+                    else:
+                        print('Nicht der richtige Wochentag: ' + str(startZeit))
+                        print('Suche neuen Wochentag')
+                        startZeit = get_date_of_next_weekday(startZeit, weekday)
+                        startZeit = datetime.datetime.combine(startZeit, datetime.time())  # convert to datetime object
+                        startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+
+
+            if 'new' in request.form:
+                flash('Zeit erfolgreich hinzugefügt')
+                # Save the current time and add a new time input field
+                return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
         return redirect(url_for('confirmFahrplan', fahrplanId=fahrplanId))
     else:
         print(form.errors)
@@ -355,7 +390,7 @@ def confirmFahrplan(fahrplanId):
     if form.validate_on_submit():
 
         flash('Fahrplan successfully created!')
-        return redirect(url_for('index'))
+        return redirect(url_for('fahrplanList'))
     return render_template('confirmFahrplan.html', form=form)
 
 
