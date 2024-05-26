@@ -33,7 +33,17 @@ class TimeInputForm(FlaskForm):
 
     def validate_start_time(form, field):
         if form.end_time.data is not None and form.start_time.data > form.end_time.data:
-            raise ValidationError('Start time must be before end time')
+            raise ValidationError('Startzeit muss vor der Endzeit liegen.')
+
+    def validate_interval(form, field):
+        if field.data is not None and not field.data.isdigit():
+            raise ValidationError('Interval muss eine Zahl sein.')
+        if field.data is not None and int(field.data) < 1:
+                raise ValidationError('Interval muss größer als 0 sein')
+        if field.data is not None and int(field.data) > 24:
+            raise ValidationError('Interval muss kleiner als 24 sein')
+        if form.end_time.data is not None and field is None:
+            raise ValidationError('Interval muss angegeben werden, wenn eine Endzeit angegeben ist.')
 
 class SpecificDateForm(FlaskForm):
     date = DateField('Datum', validators=[DataRequired()])
