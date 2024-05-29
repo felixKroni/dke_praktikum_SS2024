@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import requests
 from faker import Faker
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -57,6 +58,7 @@ class Database:
         """newZug = Zug(name=fake.name(), spurenweite=550)
         addedZug = self.baseController.add(newZug)
         print("Added Zug: " + str(addedZug))"""
+        self.getZuege()
 
         #Mitarbeiter Data
         if self.get_controller("ma").get_mitarbeiter_by_username("1") is None:
@@ -116,3 +118,18 @@ class Database:
             raise ValueError(f"No controller found for name: {name}")
 
 
+    def getZuege(self):
+        response = requests.get("http://127.0.0.1:5002/api/züge")
+        zuege_data = response.json()
+        existing_zuege = self.baseController.find_all(Zug)
+
+        for zug_data in zuege_data:
+            unique_name = zug_data["zug_name"] + ' ' + zug_data["zug_nummer"]
+            existing_zug = self.get_controller("zug").get_zug_by_name(unique_name)
+
+            if not existing_zug:
+                zug = Zug(
+                    name=unique_name,
+                    spurenweite=zug_data["spurweite"]
+                )
+                self.baseController.add(zug)

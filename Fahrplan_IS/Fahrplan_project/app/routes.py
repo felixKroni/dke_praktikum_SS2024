@@ -1,4 +1,5 @@
 import datetime
+from functools import wraps
 from urllib.parse import urlsplit
 
 import requests
@@ -25,6 +26,17 @@ from app.models.mitarbeiter import Mitarbeiter
 from app.models.mitarbeiter_durchfuehrung import MitarbeiterDurchfuehrung
 from app.models.zug import Zug
 
+
+
+def admin_required(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if not current_user.role == 'admin':
+            flash('Sie dürfen nicht auf diese Seite zugreifen!')
+            return redirect(url_for('login'))
+        return func(*args, **kwargs)
+
+    return decorated_function
 
 @app.route('/')
 @app.route('/index')
@@ -59,6 +71,7 @@ def logout():
 
 @app.route('/registerMitarbeiter', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def registerMitarbeiter():
     # if current_user.is_authenticated:
     #    return redirect(url_for('index'))
@@ -76,6 +89,7 @@ def registerMitarbeiter():
 
 @app.route('/mitarbeiterList', methods=['GET'])
 @login_required
+@admin_required
 def mitarbeiterList():
     if current_user.is_authenticated:
         return render_template('mitarbeiterList.html', title='Mitarbeiter',
@@ -85,6 +99,7 @@ def mitarbeiterList():
 
 @app.route('/deleteMitarbeiter/<int:id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def deleteMitarbeiter(id):
     if current_user.is_authenticated:
         user = database.baseController.find_by_id(Mitarbeiter, id)
@@ -97,6 +112,7 @@ def deleteMitarbeiter(id):
 
 @app.route('/editMitarbeiter/<int:id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def editMitarbeiter(id):
     if current_user.is_authenticated:
         user = database.baseController.find_by_id(Mitarbeiter, id)
@@ -132,6 +148,7 @@ def editMitarbeiter(id):
 # Halteplan routes
 @app.route('/halteplanList', methods=['GET'])
 @login_required
+@admin_required
 def halteplanList():
     halteplaene = database.baseController.find_all(Halteplan)
     return render_template('halteplanList.html', title='Haltepläne', halteplaene=halteplaene)
@@ -139,6 +156,7 @@ def halteplanList():
 
 @app.route('/createHalteplan', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def createHalteplan():
 
     form = HalteplanCreateForm(request.form)
@@ -156,6 +174,7 @@ def createHalteplan():
 
 @app.route('/chooseHaltestellen', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def chooseHaltestellen():
     form_data = session.get('form_data', {})
     form = HalteplanChooseHaltepunktForm(request.form)
@@ -178,6 +197,7 @@ def chooseHaltestellen():
 
 @app.route('/choosePrices/<int:halteplan_id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def choosePrices(halteplan_id):
     form = HalteplanChoosePricesForm(request.form)
     abschnitte = database.get_controller('hp').get_abschnitte(halteplan_id)
@@ -198,6 +218,7 @@ def choosePrices(halteplan_id):
 
 @app.route('/editHalteplan/<int:id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def editHalteplan(id):
     halteplan = database.baseController.find_by_id(Halteplan, id)
     if halteplan is not None:
@@ -245,6 +266,7 @@ def editHalteplan(id):
 
 @app.route('/deleteHalteplan/<int:id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def deleteHalteplan(id):
     halteplan = database.baseController.find_by_id(Halteplan, id)
     if halteplan is not None:
@@ -256,10 +278,9 @@ def deleteHalteplan(id):
     return redirect(url_for('halteplanList'))
 
 
-
-
 @app.route('/createFahrplan', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def createFahrplan():
     form = FahrplanForm(request.form)
     data = database.baseController.find_all(Halteplan)
@@ -275,7 +296,6 @@ def createFahrplan():
                                 halteplan_id=hp.id)
         new_fahrplan = database.baseController.add(new_fahrplan)
 
-
         choice = form.choice.data
         if choice == 'specific':
             return redirect(url_for('specificDates', fahrplanId=new_fahrplan.id))
@@ -286,6 +306,7 @@ def createFahrplan():
 
 @app.route('/specificDates/<int:fahrplanId>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def specificDates(fahrplanId):
     form = SpecificDateForm(request.form)
     fahrplan = database.baseController.find_by_id(Fahrplan, fahrplanId)
@@ -326,10 +347,10 @@ def specificDates(fahrplanId):
 
 @app.route('/weeklyDays/<int:fahrplanId>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def weeklyDays(fahrplanId):
     form = WeeklyDaysForm(request.form)
     if form.validate_on_submit():
-        # TODO Züge aus Zugsystem nehmen
         fahrplan = database.baseController.find_by_id(Fahrplan, fahrplanId)
         if fahrplan is not None:
             weekday = form.weekdays.data
@@ -382,6 +403,7 @@ def weeklyDays(fahrplanId):
 
 @app.route('/confirmFahrplan/<int:fahrplanId>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def confirmFahrplan(fahrplanId):
     form = ConfirmFahrplanForm()
     fahrplan = database.baseController.find_by_id(Fahrplan, fahrplanId)
@@ -403,6 +425,7 @@ def fahrplanList():
 
 @app.route('/deleteFahrplan/<int:id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def deleteFahrplan(id):
     fahrplan = database.baseController.find_by_id(Fahrplan, id)
     if fahrplan is not None:
@@ -416,19 +439,29 @@ def deleteFahrplan(id):
 
 @app.route('/editFahrplan/<int:id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def editFahrplan(id):
     pass
 
 
 @app.route('/fahrtdurchfuehrungList', methods=['GET'])
 @login_required
+@admin_required
 def fahrtdurchfuehrungList():
-    fahrplaene = database.baseController.find_all(Fahrplan)
-    return render_template('fahrtdurchfuehrungList.html', title='Fahrtdurchführungen', fahrplaene=fahrplaene)
+    fahrplan = database.baseController.find_all(Fahrplan)
+    return render_template('fahrtdurchfuehrungList.html', title='Fahrtdurchführungen', fahrplaene=fahrplan)
+
+
+@app.route('/ma_fahrtdurchfuehrungList/<int:ma_id>', methods=['GET'])
+@login_required
+def ma_fahrtdurchfuehrungList(ma_id):
+    fahrtdurchfuehrungen = database.get_controller('df').get_all_fahrtdurchfuehrungen_by_mitarbeiter_id(ma_id)
+    return render_template('ma_fahrtdurchfuehrungList.html', title='Fahrtdurchführungen', fahrtdurchfuehrungen=fahrtdurchfuehrungen)
 
 
 @app.route('/deleteFahrtdurchfuehrung/<int:id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def deleteFahrtdurchfuehrung(id):
     database.get_controller('df').remove_all_mitarbeiterdurchfuehrungen_of_fahrtdurchfuehrung(id)
     database.baseController.delete_by_id(Fahrtdurchfuehrung, id)
@@ -438,6 +471,7 @@ def deleteFahrtdurchfuehrung(id):
 
 @app.route('/editFahrtdurchfuehrung/<int:id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def editFahrtdurchfuehrung(id):
     form = EditFahrtdurchfuehrungForm(request.form)
     form.zug_selection.choices = [(zug.id, zug.name) for zug in database.baseController.find_all(Zug)]
@@ -508,6 +542,8 @@ def get_haltepunkte_names(strecke_name):
     else:
         return None
 
+
+
 # API´s
 @app.route('/api/all_halteplaen_data', methods=['GET'])
 def all_halteplaen_data():
@@ -530,7 +566,6 @@ def all_halteplaen_data():
 # db functions
 
 
-#create abschnitt by combining start and end bahnhof
 def create_abschnitt(start_bahnhof, end_bahnhof, strecke_name, halteplan_id, reihung):
     start_bahnhof = str(start_bahnhof)
     end_bahnhof = str(end_bahnhof)
