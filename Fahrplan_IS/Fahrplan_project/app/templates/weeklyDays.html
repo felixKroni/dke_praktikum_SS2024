@@ -20,7 +20,7 @@
             {% endfor %}
     </div>
     <div>
-      <h2>Specify Times</h2>
+      <h2>Zeiten Spezifizieren</h2>
       <p>{{ form.time.start_time.label }} {{ form.time.start_time(type='time') }}
       {% for error in form.time.start_time.errors %}
             <span style="color: red;">[{{ error }}]</span>

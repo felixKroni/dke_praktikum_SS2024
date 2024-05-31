@@ -27,7 +27,6 @@ from app.models.mitarbeiter_durchfuehrung import MitarbeiterDurchfuehrung
 from app.models.zug import Zug
 
 
-
 def admin_required(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
@@ -37,6 +36,7 @@ def admin_required(func):
         return func(*args, **kwargs)
 
     return decorated_function
+
 
 @app.route('/')
 @app.route('/index')
@@ -158,7 +158,6 @@ def halteplanList():
 @login_required
 @admin_required
 def createHalteplan():
-
     form = HalteplanCreateForm(request.form)
     form.streckenName.choices = get_strecken()
     if form.validate_on_submit():
@@ -166,11 +165,12 @@ def createHalteplan():
             'name': form.name.data,
             'streckenName': form.streckenName.data
         }
-        #new_halteplan = Halteplan(name=form.name.data, streckenName=form.streckenName.data)
-        #database.baseController.add(new_halteplan)
-        #flash('Erfolgreich neuen Halteplan erstellt')
+        # new_halteplan = Halteplan(name=form.name.data, streckenName=form.streckenName.data)
+        # database.baseController.add(new_halteplan)
+        # flash('Erfolgreich neuen Halteplan erstellt')
         return redirect(url_for('chooseHaltestellen'))
     return render_template('createHalteplan.html', title='Halteplan erstellen', form=form)
+
 
 @app.route('/chooseHaltestellen', methods=['GET', 'POST'])
 @login_required
@@ -235,7 +235,7 @@ def editHalteplan(id):
                 abschnitt = database.baseController.find_by_id(Abschnitt, abschnitt_halteplan.abschnitt_id)
                 haltepunkte.append(abschnitt.StartBahnhof)
                 haltepunkte.append(abschnitt.EndBahnhof)
-            #Remove duplicates
+            # Remove duplicates
             haltepunkte = list(set(haltepunkte))
 
             form.haltepunkte.data = haltepunkte
@@ -243,16 +243,15 @@ def editHalteplan(id):
             halteplan.name = form.name.data
             halteplan.streckenName = form.streckenName.data
 
-            #remove existing abschnitte
+            # remove existing abschnitte
             database.get_controller('hp').delete_abschnitt_relations(halteplan.id)
 
-            #insert the new ones
+            # insert the new ones
             haltepunkte = form.haltepunkte.data
             for i in range(len(haltepunkte) - 1):
                 start_bahnhof = haltepunkte[i]
                 end_bahnhof = haltepunkte[i + 1]
-                create_abschnitt(start_bahnhof, end_bahnhof, halteplan.streckenName , halteplan.id, i)
-
+                create_abschnitt(start_bahnhof, end_bahnhof, halteplan.streckenName, halteplan.id, i)
 
             database.baseController.update_by_id(Halteplan, id, halteplan.__dict__)
 
@@ -270,7 +269,7 @@ def editHalteplan(id):
 def deleteHalteplan(id):
     halteplan = database.baseController.find_by_id(Halteplan, id)
     if halteplan is not None:
-        #TODO delete all accordinng Fahrpläne and Fahrtdurchführungen
+        # TODO delete all accordinng Fahrpläne and Fahrtdurchführungen
         database.get_controller('hp').delete_abschnitt_relations_with_halteplan(halteplan.id)
         flash('Halteplan gelöscht')
     else:
@@ -284,7 +283,8 @@ def deleteHalteplan(id):
 def createFahrplan():
     form = FahrplanForm(request.form)
     data = database.get_controller('hp').get_all_halteplaene_with_no_fahrplan()
-    form.halteplan_selection.choices = [(halteplan.id, halteplan.name + ' - ' + halteplan.streckenName) for halteplan in data]
+    form.halteplan_selection.choices = [(halteplan.id, halteplan.name + ' - ' + halteplan.streckenName) for halteplan in
+                                        data]
 
     if form.validate_on_submit():
         name = form.name.data
@@ -313,37 +313,77 @@ def specificDates(fahrplanId):
     form.gueltig_von = fahrplan.gueltig_von
     form.gueltig_bis = fahrplan.gueltig_bis
 
+    # Filling the form again after manipulating prices
+    specific_days_data = session.get('specific_days_data')
+    if specific_days_data is not None:
+        form.date.data = datetime.datetime.strptime(specific_days_data['date'],
+                                                    '%Y-%m-%d').date()
+        form.set_time_data(specific_days_data['start_time'], specific_days_data['end_time'],
+                           specific_days_data['interval'])
+        session.pop('specific_days_data', None)
+
     if form.validate_on_submit():
-        # TODO Züge aus Zugsystem nehmen
 
         if fahrplan is not None:
-            time = form.time.data
-            date = datetime.datetime.combine(form.date.data, datetime.time()) #format to datetime just to be sure
-
-            fahrplan_startDate = fahrplan.gueltig_von
-            start_time = time['start_time']
-            end_time = time['end_time']
-
-            if end_time is None:
-                single_time = date.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
-                new_single_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=single_time,
-                                                                   ausfall=False, verspaetung=False)
-                database.baseController.add(new_single_fahrtdurchfuehrung)
+            if 'specialPrices' in request.form:
+                session['specific_days_data'] = {
+                    'date': form.date.data.strftime('%Y-%m-%d'),
+                    'start_time': form.time.data['start_time'].strftime('%H:%M:%S'),
+                    'end_time': form.time.data['end_time'].strftime('%H:%M:%S'),
+                    'interval': form.time.data['interval'],
+                    'fahrplanId': fahrplanId
+                }
+                return redirect(url_for('specialPrices'))
 
             else:
-                startZeit = date.replace(hour=start_time.hour, minute=start_time.minute)
-                while startZeit.time() <= end_time:
-                    print(startZeit.time())
-                    new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False)
-                    database.baseController.add(new_fahrtdurchfuehrung)
-                    startZeit += datetime.timedelta(hours=int(time['interval']))
-                pass
+                time = form.time.data
+                date = datetime.datetime.combine(form.date.data, datetime.time())  # format to datetime just to be sure
 
-            if 'new' in request.form:
-                flash('Zeit erfolgreich hinzugefügt')
-                return redirect(url_for('specificDates', fahrplanId=fahrplanId))
+                fahrplan_startDate = fahrplan.gueltig_von
+                start_time = time['start_time']
+                end_time = time['end_time']
+
+                specialPricesData = session.get('return_price_data', {})
+                if specialPricesData is not None and specialPricesData.get(
+                        'price_multiplier') is not None and specialPricesData.get(
+                    'start_time') is not None and specialPricesData.get('end_time') is not None:
+                    session.pop('return_price_data', None)
+                    price_multiplier = specialPricesData.get('price_multiplier')
+                    specialPrices_start_time = datetime.datetime.strptime(specialPricesData.get('start_time'),
+                                                                          '%H:%M:%S').time()
+                    specialPrices_end_time = datetime.datetime.strptime(specialPricesData.get('end_time'),
+                                                                        '%H:%M:%S').time()
+                else:
+                    price_multiplier = None
+                    specialPrices_start_time = None
+                    specialPrices_end_time = None
+
+                if end_time is None:
+                    single_time = date.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+                    new_single_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=single_time,
+                                                                       ausfall=False, verspaetung=False)
+                    database.baseController.add(new_single_fahrtdurchfuehrung)
+
+                else:
+                    startZeit = date.replace(hour=start_time.hour, minute=start_time.minute)
+                    while startZeit.time() <= end_time:
+                        new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit,
+                                                                    ausfall=False, verspaetung=False)
+                        if price_multiplier is not None and specialPrices_start_time is not None and specialPrices_end_time is not None and specialPrices_start_time <= startZeit.time() <= specialPrices_end_time:
+                            new_fahrtdurchfuehrung.preis = get_prices_accumulated(fahrplan.halteplan_id,
+                                                                                  price_multiplier)
+                        else:
+                            new_fahrtdurchfuehrung.preis = get_prices_accumulated(fahrplan.halteplan_id, 1)
+                        database.baseController.add(new_fahrtdurchfuehrung)
+                        startZeit += datetime.timedelta(hours=int(time['interval']))
+                    pass
+
+                if 'new' in request.form:
+                    flash('Zeit erfolgreich hinzugefügt')
+                    return redirect(url_for('specificDates', fahrplanId=fahrplanId))
         return redirect(url_for('confirmFahrplan', fahrplanId=fahrplanId))
     return render_template('specificDates.html', form=form)
+
 
 @app.route('/weeklyDays/<int:fahrplanId>', methods=['GET', 'POST'])
 @login_required
@@ -376,58 +416,58 @@ def weeklyDays(fahrplanId):
                 time = form.time.data
                 fahrplan_startDate = fahrplan.gueltig_von
                 fahrplan_endDate = fahrplan.gueltig_bis
-                #fahrplan_startDate = datetime.datetime.combine(startZeit, datetime.time())
                 fahrplan_endDate = fahrplan_endDate.replace(hour=23, minute=59, second=59)
                 start_time = time['start_time']
                 end_time = time['end_time']
 
                 specialPricesData = session.get('return_price_data', {})
-                if specialPricesData is not None and specialPricesData.get('price_multiplier') is not None and specialPricesData.get('start_time') is not None and specialPricesData.get('end_time') is not None:
+                if specialPricesData is not None and specialPricesData.get(
+                        'price_multiplier') is not None and specialPricesData.get(
+                        'start_time') is not None and specialPricesData.get('end_time') is not None:
                     session.pop('return_price_data', None)
                     price_multiplier = specialPricesData.get('price_multiplier')
-                    specialPrices_start_time = datetime.datetime.strptime(specialPricesData.get('start_time'), '%H:%M:%S').time()
-                    specialPrices_end_time = datetime.datetime.strptime(specialPricesData.get('end_time'), '%H:%M:%S').time()
+                    specialPrices_start_time = datetime.datetime.strptime(specialPricesData.get('start_time'),
+                                                                          '%H:%M:%S').time()
+                    specialPrices_end_time = datetime.datetime.strptime(specialPricesData.get('end_time'),
+                                                                        '%H:%M:%S').time()
                 else:
                     price_multiplier = None
                     specialPrices_start_time = None
                     specialPrices_end_time = None
-
 
                 if end_time is None:
                     single_time = get_date_of_next_weekday(fahrplan_startDate, weekday)
                     single_time = datetime.datetime.combine(single_time, datetime.time())  # convert to datetime object
                     single_time = single_time.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
                     new_single_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=single_time,
-                                                                       ausfall=False, verspaetung=False )
+                                                                       ausfall=False, verspaetung=False)
                     database.baseController.add(new_single_fahrtdurchfuehrung)
                     pass
 
                 else:
                     startZeit = get_date_of_next_weekday(fahrplan_startDate, weekday)
-                    startZeit = datetime.datetime.combine(startZeit, datetime.time()) # convert to datetime object
+                    startZeit = datetime.datetime.combine(startZeit, datetime.time())  # convert to datetime object
                     startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
-                    print('Erster Tag: '+str(startZeit))
 
                     while startZeit <= fahrplan_endDate:
                         if startZeit.weekday() == weekday_converter(weekday):
                             if start_time <= startZeit.time() <= end_time:
-                                print(startZeit)
-                                new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False )
+
+                                new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit,
+                                                                            ausfall=False, verspaetung=False)
                                 if price_multiplier is not None and specialPrices_start_time is not None and specialPrices_end_time is not None and specialPrices_start_time <= startZeit.time() <= specialPrices_end_time:
-                                    print(str(startZeit.time()) + 'is between ' + str(specialPrices_start_time) + ' and ' + str(specialPrices_end_time))
-                                    new_fahrtdurchfuehrung.preis = get_prices_accumulated(fahrplan.halteplan_id, price_multiplier)
+                                    new_fahrtdurchfuehrung.preis = get_prices_accumulated(fahrplan.halteplan_id,
+                                                                                          price_multiplier)
                                 else:
-                                    print(str(startZeit.time()) + 'is not between ' + str(specialPrices_start_time) + ' and ' + str(specialPrices_end_time))
-                                    new_fahrtdurchfuehrung.preis = get_prices_accumulated(fahrplan.halteplan_id,1)
+                                    new_fahrtdurchfuehrung.preis = get_prices_accumulated(fahrplan.halteplan_id, 1)
                                 database.baseController.add(new_fahrtdurchfuehrung)
                             startZeit += datetime.timedelta(hours=int(time['interval']))
                         else:
-                            print('Nicht der richtige Wochentag: ' + str(startZeit))
-                            print('Suche neuen Wochentag')
                             startZeit = get_date_of_next_weekday(startZeit, weekday)
-                            startZeit = datetime.datetime.combine(startZeit, datetime.time())  # convert to datetime object
-                            startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
-
+                            startZeit = datetime.datetime.combine(startZeit,
+                                                                  datetime.time())  # convert to datetime object
+                            startZeit = startZeit.replace(hour=time['start_time'].hour,
+                                                          minute=time['start_time'].minute)
 
                 if 'new' in request.form:
                     flash('Zeit erfolgreich hinzugefügt')
@@ -445,6 +485,11 @@ def weeklyDays(fahrplanId):
 def specialPrices():
     form = SpecialPricesForm(request.form)
     data = session.get('weekly_days_data', {})
+    specific_dates_redirect = False
+    if data is None or data == {}:
+        data = session.get('specific_days_data', {})
+        specific_dates_redirect = True
+
     start_time = datetime.datetime.strptime(data.get('start_time'), '%H:%M:%S').time()
     end_time = datetime.datetime.strptime(data.get('end_time'), '%H:%M:%S').time()
 
@@ -460,6 +505,8 @@ def specialPrices():
             'start_time': form.start_time.data.strftime('%H:%M:%S'),
             'end_time': form.end_time.data.strftime('%H:%M:%S')
         }
+        if specific_dates_redirect is True:
+            return redirect(url_for('specificDates', fahrplanId=data.get('fahrplanId')))
         return redirect(url_for('weeklyDays', fahrplanId=data.get('fahrplanId')))
     return render_template('specialPrices.html', form=form)
 
@@ -473,7 +520,8 @@ def confirmFahrplan(fahrplanId):
     if fahrplan is not None:
         form.fahrplan = fahrplan
     if form.validate_on_submit():
-
+        if 'revoke' in request.form:
+            return redirect(url_for('deleteFahrplan', id=fahrplanId))
         flash('Fahrplan successfully created!')
         return redirect(url_for('fahrplanList'))
     return render_template('confirmFahrplan.html', form=form)
@@ -493,7 +541,8 @@ def deleteFahrplan(id):
     fahrplan = database.baseController.find_by_id(Fahrplan, id)
     if fahrplan is not None:
         for fahrtdurchfuehrung in fahrplan.fahrtdurchfuehrungen:
-            database.get_controller('df').remove_all_mitarbeiterdurchfuehrungen_of_fahrtdurchfuehrung(fahrtdurchfuehrung.id)
+            database.get_controller('df').remove_all_mitarbeiterdurchfuehrungen_of_fahrtdurchfuehrung(
+                fahrtdurchfuehrung.id)
             database.baseController.delete_by_id(Fahrtdurchfuehrung, fahrtdurchfuehrung.id)
         database.baseController.delete_by_id(Fahrplan, id)
         flash('Fahrplan erfolgreich gelöscht')
@@ -512,7 +561,8 @@ def fahrtdurchfuehrungList():
 @login_required
 def ma_fahrtdurchfuehrungList(ma_id):
     fahrtdurchfuehrungen = database.get_controller('df').get_all_fahrtdurchfuehrungen_by_mitarbeiter_id(ma_id)
-    return render_template('ma_fahrtdurchfuehrungList.html', title='Fahrtdurchführungen', fahrtdurchfuehrungen=fahrtdurchfuehrungen)
+    return render_template('ma_fahrtdurchfuehrungList.html', title='Fahrtdurchführungen',
+                           fahrtdurchfuehrungen=fahrtdurchfuehrungen)
 
 
 @app.route('/deleteFahrtdurchfuehrung/<int:id>', methods=['GET', 'POST'])
@@ -550,12 +600,12 @@ def editFahrtdurchfuehrung(id):
             new_fahrtdurchfuehrung.preis = form.preis.data
             new_fahrtdurchfuehrung.zug_id = form.zug_selection.data
 
-
             mitarbeiter_ids = form.mitarbeiter_selection.data
             database.get_controller('df').remove_all_mitarbeiterdurchfuehrungen_of_fahrtdurchfuehrung(id)
             for mitarbeiter_id in mitarbeiter_ids:
                 mitarbeiter_id = int(mitarbeiter_id)
-                new_mitarbeiter_durchfuehrung = MitarbeiterDurchfuehrung(mitarbeiter_id=mitarbeiter_id, fahrtdurchfuehrung_id=new_fahrtdurchfuehrung.id)
+                new_mitarbeiter_durchfuehrung = MitarbeiterDurchfuehrung(mitarbeiter_id=mitarbeiter_id,
+                                                                         fahrtdurchfuehrung_id=new_fahrtdurchfuehrung.id)
                 new_mitarbeiter_durchfuehrung = database.baseController.add(new_mitarbeiter_durchfuehrung)
                 new_fahrtdurchfuehrung.mitarbeiter.append(new_mitarbeiter_durchfuehrung)
 
@@ -569,9 +619,6 @@ def editFahrtdurchfuehrung(id):
     return redirect(url_for('fahrtdurchfuehrungList'))
 
 
-
-
-
 ###########################
 # REST requests
 def get_strecken():
@@ -581,12 +628,14 @@ def get_strecken():
     else:
         return None
 
+
 def get_all_haltepunkte_of_strecke(strecke_name):
     response = requests.get("http://127.0.0.1:5001/api/strecken/" + str(strecke_name))
     if response.status_code == 200:
         return response.json()
     else:
         return None
+
 
 def get_haltepunkte_names(strecke_name):
     response = requests.get("http://127.0.0.1:5001/api/strecken/" + str(strecke_name))
@@ -597,7 +646,6 @@ def get_haltepunkte_names(strecke_name):
         return names
     else:
         return None
-
 
 
 # API´s
@@ -613,9 +661,6 @@ def all_halteplaen_data():
         result.append(serialize_halteplan(halteplan))
 
     return jsonify({'halteplaene': result})
-
-
-
 
 
 #####
@@ -646,15 +691,15 @@ def create_abschnitt(start_bahnhof, end_bahnhof, strecke_name, halteplan_id, rei
         elif is_between is True:
             total_nutzungsentgelt += abschnitt['nutzungsentgelt']
 
-    new_abschnitt = Abschnitt(spurenweite=500, #TODO richtige werte ermitteln für spurenbreite
+    new_abschnitt = Abschnitt(spurenweite=500,  # TODO richtige werte ermitteln für spurenbreite
                               nutzungsentgelt=total_nutzungsentgelt, StartBahnhof=start_bahnhof, EndBahnhof=end_bahnhof)
 
     new_abschnitt = database.baseController.add(new_abschnitt)
 
-
     halteplan = database.baseController.find_by_id(Halteplan, halteplan_id)
 
-    new_abschnitt_halteplan = AbschnittHalteplan(abschnitt_id=new_abschnitt.id, halteplan_id=halteplan.id, reihung=reihung)
+    new_abschnitt_halteplan = AbschnittHalteplan(abschnitt_id=new_abschnitt.id, halteplan_id=halteplan.id,
+                                                 reihung=reihung)
     database.baseController.add(new_abschnitt_halteplan)
 
     database.baseController.commit()
@@ -754,5 +799,3 @@ def get_prices_accumulated(halteplan_id, multiplier=1):
     for abschnitt in abschnitte:
         total_price += abschnitt.nutzungsentgelt
     return total_price * multiplier
-
-

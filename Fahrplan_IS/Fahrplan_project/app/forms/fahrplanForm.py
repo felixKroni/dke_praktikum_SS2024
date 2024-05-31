@@ -52,6 +52,12 @@ class SpecificDateForm(FlaskForm):
     time = FormField(TimeInputForm)
     submit = SubmitField('Speichern und Abschließen')
     new = SubmitField('Speichern und neue Zeit hinzufügen')
+    specialPrices = SubmitField('Sonderpreise festlegen')
+
+    def set_time_data(self, start_time, end_time, interval):
+        self.time.start_time.data = datetime.strptime(start_time, '%H:%M:%S').time()
+        self.time.end_time.data = datetime.strptime(end_time, '%H:%M:%S').time()
+        self.time.interval.data = interval
 
     def validate_date(form, field):
         if form.gueltig_von and form.gueltig_bis:
@@ -101,4 +107,5 @@ class SpecialPricesForm(FlaskForm):
 
 class ConfirmFahrplanForm(FlaskForm):
     fahrplan = []
-    submit = SubmitField('Confirm')
+    submit = SubmitField('Bestätigen')
+    revoke = SubmitField('Alles Zurücksetzen')

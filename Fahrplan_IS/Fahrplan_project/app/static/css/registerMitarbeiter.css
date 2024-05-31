@@ -1,5 +1,5 @@
 input[type="text"], input[type="email"], input[type="password"],
-select, input[type="date"], input[type="time"] {
+select, input[type="date"], input[type="time"], input[type="number"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
@@ -65,12 +65,6 @@ input[type="checkbox"] {
     cursor: pointer; /* Pointer cursor on hover */
 }
 
-input[type='number'] {
-    width: 100px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
 
 .grayed-out {
     color: gray;
