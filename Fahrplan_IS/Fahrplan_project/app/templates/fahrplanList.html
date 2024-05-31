@@ -28,10 +28,6 @@
                 <td>{{ fahrplan.gueltig_bis }}</td>
                 <td>{{ fahrplan.halteplan.name }}</td>
                 <td>
-                    <!-- Edit button -->
-                    <a href="{{ url_for('editFahrplan', id=fahrplan.id) }}" class="action-button">
-                        &#x270E;
-                    </a>
                     <!-- Delete button -->
                     <a href="{{ url_for('deleteFahrplan', id=fahrplan.id) }}" class="action-button delete">
                         &#x2715;

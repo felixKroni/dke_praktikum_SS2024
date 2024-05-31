@@ -34,6 +34,9 @@
         <p>
             {{  form.halteplan_selection.label }}<br>
             {{ form.halteplan_selection() }}<br>
+            {% if form.halteplan_selection.choices is none  %}
+                <span style="color: red;">[Keine freien Haltepläne verfügbar]</span>
+            {% endif %}
             {% for error in form.halteplan_selection.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

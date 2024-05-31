@@ -8,7 +8,7 @@ from sqlalchemy.orm import joinedload
 
 from app import app, database
 from app.forms.fahrplanForm import SpecificDateForm, \
-    WeeklyDaysForm, ConfirmFahrplanForm, FahrplanForm
+    WeeklyDaysForm, ConfirmFahrplanForm, FahrplanForm, SpecialPricesForm
 from app.forms.fahrtdurchfuehrungForm import EditFahrtdurchfuehrungForm
 from app.forms.halteplanCreateForm import HalteplanCreateForm, HalteplanChooseHaltepunktForm, HalteplanChoosePricesForm
 from app.forms.halteplanEditForm import HalteplanEditForm
@@ -283,7 +283,7 @@ def deleteHalteplan(id):
 @admin_required
 def createFahrplan():
     form = FahrplanForm(request.form)
-    data = database.baseController.find_all(Halteplan)
+    data = database.get_controller('hp').get_all_halteplaene_with_no_fahrplan()
     form.halteplan_selection.choices = [(halteplan.id, halteplan.name + ' - ' + halteplan.streckenName) for halteplan in data]
 
     if form.validate_on_submit():
@@ -350,56 +350,119 @@ def specificDates(fahrplanId):
 @admin_required
 def weeklyDays(fahrplanId):
     form = WeeklyDaysForm(request.form)
+
+    # Filling the form again after manipulating prices
+    weekly_days_data = session.get('weekly_days_data')
+    if weekly_days_data is not None:
+        form.weekdays.data = weekly_days_data['weekday']
+        form.set_time_data(weekly_days_data['start_time'], weekly_days_data['end_time'], weekly_days_data['interval'])
+        session.pop('weekly_days_data', None)
+
     if form.validate_on_submit():
         fahrplan = database.baseController.find_by_id(Fahrplan, fahrplanId)
         if fahrplan is not None:
-            weekday = form.weekdays.data
-            time = form.time.data
-            fahrplan_startDate = fahrplan.gueltig_von
-            fahrplan_endDate = fahrplan.gueltig_bis
-            #fahrplan_startDate = datetime.datetime.combine(startZeit, datetime.time())
-            fahrplan_endDate = fahrplan_endDate.replace(hour=23, minute=59, second=59)
-            start_time = time['start_time']
-            end_time = time['end_time']
-
-            if end_time is None:
-                single_time = get_date_of_next_weekday(fahrplan_startDate, weekday)
-                single_time = datetime.datetime.combine(single_time, datetime.time())  # convert to datetime object
-                single_time = single_time.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
-                new_single_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=single_time,
-                                                                   ausfall=False, verspaetung=False )
-                database.baseController.add(new_single_fahrtdurchfuehrung)
-                pass
+            if 'specialPrices' in request.form:
+                session['weekly_days_data'] = {
+                    'weekday': form.weekdays.data,
+                    'start_time': form.time.data['start_time'].strftime('%H:%M:%S'),
+                    'end_time': form.time.data['end_time'].strftime('%H:%M:%S'),
+                    'interval': form.time.data['interval'],
+                    'fahrplanId': fahrplanId
+                }
+                return redirect(url_for('specialPrices'))
 
             else:
-                startZeit = get_date_of_next_weekday(fahrplan_startDate, weekday)
-                startZeit = datetime.datetime.combine(startZeit, datetime.time()) # convert to datetime object
-                startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
-                print('Erster Tag: '+str(startZeit))
+                weekday = form.weekdays.data
+                time = form.time.data
+                fahrplan_startDate = fahrplan.gueltig_von
+                fahrplan_endDate = fahrplan.gueltig_bis
+                #fahrplan_startDate = datetime.datetime.combine(startZeit, datetime.time())
+                fahrplan_endDate = fahrplan_endDate.replace(hour=23, minute=59, second=59)
+                start_time = time['start_time']
+                end_time = time['end_time']
 
-                while startZeit <= fahrplan_endDate:
-                    if startZeit.weekday() == weekday_converter(weekday):
-                        if start_time <= startZeit.time() <= end_time:
-                            print(startZeit)
-                            new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False )
-                            database.baseController.add(new_fahrtdurchfuehrung)
-                        startZeit += datetime.timedelta(hours=int(time['interval']))
-                    else:
-                        print('Nicht der richtige Wochentag: ' + str(startZeit))
-                        print('Suche neuen Wochentag')
-                        startZeit = get_date_of_next_weekday(startZeit, weekday)
-                        startZeit = datetime.datetime.combine(startZeit, datetime.time())  # convert to datetime object
-                        startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+                specialPricesData = session.get('return_price_data', {})
+                if specialPricesData is not None and specialPricesData.get('price_multiplier') is not None and specialPricesData.get('start_time') is not None and specialPricesData.get('end_time') is not None:
+                    session.pop('return_price_data', None)
+                    price_multiplier = specialPricesData.get('price_multiplier')
+                    specialPrices_start_time = datetime.datetime.strptime(specialPricesData.get('start_time'), '%H:%M:%S').time()
+                    specialPrices_end_time = datetime.datetime.strptime(specialPricesData.get('end_time'), '%H:%M:%S').time()
+                else:
+                    price_multiplier = None
+                    specialPrices_start_time = None
+                    specialPrices_end_time = None
 
 
-            if 'new' in request.form:
-                flash('Zeit erfolgreich hinzugefügt')
-                # Save the current time and add a new time input field
-                return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
+                if end_time is None:
+                    single_time = get_date_of_next_weekday(fahrplan_startDate, weekday)
+                    single_time = datetime.datetime.combine(single_time, datetime.time())  # convert to datetime object
+                    single_time = single_time.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+                    new_single_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=single_time,
+                                                                       ausfall=False, verspaetung=False )
+                    database.baseController.add(new_single_fahrtdurchfuehrung)
+                    pass
+
+                else:
+                    startZeit = get_date_of_next_weekday(fahrplan_startDate, weekday)
+                    startZeit = datetime.datetime.combine(startZeit, datetime.time()) # convert to datetime object
+                    startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+                    print('Erster Tag: '+str(startZeit))
+
+                    while startZeit <= fahrplan_endDate:
+                        if startZeit.weekday() == weekday_converter(weekday):
+                            if start_time <= startZeit.time() <= end_time:
+                                print(startZeit)
+                                new_fahrtdurchfuehrung = Fahrtdurchfuehrung(fahrplan_id=fahrplanId, startZeit=startZeit, ausfall=False, verspaetung=False )
+                                if price_multiplier is not None and specialPrices_start_time is not None and specialPrices_end_time is not None and specialPrices_start_time <= startZeit.time() <= specialPrices_end_time:
+                                    print(str(startZeit.time()) + 'is between ' + str(specialPrices_start_time) + ' and ' + str(specialPrices_end_time))
+                                    new_fahrtdurchfuehrung.preis = get_prices_accumulated(fahrplan.halteplan_id, price_multiplier)
+                                else:
+                                    print(str(startZeit.time()) + 'is not between ' + str(specialPrices_start_time) + ' and ' + str(specialPrices_end_time))
+                                    new_fahrtdurchfuehrung.preis = get_prices_accumulated(fahrplan.halteplan_id,1)
+                                database.baseController.add(new_fahrtdurchfuehrung)
+                            startZeit += datetime.timedelta(hours=int(time['interval']))
+                        else:
+                            print('Nicht der richtige Wochentag: ' + str(startZeit))
+                            print('Suche neuen Wochentag')
+                            startZeit = get_date_of_next_weekday(startZeit, weekday)
+                            startZeit = datetime.datetime.combine(startZeit, datetime.time())  # convert to datetime object
+                            startZeit = startZeit.replace(hour=time['start_time'].hour, minute=time['start_time'].minute)
+
+
+                if 'new' in request.form:
+                    flash('Zeit erfolgreich hinzugefügt')
+                    # Save the current time and add a new time input field
+                    return redirect(url_for('weeklyDays', fahrplanId=fahrplanId))
         return redirect(url_for('confirmFahrplan', fahrplanId=fahrplanId))
     else:
         print(form.errors)
     return render_template('weeklyDays.html', form=form)
+
+
+@app.route('/specialPrices', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def specialPrices():
+    form = SpecialPricesForm(request.form)
+    data = session.get('weekly_days_data', {})
+    start_time = datetime.datetime.strptime(data.get('start_time'), '%H:%M:%S').time()
+    end_time = datetime.datetime.strptime(data.get('end_time'), '%H:%M:%S').time()
+
+    form.weeklyDay_start_time = start_time
+    form.weeklyDay_end_time = end_time
+
+    if request.method == 'GET':
+        form.start_time.data = start_time
+        form.end_time.data = end_time
+    if form.validate_on_submit():
+        session['return_price_data'] = {
+            'price_multiplier': form.price_multiplier.data,
+            'start_time': form.start_time.data.strftime('%H:%M:%S'),
+            'end_time': form.end_time.data.strftime('%H:%M:%S')
+        }
+        return redirect(url_for('weeklyDays', fahrplanId=data.get('fahrplanId')))
+    return render_template('specialPrices.html', form=form)
+
 
 @app.route('/confirmFahrplan/<int:fahrplanId>', methods=['GET', 'POST'])
 @login_required
@@ -435,13 +498,6 @@ def deleteFahrplan(id):
         database.baseController.delete_by_id(Fahrplan, id)
         flash('Fahrplan erfolgreich gelöscht')
         return redirect(url_for('fahrplanList'))
-
-
-@app.route('/editFahrplan/<int:id>', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def editFahrplan(id):
-    pass
 
 
 @app.route('/fahrtdurchfuehrungList', methods=['GET'])
@@ -690,3 +746,13 @@ def serialize_mitarbeiter_durchfuehrung(mitarbeiter_durchfuehrung):
         'mitarbeiter_id': mitarbeiter_durchfuehrung.mitarbeiter_id,
         'durchfuehrung_id': mitarbeiter_durchfuehrung.durchfuehrung_id
     }
+
+
+def get_prices_accumulated(halteplan_id, multiplier=1):
+    abschnitte = database.get_controller('hp').get_abschnitte(halteplan_id)
+    total_price = 0
+    for abschnitt in abschnitte:
+        total_price += abschnitt.nutzungsentgelt
+    return total_price * multiplier
+
+

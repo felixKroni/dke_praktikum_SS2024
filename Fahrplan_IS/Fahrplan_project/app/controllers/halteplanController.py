@@ -44,3 +44,6 @@ class HalteplanController(BaseController):
             return [abschnitt_halteplan.abschnitt for abschnitt_halteplan in abschnitt_halteplan_list]
         else:
             return None
+
+    def get_all_halteplaene_with_no_fahrplan(self):
+        return self.session.query(Halteplan).filter(Halteplan.fahrplan == None).all()
