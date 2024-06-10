@@ -30,6 +30,8 @@ flask run --port:5001
 
 Das Projekt ist eine Webanwendung, die mit dem Flask-Framework in Python erstellt wurde. Es verwendet SQLAlchemy als ORM (Object-Relational Mapper) für die Datenbankinteraktionen und Flask-Login für die Benutzerauthentifizierung.
 
+Das zugrundeliegende Datenmodel und der Prototyp der Webanwendung wurden im Rahmen des Projekts entwickelt und im Ordnder `resources` abgelegt.
+
 Die zentrale Datei des Projekts ist `routes.py`, die die Routen für die Webanwendung definiert. Jede Route ist mit einer Funktion verknüpft, die bestimmt, was passiert, wenn die Route aufgerufen wird. Hier eine Zusammenfassung der wichtigsten Routen:
 
 - [`index()`](#index): Diese Methode ist für die Hauptseite der Anwendung zuständig. Sie holt alle Bahnhöfe, Abschnitte, Strecken und Warnungen aus der Datenbank und gibt sie an die index.html Vorlage weiter.
