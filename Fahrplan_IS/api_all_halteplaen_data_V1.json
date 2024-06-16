@@ -1,0 +1,165 @@
+{
+    "halteplaene": [
+      {
+        "abschnitte": [
+          {
+            "abschnitt": {
+              "EndBahnhof": "České Budějovice",
+              "StartBahnhof": "Summerau",
+              "id": 1,
+              "nutzungsentgelt": 5,
+              "spurenweite": 500
+            },
+            "abschnitt_id": 1,
+            "halteplan_id": 1,
+            "reihung": 0
+          }
+        ],
+        "fahrplan": {
+          "fahrtdurchfuehrungen": [],
+          "gueltig_bis": "2024-06-06T00:00:00",
+          "gueltig_von": "2024-05-29T00:00:00",
+          "id": 1,
+          "name": "nasus"
+        },
+        "id": 1,
+        "name": "20231011",
+        "streckenName": "Summerauer Bahn"
+      },
+      {
+        "abschnitte": [
+          {
+            "abschnitt": {
+              "EndBahnhof": "Vöcklabruck",
+              "StartBahnhof": "Salzburg",
+              "id": 2,
+              "nutzungsentgelt": 20,
+              "spurenweite": 500
+            },
+            "abschnitt_id": 2,
+            "halteplan_id": 2,
+            "reihung": 0
+          },
+          {
+            "abschnitt": {
+              "EndBahnhof": "Linz",
+              "StartBahnhof": "Vöcklabruck",
+              "id": 3,
+              "nutzungsentgelt": 42,
+              "spurenweite": 500
+            },
+            "abschnitt_id": 3,
+            "halteplan_id": 2,
+            "reihung": 1
+          },
+          {
+            "abschnitt": {
+              "EndBahnhof": "Amstetten",
+              "StartBahnhof": "Linz",
+              "id": 4,
+              "nutzungsentgelt": 9,
+              "spurenweite": 500
+            },
+            "abschnitt_id": 4,
+            "halteplan_id": 2,
+            "reihung": 2
+          },
+          {
+            "abschnitt": {
+              "EndBahnhof": "Wien Meidling",
+              "StartBahnhof": "Amstetten",
+              "id": 5,
+              "nutzungsentgelt": 10,
+              "spurenweite": 500
+            },
+            "abschnitt_id": 5,
+            "halteplan_id": 2,
+            "reihung": 3
+          },
+          {
+            "abschnitt": {
+              "EndBahnhof": "Flughafen Wien",
+              "StartBahnhof": "Wien Meidling",
+              "id": 6,
+              "nutzungsentgelt": 8,
+              "spurenweite": 500
+            },
+            "abschnitt_id": 6,
+            "halteplan_id": 2,
+            "reihung": 4
+          }
+        ],
+        "fahrplan": {
+          "fahrtdurchfuehrungen": [
+            {
+              "ausfall": false,
+              "id": 1,
+              "mitarbeiter": [],
+              "preis": null,
+              "startZeit": "2024-05-27T15:29:00",
+              "tag": null,
+              "verspaetung": false,
+              "zug_id": null
+            },
+            {
+              "ausfall": false,
+              "id": 2,
+              "mitarbeiter": [],
+              "preis": null,
+              "startZeit": "2024-05-27T17:29:00",
+              "tag": null,
+              "verspaetung": false,
+              "zug_id": null
+            },
+            {
+              "ausfall": false,
+              "id": 3,
+              "mitarbeiter": [],
+              "preis": null,
+              "startZeit": "2024-05-27T19:29:00",
+              "tag": null,
+              "verspaetung": false,
+              "zug_id": null
+            },
+            {
+              "ausfall": false,
+              "id": 4,
+              "mitarbeiter": [],
+              "preis": null,
+              "startZeit": "2024-06-03T15:29:00",
+              "tag": null,
+              "verspaetung": false,
+              "zug_id": null
+            },
+            {
+              "ausfall": false,
+              "id": 5,
+              "mitarbeiter": [],
+              "preis": null,
+              "startZeit": "2024-06-03T17:29:00",
+              "tag": null,
+              "verspaetung": false,
+              "zug_id": null
+            },
+            {
+              "ausfall": false,
+              "id": 6,
+              "mitarbeiter": [],
+              "preis": null,
+              "startZeit": "2024-06-03T19:29:00",
+              "tag": null,
+              "verspaetung": false,
+              "zug_id": null
+            }
+          ],
+          "gueltig_bis": "2024-06-04T00:00:00",
+          "gueltig_von": "2024-05-25T00:00:00",
+          "id": 2,
+          "name": "Test Fahrplan"
+        },
+        "id": 2,
+        "name": "TEST",
+        "streckenName": "Westbahn"
+      }
+    ]
+  }

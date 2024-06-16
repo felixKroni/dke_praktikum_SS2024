@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/baseTableStyling.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h1>Fahrtdurchführungs Liste</h1>
+    {% for fahrplan in fahrplaene %}
+
+        <div class="fahrplan-details">
+            <p>
+              <strong>Fahrplan Details:</strong> <br>
+              Fahrplan Name: {{ fahrplan.name }} <br>
+                gültig von: {{ fahrplan.gueltig_von }} <br>
+                bis: {{ fahrplan.gueltig_bis }} <br>
+              Halteplan: {{ fahrplan.halteplan.name }} <br>
+
+              <strong>Fahrtdurchführungen:</strong>
+
+            </p>
+        </div>
+      <table>
+        <thead>
+            <tr>
+                <th>Startzeit</th>
+                <th>Ausgefallen</th>
+                <th>Verspaetung</th>
+                <th>Preis</th>
+                <th>Zug</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fahrt in fahrplan.fahrtdurchfuehrungen %}
+            <tr>
+                <td>{{ fahrt.startZeit }}</td>
+                <td>{{ fahrt.ausfall }}</td>
+                <td>{{ fahrt.verspaetung }}</td>
+                <td>{{ fahrt.preis }}</td>
+                <td>{{ fahrt.zug.name }}</td>
+            </tr>
+            {% else %}
+                <p>Keine Fahrtdurchführungen für diesen Fahrplan vorhanden</p>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Keine Fahrtdurchführungen vorhanden</p>
+    {% endfor %}
+
+{% endblock %}

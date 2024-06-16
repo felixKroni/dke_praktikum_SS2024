@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Specify Weekdays{% endblock %}
+{% block title %}Wochentag spezifizieren{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/registerMitarbeiter.css') }}">
+{% endblock %}
 
 {% block content %}
-  <h1>Specify Weekdays and Times</h1>
+  <h1>Wochentage und Zeiten angeben</h1>
   <form method="post">
     {{ form.hidden_tag() }}
     {{ form.time.hidden_tag() }}
@@ -15,11 +20,22 @@
             {% endfor %}
     </div>
     <div>
-      <h2>Specify Times</h2>
-      <p>{{ form.time.start_time.label }} {{ form.time.start_time() }}</p>
-      <p>{{ form.time.end_time.label }} {{ form.time.end_time() }}</p>
-      <p>{{ form.time.interval.label }} {{ form.time.interval() }} Stunden</p>
+      <h2>Zeiten Spezifizieren</h2>
+      <p>{{ form.time.start_time.label }} {{ form.time.start_time(type='time') }}
+      {% for error in form.time.start_time.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}</p>
+      <p>{{ form.time.end_time.label }} {{ form.time.end_time(type='time') }}
+      {% for error in form.time.end_time.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}</p>
+
+      <p>{{ form.time.interval.label }} {{ form.time.interval() }}
+      {% for error in form.time.interval.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}</p>
     </div>
+    <p>{{ form.specialPrices }}</p>
     <p>{{ form.submit() }}</p>
     <p>{{ form.new() }}</p>
   </form>

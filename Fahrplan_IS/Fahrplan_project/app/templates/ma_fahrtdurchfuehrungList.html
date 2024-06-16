@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/baseTableStyling.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h1>Fahrtdurchführungs Liste für Mitarbeiter</h1>
+      <table>
+        <thead>
+            <tr>
+                <th>Startzeit</th>
+                <th>Ausgefallen</th>
+                <th>Verspaetung</th>
+                <th>Preis</th>
+                <th>Zug</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fahrt in fahrtdurchfuehrungen %}
+            <tr>
+                <td>{{ fahrt.startZeit }}</td>
+                <td>{{ fahrt.ausfall }}</td>
+                <td>{{ fahrt.verspaetung }}</td>
+                <td>{{ fahrt.preis }}</td>
+                <td>{{ fahrt.zug.name }}</td>
+            </tr>
+            {% else %}
+                <p>Keinen Fahrtdurchführungen zugewiesen</p>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Fahrplan Admin Page</title>
+        <title>Fahrplan Admin Seite</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/baseStyling.css') }}">
         {% block head %}{% endblock %}
     </head>
@@ -10,11 +10,16 @@
             <a href="/index">Home</a>
             {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
+            {% elif current_user.role != 'admin' %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('fahrtdurchfuehrungList') }}">Fahrpläne</a>
+                <a href="{{ url_for('ma_fahrtdurchfuehrungList',ma_id=current_user.id) }}">Fahrtdurchführungen</a>
             {% else %}
-            <a href="{{ url_for('logout') }}">Logout</a>
-            <a href="{{ url_for('mitarbeiterList') }}">Mitarbeiter</a>
-            <a href="{{ url_for('halteplanList') }}">Halteplan</a>
-            <a href="{{ url_for('createFahrplan') }}">Fahrplan erstellen</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('mitarbeiterList') }}">Mitarbeiter</a>
+                <a href="{{ url_for('halteplanList') }}">Haltepläne</a>
+                <a href="{{ url_for('fahrplanList') }}">Fahrpläne</a>
+                <a href="{{ url_for('fahrtdurchfuehrungList') }}">Fahrtdurchführungen</a>
             {% endif %}
         </div>
         <hr>

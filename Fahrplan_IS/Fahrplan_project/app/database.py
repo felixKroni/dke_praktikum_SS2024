@@ -1,13 +1,17 @@
 from pathlib import Path
 
+import requests
+from faker import Faker
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from app.commons import Base
 from app.controllers.abschnittController import AbschnittController
 from app.controllers.baseController import BaseController
+from app.controllers.durchfuehrungController import DurchfuehrungController
 from app.controllers.halteplanController import HalteplanController
 from app.controllers.mitarbeiterController import MitarbeiterController
+from app.controllers.mitarbeiter_durchfuehrungController import MitarbeiterDurchfuehrungController
 from app.controllers.zugController import ZugController
 from app.models.abschnitt import Abschnitt
 from app.models.abschnitt_halteplan import AbschnittHalteplan
@@ -43,22 +47,25 @@ class Database:
         __init__(db_path)
 
     def insert_testdata(self):
-        self.Session.query(Mitarbeiter).delete()
+        """self.Session.query(Mitarbeiter).delete()
         self.Session.query(Zug).delete()
         self.Session.query(Abschnitt).delete()
         self.Session.query(Halteplan).delete()
-        self.Session.query(AbschnittHalteplan).delete()
+        self.Session.query(AbschnittHalteplan).delete()"""
+        fake = Faker()
 
         #Zug Data
-        newZug = Zug(name="ICE 123", spurenweite=1435)
+        """newZug = Zug(name=fake.name(), spurenweite=550)
         addedZug = self.baseController.add(newZug)
-        print("Added Zug: " + str(addedZug))
+        print("Added Zug: " + str(addedZug))"""
+        self.getZuege()
 
         #Mitarbeiter Data
-        newMitarbeiter = Mitarbeiter(name="Miky", svnr="12345678", username="1", role="admin", email="miky.x@g2.at")
-        newMitarbeiter.set_password("12")
-        addedMitarbeiter = self.baseController.add(newMitarbeiter)
-        print("Added Mitarbeiter: " + str(addedMitarbeiter))
+        if self.get_controller("ma").get_mitarbeiter_by_username("1") is None:
+            newMitarbeiter = Mitarbeiter(name="Caps", svnr="12345678", username="1", role="admin", email="caps.claps@g2.at")
+            newMitarbeiter.set_password("12")
+            addedMitarbeiter = self.baseController.add(newMitarbeiter)
+            print("Added Mitarbeiter: " + str(addedMitarbeiter))
 
         #Abschnitt Data
         """
@@ -103,7 +110,26 @@ class Database:
             return HalteplanController(self.Session)
         elif name == 'ab':
             return AbschnittController(self.Session)
+        elif name == "df":
+            return DurchfuehrungController(self.Session)
+        elif name == "ma_df":
+            return MitarbeiterDurchfuehrungController(self.Session)
         else:
             raise ValueError(f"No controller found for name: {name}")
 
 
+    def getZuege(self):
+        response = requests.get("http://127.0.0.1:5002/api/züge")
+        zuege_data = response.json()
+        existing_zuege = self.baseController.find_all(Zug)
+
+        for zug_data in zuege_data:
+            unique_name = zug_data["zug_name"] + ' ' + zug_data["zug_nummer"]
+            existing_zug = self.get_controller("zug").get_zug_by_name(unique_name)
+
+            if not existing_zug:
+                zug = Zug(
+                    name=unique_name,
+                    spurenweite=zug_data["spurweite"]
+                )
+                self.baseController.add(zug)

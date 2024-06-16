@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/registerMitarbeiter.css') }}">
+
+{% endblock %}
+
+{% block content %}
+    <h1>Fahrtdurchführung ändern</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.startZeit.label }}<br>
+            {{ form.startZeit(type="text") }}<br>
+            {% for error in form.startZeit.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.ausfall.label }}
+            {{ form.ausfall(size=32) }}<br>
+            {% for error in form.ausfall.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.verspaetung.label }} {{ form.verspaetung(size=32) }}<br>
+            {% for error in form.verspaetung.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.preis.label }}<br>
+            {{ form.preis(size=32) }}<br>
+            {% for error in form.preis.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.zug_selection.label }}<br>
+            {{ form.zug_selection(size=form.zug_selection.choices|length) }}<br>
+            {% for error in form.zug_selection.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.mitarbeiter_selection.label }}<br>
+            {{ form.mitarbeiter_selection(size=form.mitarbeiter_selection.choices|length) }}<br>
+            {% for error in form.mitarbeiter_selection.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
