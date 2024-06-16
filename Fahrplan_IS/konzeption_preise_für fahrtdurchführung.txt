@@ -1,7 +1,9 @@
 Button für "specialTimePrices" hinzufügen
 in da weeklyDays methode im routes de aktuellen daten (Weekday, start/end time, interval) in ner Session zwischenspeichern
-neues html für specialTimePrices erstellen. Beinhaltet input feld für start/end time und Preis multiplikator. [Check ob Zeit zwischen start-Endzeit vom fahrplan liegt]
+neues html für specialTimePrices erstellen. Beinhaltet input feld für start/end time und Preis multiplikator. 
+[Check ob Zeit zwischen start-Endzeit vom fahrplan liegt]
 Save Button -> daten in session speichern und wieder zum weeklyDays zurück
 Preis manipulation in Algorithmus zur Fahrtdurchführung integrieren.
 
 
+end time in weeklyDays kann null sein !

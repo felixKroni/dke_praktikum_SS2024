@@ -11,3 +11,10 @@ class MitarbeiterController(BaseController):
 
     def get_mitarbeiter_by_email(self, email):
         return self.session.query(Mitarbeiter).filter(Mitarbeiter.email == email).first()
+
+    def get_mitarbeiter_by_role(self, role):
+        return self.session.query(Mitarbeiter).filter(Mitarbeiter.role == role).all()
+
+
+
+

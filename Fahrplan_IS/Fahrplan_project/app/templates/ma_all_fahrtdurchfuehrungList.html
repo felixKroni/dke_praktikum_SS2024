@@ -6,7 +6,21 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Fahrtdurchführungs Liste für Mitarbeiter</h1>
+    <h1>Fahrtdurchführungs Liste</h1>
+    {% for fahrplan in fahrplaene %}
+
+        <div class="fahrplan-details">
+            <p>
+              <strong>Fahrplan Details:</strong> <br>
+              Fahrplan Name: {{ fahrplan.name }} <br>
+                gültig von: {{ fahrplan.gueltig_von }} <br>
+                bis: {{ fahrplan.gueltig_bis }} <br>
+              Halteplan: {{ fahrplan.halteplan.name }} <br>
+
+              <strong>Fahrtdurchführungen:</strong>
+
+            </p>
+        </div>
       <table>
         <thead>
             <tr>
@@ -18,7 +32,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for fahrt in fahrtdurchfuehrungen %}
+            {% for fahrt in fahrplan.fahrtdurchfuehrungen %}
             <tr>
                 <td>{{ fahrt.startZeit }}</td>
                 <td>{{ fahrt.ausfall }}</td>
@@ -27,9 +41,12 @@
                 <td>{{ fahrt.zug.name }}</td>
             </tr>
             {% else %}
-                <p>Keinen Fahrtdurchführungen zugewiesen</p>
+                <p>Keine Fahrtdurchführungen für diesen Fahrplan vorhanden</p>
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+        <p>Keine Fahrtdurchführungen vorhanden</p>
+    {% endfor %}
 
 {% endblock %}
