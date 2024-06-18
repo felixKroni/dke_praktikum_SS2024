@@ -638,7 +638,7 @@ def editFahrtdurchfuehrung(id):
 ###########################
 # REST requests
 def get_strecken():
-    response = requests.get("http://127.0.0.1:5001/api/strecken")
+    response = requests.get("http://localhost:5001/api/strecken")
     if response.status_code == 200:
         return response.json()
     else:
@@ -646,7 +646,7 @@ def get_strecken():
 
 
 def get_all_haltepunkte_of_strecke(strecke_name):
-    response = requests.get("http://127.0.0.1:5001/api/strecken/" + str(strecke_name))
+    response = requests.get("http://localhost:5001/api/strecken/" + str(strecke_name))
     if response.status_code == 200:
         return response.json()
     else:
@@ -654,7 +654,7 @@ def get_all_haltepunkte_of_strecke(strecke_name):
 
 
 def get_haltepunkte_names(strecke_name):
-    response = requests.get("http://127.0.0.1:5001/api/strecken/" + str(strecke_name))
+    response = requests.get("http://localhost:5001/api/strecken/" + str(strecke_name))
     if response.status_code == 200:
         abschnitte = response.json().get('abschnitte', [])
         names = [abschnitt['startbahnhof_id'] for abschnitt in abschnitte]

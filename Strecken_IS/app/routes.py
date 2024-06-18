@@ -145,6 +145,12 @@ def edit_abschnitt(abschnitt_id):
     form = AbschnittForm(obj=abschnitt)
     if form.validate_on_submit():
         form.populate_obj(abschnitt)
+        strecke = Strecke.query.get_or_404(form.strecke_id.data)
+        if strecke.validate_strecke() is None and form.strecke_validieren.data == True:
+            flash(
+                'Die Änderungen konnten nicht gespeichert werden, da die Strecke {} nicht mehr zusammenhängend wäre oder es mehrdeutige Pfade gibt.'.format(
+                    form.strecke_id.data))
+            return redirect(url_for('abschnitt'))
         db.session.commit()
         flash('Die Änderungen wurden gespeichert.')
         return redirect(url_for('abschnitt'))
