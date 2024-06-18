@@ -26,13 +26,11 @@ class User(UserMixin, db.Model):
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
     is_admin: so.Mapped[Optional[bool]] = so.mapped_column(sa.Boolean)
-<<<<<<< Updated upstream
-    wartungen = db.relationship('Wartung', back_populates='mitarbeiter', lazy='dynamic')
-=======
+
 
     def set_role(self, role):
         self.role = role
->>>>>>> Stashed changes
+
 
     def set_role(self, role):
         self.role = role
@@ -108,7 +106,6 @@ class Zug(db.Model):
 class Wartung(db.Model):
     __table_args__ = (sa.UniqueConstraint('start_time', name='uq_mitarbeiter_time'), {'extend_existing': True})
     wartung_nr = db.Column(db.String, primary_key=True)
-    # mitarbeiter_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     zug_nummer = db.Column(db.String, db.ForeignKey('zug.zug_nummer', ondelete='CASCADE'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
