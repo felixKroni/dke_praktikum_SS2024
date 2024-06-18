@@ -8,11 +8,14 @@
 
                   <tr>
                     <th>Wartung Nr</th>
-                    <th>Mitarbeiter</th>
+                    <th>Mitarbeiters</th>
                     <th>Zugnummer</th>
                     <th>Startzeit</th>
                     <th>Endzeit</th>
-                    <th>Aktionen</th>
+                      {% if current_user.is_admin %}
+                        <th>Aktionen</th>
+                      {% endif %}
+
                   </tr>
 
                 </thead>
@@ -21,18 +24,22 @@
                   {% for wartung in wartungen %}
                   <tr>
                     <td>{{ wartung.wartung_nr }}</td>
-                    <td>{{ wartung.mitarbeiter.username }}</td>
+                    <td>
+                        {% for mitarbeiter in wartung.mitarbeiters %}
+                        	{{ mitarbeiter.username }}<br>
+                        {% endfor %}
+                    </td>
                     <td>{{ wartung.zug.zug_name }}</td>
                     <td>{{ wartung.start_time }}</td>
                     <td>{{ wartung.end_time }}</td>
-
+                    {% if current_user.is_admin %}
                     <td>
                       <a href="{{ url_for('updateWartung', wartung_nr=wartung.wartung_nr) }}">Update</a>
                       <form action="{{ url_for('deleteWartung', wartung_nr=wartung.wartung_nr) }}" method="post" style="display:inline;">
                         <button type="submit" class="btn-custom" onclick="return confirm('Sind Sie sicher, dass Sie diesen Wagen löschen möchten?')">Löschen</button>
                       </form>
                     </td>
-
+                    {% endif %}
                   </tr>
                   {% endfor %}
             </table>

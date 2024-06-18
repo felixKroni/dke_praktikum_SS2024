@@ -10,6 +10,11 @@ from app import login
 
 from app import db
 
+wartung_mitarbeiter = db.Table(
+    'wartung_mitarbeiter',
+    db.Column('wartung_nr', db.String, db.ForeignKey('wartung.wartung_nr', ondelete='CASCADE'), nullable=False, primary_key=True),
+    db.Column('mitarbeiter_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False, primary_key=True)
+)
 
 class User(UserMixin, db.Model):
     __table_args__ = {'extend_existing': True}
@@ -21,7 +26,13 @@ class User(UserMixin, db.Model):
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
     is_admin: so.Mapped[Optional[bool]] = so.mapped_column(sa.Boolean)
+<<<<<<< Updated upstream
     wartungen = db.relationship('Wartung', back_populates='mitarbeiter', lazy='dynamic')
+=======
+
+    def set_role(self, role):
+        self.role = role
+>>>>>>> Stashed changes
 
     def set_role(self, role):
         self.role = role
@@ -94,19 +105,17 @@ class Zug(db.Model):
         return '<Zugnummer: {}>'.format(self.zug_nummer)
 
 
-
-
 class Wartung(db.Model):
-    __table_args__ = (sa.UniqueConstraint('mitarbeiter_id', 'start_time', name='uq_mitarbeiter_time'), {'extend_existing': True})
+    __table_args__ = (sa.UniqueConstraint('start_time', name='uq_mitarbeiter_time'), {'extend_existing': True})
     wartung_nr = db.Column(db.String, primary_key=True)
-    mitarbeiter_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    # mitarbeiter_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     zug_nummer = db.Column(db.String, db.ForeignKey('zug.zug_nummer', ondelete='CASCADE'), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
 
-    mitarbeiter = db.relationship("User", back_populates="wartungen")
+    mitarbeiters = db.relationship("User", secondary=wartung_mitarbeiter, backref='wartungs', lazy=True)
     zug = db.relationship("Zug", back_populates="wartungen")
 
     def __repr__(self):
-        return '<Wartung: Wartung-Nr {}, Mitarbeiter {}, Zugnummer {}, Start: {}, End: {}>'.format(
-            self.wartung_nr, self.mitarbeiter_id, self.zug_nummer, self.start_time, self.end_time)
+        return '<Wartung: Wartung-Nr {}, Mitarbeiters {}, Zugnummer {}, Start: {}, End: {}>'.format(
+            self.wartung_nr, self.mitarbeiters, self.zug_nummer, self.start_time, self.end_time)

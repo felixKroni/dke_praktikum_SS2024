@@ -8,3 +8,6 @@ from app.models import User, Wagen, Triebwagen, Personenwagen, Zug, Wartung
 def make_shell_context():
     return {'sa': sa, 'so': so, 'db': db, 'User': User, 'Wagen': Wagen,
             'Triebwagen': Triebwagen, 'Personenwagen': Personenwagen, 'Zug': Zug, 'Wartung' : Wartung}
+
+if __name__ == '__main__':
+    app.run(port=5002)

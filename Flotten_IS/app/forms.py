@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, FloatField, IntegerField, \
-    DateField, TextAreaField, DateTimeField
+    DateField, TextAreaField, DateTimeField, DateTimeLocalField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Length
 
 import sqlalchemy as sa
@@ -217,10 +217,10 @@ class UpdateZugForm(FlaskForm):
 
 class WartungForm(FlaskForm):
     wartung_nr = StringField('Wartungnummer', validators=[DataRequired(), Length(min=5, max=10)])
-    mitarbeiter_id = SelectField('Mitarbeiter', validators=[DataRequired()])
+    mitarbeiter_ids = SelectField('Mitarbeiters', validators=[DataRequired()], name='mitarbeiter_ids[]')
     zug_nummer = SelectField('Zugnummer', validators=[DataRequired()])
-    start_time = DateTimeField('Startzeit', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
-    end_time = DateTimeField('Endzeit', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
+    start_time = DateTimeLocalField('Startzeit', validators=[DataRequired()])
+    end_time = DateTimeLocalField('Endzeit', validators=[DataRequired()])
     submit = SubmitField('Speichern')
 
     def validate_wartung_nr(self, wartung_nr):
@@ -232,16 +232,16 @@ class WartungForm(FlaskForm):
 
 class UpdateWartungForm(FlaskForm):
     wartung_nr = StringField('Wartungnummer', validators=[DataRequired(), Length(min=5, max=10)])
-    mitarbeiter_id = SelectField('Mitarbeiter', validators=[DataRequired()])
+    mitarbeiter_ids = SelectField('Mitarbeiters', validators=[DataRequired()], name='mitarbeiter_ids[]')
     zug_nummer = SelectField('Zugnummer', validators=[DataRequired()])
-    start_time = DateTimeField('Startzeit', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
-    end_time = DateTimeField('Endzeit', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
+    start_time = DateTimeLocalField('Startzeit', validators=[DataRequired()])
+    end_time = DateTimeLocalField('Endzeit', validators=[DataRequired()])
     submit = SubmitField('Speichern')
 
-    def __init__(self, original_wartung_nr, original_mitarbeiter_id, original_zug_nummer, original_start_time, original_end_time, *args, **kwargs):
+    def __init__(self, original_wartung_nr, original_mitarbeiter_ids, original_zug_nummer, original_start_time, original_end_time, *args, **kwargs):
         super(UpdateWartungForm, self).__init__(*args, **kwargs)
         self.original_wartung_nr = original_wartung_nr
-        self.original_mitarbeiter_id = original_mitarbeiter_id
+        self.original_mitarbeiter_ids = original_mitarbeiter_ids
         self.original_zug_nummer = original_zug_nummer
         self.original_start_time = original_start_time
         self.original_end_time = original_end_time

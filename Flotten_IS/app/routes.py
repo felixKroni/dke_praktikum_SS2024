@@ -136,6 +136,10 @@ def deleteUser(user_id):
 def wagenOverview():
         triebwagen = Triebwagen.query.all()
         personenwagen = Personenwagen.query.all()
+        # Get zug for personenwagen
+        for p in personenwagen:
+            p.zug = Zug.query.filter_by(zug_nummer=p.zug_nummer).first()
+
         return render_template('wagenoverview.html', title='Wagenübersicht', triebwagen=triebwagen, personenwagen=personenwagen)
 
 
@@ -384,7 +388,12 @@ def get_zug():
 @app.route('/wartungOverview')
 @login_required
 def wartungOverview():
-    wartungen = Wartung.query.all()
+    if current_user.is_admin:
+        wartungen = Wartung.query.all()
+    else:
+        user_id = current_user.id
+        wartungen = Wartung.query.join(Wartung.mitarbeiters).filter(User.id == user_id).all()
+
     return render_template('wartungoverview.html', wartungen=wartungen)
 
 
@@ -393,32 +402,43 @@ def wartungOverview():
 @admin_required
 def createWartung():
     form = WartungForm()
-    form.mitarbeiter_id.choices = [(u.id, u.username) for u in User.query.filter_by(is_admin=False).all()]
+    form.mitarbeiter_ids.choices = [(u.id, u.username) for u in User.query.filter_by(is_admin=False).all()]
     form.zug_nummer.choices = [(z.zug_nummer, z.zug_name) for z in Zug.query.all()]
 
     if form.validate_on_submit():
-
-        mitarbeiter_id = form.mitarbeiter_id.data
+        mitarbeiter_ids = form.mitarbeiter_ids.raw_data
         start_time = form.start_time.data
         end_time = form.end_time.data
-        existing_wartung = Wartung.query.filter_by(mitarbeiter_id=mitarbeiter_id).filter(
-            (Wartung.start_time <= start_time) & (Wartung.end_time >= start_time) |
-            (Wartung.start_time <= end_time) & (Wartung.end_time >= end_time)
-        ).first()
 
-        if existing_wartung:
-            flash('Warning: Der ausgewählte Mitarbeiter hat bereits eine Wartung in diesem Zeitraum!')
-            return redirect(url_for('createWartung'))
+        for mitarbeiter_id in mitarbeiter_ids:
+            mitarbeiter = User.query.get(mitarbeiter_id)
+            for wartung in mitarbeiter.wartungs:
+                if wartung.wartung_nr == form.wartung_nr.data:
+                    continue
+
+                if (
+                    (wartung.start_time <= start_time <= wartung.end_time)
+                    or (wartung.start_time <= end_time <= wartung.end_time)
+                    or (start_time <= wartung.start_time <= end_time)
+                    or (start_time <= wartung.end_time <= end_time)
+                ):
+                    flash(f'Warning: Member {mitarbeiter.username} is not available from {start_time} to {end_time}!')
+                    return redirect(url_for('createWartung'))
 
         wartung = Wartung(
             wartung_nr = form.wartung_nr.data,
-            mitarbeiter_id=form.mitarbeiter_id.data,
             zug_nummer=form.zug_nummer.data,
             start_time=form.start_time.data,
             end_time=form.end_time.data
         )
         db.session.add(wartung)
         db.session.commit()
+
+        for mitarbeiter_id in mitarbeiter_ids:
+            wartung.mitarbeiters.append(User.query.get(mitarbeiter_id))
+
+        db.session.commit()
+
         flash('Wartung wurde erfolgreich erstellt!')
         return redirect(url_for('wartungOverview'))
 
@@ -434,25 +454,54 @@ def updateWartung(wartung_nr):
         flash('Wartung nicht gefunden!')
         return redirect(url_for('wartungOverview'))
 
+    mitarbeiter_ids = [m.id for m in wartung.mitarbeiters]
+
     form = UpdateWartungForm(
         original_wartung_nr=wartung.wartung_nr,
-        original_mitarbeiter_id=wartung.mitarbeiter_id,
+        original_mitarbeiter_ids=mitarbeiter_ids,
         original_zug_nummer=wartung.zug_nummer,
         original_start_time=wartung.start_time,
         original_end_time=wartung.end_time,
         obj=wartung
     )
 
-    form.mitarbeiter_id.choices = [(u.id, u.username) for u in User.query.filter_by(is_admin=False).all()]
+    form.mitarbeiter_ids.choices = [(u.id, u.username, True if u.id in mitarbeiter_ids else False) for u in User.query.filter_by(is_admin=False).all()]
     form.zug_nummer.choices = [(z.zug_nummer, z.zug_name) for z in Zug.query.all()]
 
     if form.validate_on_submit():
+        form_mitarbeiter_ids = form.mitarbeiter_ids.raw_data
+        start_time = form.start_time.data
+        end_time = form.end_time.data
+
+        for mitarbeiter_id in form_mitarbeiter_ids:
+            mitarbeiter = User.query.get(mitarbeiter_id)
+            for wartung in mitarbeiter.wartungs:
+                if wartung.wartung_nr == form.wartung_nr.data:
+                    continue
+
+                if (
+                    (wartung.start_time <= start_time <= wartung.end_time)
+                    or (wartung.start_time <= end_time <= wartung.end_time)
+                    or (start_time <= wartung.start_time <= end_time)
+                    or (start_time <= wartung.end_time <= end_time)
+                ):
+                    flash(f'Warning: Member {mitarbeiter.username} is not available from {start_time} to {end_time}!')
+                    return redirect(url_for('updateWartung' ,wartung_nr=wartung_nr))
+
         wartung.wartung_nr = form.wartung_nr.data
-        wartung.mitarbeiter_id = form.mitarbeiter_id.data
         wartung.zug_nummer = form.zug_nummer.data
-        wartung.start_time = form.start_time.data
-        wartung.end_time = form.end_time.data
+        wartung.start_time = start_time
+        wartung.end_time = end_time
         db.session.commit()
+
+        # Remove all existing relationships
+        wartung.mitarbeiters.clear()
+        db.session.commit()
+
+        for mitarbeiter_id in form.mitarbeiter_ids.raw_data:
+            wartung.mitarbeiters.append(User.query.get(mitarbeiter_id))
+        db.session.commit()
+
         flash('Wartung wurde erfolgreich aktualisiert!')
         return redirect(url_for('wartungOverview'))
 

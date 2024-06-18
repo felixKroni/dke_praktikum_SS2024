@@ -27,40 +27,33 @@
                 </div>
 
                 <div>
-                    {{ form.mitarbeiter_id.label(class="form-label") }}<br>
-                    {{ form.mitarbeiter_id(class="form-control") }}
-                    {% for error in form.mitarbeiter_id.errors %}
-                    <span class="text-danger">{{ error }}</span>
+                    {{ form.mitarbeiter_ids.label (class="form-label") }}<br>
+                    {% for (id, name, checked) in form.mitarbeiter_ids.choices %}
+                        <div class="form-check">
+                            <input class="form-check-input" name="{{ form.mitarbeiter_ids.name }}" type="checkbox" value="{{ id }}" id="{{ id }}" {% if checked %} checked {% endif %} >
+                            <label class="form-check-label" for="{{ id }}">
+                                {{ name }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                    {% for error in form.mitarbeiter_ids.errors %}
+                        <span class="text-danger">{{ error }}</span>
                     {% endfor %}
                 </div>
 
                 <div>
-                    {{ form.start_time.label(class="form-control-label") }}<br>
-                    <div class="input-group date" id="start_time_picker">
-                        {{ form.start_time(class="form-control", size=32) }}
-                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="glyphicon glyphicon-calendar"></i>
-                            </span>
-                        </div>
-                    </div>
+                    {{ form.start_time.label (class="form-control-label")}}<br>
+                    {{ form.start_time (type="datetime-local", class="form-control", size=32)}}
                     {% for error in form.start_time.errors %}
-                    <span class="text-danger">{{ error }}</span>
+                        <span class="text-danger">{{ error }}</span>
                     {% endfor %}
                 </div>
 
                 <div>
-                    {{ form.end_time.label(class="form-control-label") }}<br>
-                    <div class="input-group date" id="end_time_picker">
-                        {{ form.end_time(class="form-control", size=32) }}
-                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="glyphicon glyphicon-calendar"></i>
-                            </span>
-                        </div>
-                    </div>
+                    {{ form.end_time.label (class="form-control-label")}}<br>
+                    {{ form.end_time (type="datetime-local", class="form-control", size=32)}}
                     {% for error in form.end_time.errors %}
-                    <span class="text-danger">{{ error }}</span>
+                        <span class="text-danger">{{ error }}</span>
                     {% endfor %}
                 </div><br>
 
