@@ -24,7 +24,7 @@ pip install -r requirements.txt
 ## Starten Sie die Anwendung
 Führen Sie den folgenden Befehl aus, um die Anwendung zu starten:
 ```bash
-flask run --port:5001
+flask run --port=5001
 ```
 # Dokumentation der Anwendung
 
