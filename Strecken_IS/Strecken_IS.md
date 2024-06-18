@@ -1,10 +1,10 @@
 # Strecken IS - Projekt Setup
 
-Folgen Sie diesen Schritten, um das Strecken_IS Projekt auf einem Linux-System einzurichten.
+Folgen Sie diesen Schritten, um das Strecken_IS Projekt auf einem Linux-System einzurichten. Sollten Sie das Projektsetup bereits ausgeführt haben, können Sie direkt zum Punkt [Starten Sie die Anwendung](#starten-sie-die-anwendung) springen. Vergessen Sie nicht davor die [virtuelle Umgebung zu aktivieren](#aktivieren-sie-die-virtuelle-umgebung).
 
 ## Erstellen Sie eine virtuelle Umgebung
 
-1. Navigieren Sie zu dem Verzeichnis, in dem Sie die virtuelle Umgebung erstellen möchten.
+1. Navigieren Sie in das Verzeichnis `Strecken_IS` (Ausgehend vom Hauptverzeichnis des Projekts).
 2. Führen Sie den folgenden Befehl aus, um eine virtuelle Umgebung namens `venv` zu erstellen:
 
 ```bash
@@ -26,7 +26,7 @@ Führen Sie den folgenden Befehl aus, um die Anwendung zu starten:
 ```bash
 flask run --port:5001
 ```
-## Dokumentation der Anwendung
+# Dokumentation der Anwendung
 
 Das Projekt ist eine Webanwendung, die mit dem Flask-Framework in Python erstellt wurde. Es verwendet SQLAlchemy als ORM (Object-Relational Mapper) für die Datenbankinteraktionen und Flask-Login für die Benutzerauthentifizierung.
 
