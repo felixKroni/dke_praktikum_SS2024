@@ -29,14 +29,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-'''
-@app.route('/')
-@app.route('/index')
-@login_required
-def index():
-    zug = Zug.query.order_by('zug_name').all()
-    return render_template('zugoverview.html', title='Home', zug=zug)
-'''
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -485,7 +477,7 @@ def updateWartung(wartung_nr):
                     or (start_time <= wartung.start_time <= end_time)
                     or (start_time <= wartung.end_time <= end_time)
                 ):
-                    flash(f'Warning: Member {mitarbeiter.username} is not available from {start_time} to {end_time}!')
+                    flash(f'Warning: Mitarbeiter {mitarbeiter.username} ist von {start_time} bis {end_time} nicht verfügbar!')
                     return redirect(url_for('updateWartung' ,wartung_nr=wartung_nr))
 
         wartung.wartung_nr = form.wartung_nr.data
