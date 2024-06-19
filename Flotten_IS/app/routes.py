@@ -438,7 +438,7 @@ def createWartung():
                     or (start_time <= wartung.start_time <= end_time)
                     or (start_time <= wartung.end_time <= end_time)
                 ):
-                    flash('Warning: Mitarbeiter {mitarbeiter.username} ist von {start_time} bis {end_time}!')
+                    flash('Warning: Mitarbeiter {mitarbeiter.username} ist von {start_time} bis {end_time} nicht verfügbar!!')
                     return redirect(url_for('createWartung'))
 
         wartung = Wartung(
