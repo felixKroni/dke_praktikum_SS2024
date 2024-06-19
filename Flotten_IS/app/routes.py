@@ -206,15 +206,28 @@ def updateWagen(wagennummer):
 @admin_required
 def deleteWagen(wagennummer):
     wagen = Wagen.query.filter_by(wagennummer=wagennummer).first()
-    db.session.delete(wagen)
-    if type(wagen) == Personenwagen:
-            zug = Zug.query.filter_by(zug_nummer=wagen.zug_nummer).first()
-            if zug is not None and zug.personenwagen.first() is None:
-                db.session.delete(zug)
 
+    if not wagen:
+        flash('Wagen nicht gefunden!', 'error')
+        return redirect(url_for('wagenOverview'))
+
+    if isinstance(wagen, Triebwagen):
+        zug = Zug.query.filter_by(triebwagen_nr=wagennummer).first()
+        if zug:
+            flash('Warnung! Triebwagen {} wird in einem Zug verwendet und kann nicht gelöscht werden!'.format(wagennummer), 'error')
+            return redirect(url_for('wagenOverview'))
+
+    if isinstance(wagen, Personenwagen):
+        zug = Zug.query.filter(Zug.personenwagen.any(wagennummer=wagennummer)).first()
+        if zug:
+            flash('Warnung! Personenwagen {} wird in einem Zug verwendet und kann nicht gelöscht werden!'.format(wagennummer), 'error')
+            return redirect(url_for('wagenOverview'))
+
+    db.session.delete(wagen)
     db.session.commit()
     flash('{} wurde erfolgreich gelöscht!'.format(wagennummer))
     return redirect(url_for('wagenOverview'))
+
 
 @app.route('/')
 @app.route('/Zugübersicht')
@@ -348,22 +361,33 @@ def updateZug(zug_nummer):
 @login_required
 @admin_required
 def deleteZug(zug_nummer):
-
     zug = Zug.query.filter_by(zug_nummer=zug_nummer).first()
+
     if zug is None:
+        flash('Zug mit der Nummer {} nicht gefunden!'.format(zug_nummer), 'error')
         return redirect(url_for('zugOverview'))
+
+    wartung = Wartung.query.filter_by(zug_nummer=zug_nummer).first()
+    if wartung:
+        flash('Zug {} wird in einer Wartung verwendet und kann nicht gelöscht werden!'.format(zug_nummer), 'error')
+        return redirect(url_for('zugOverview'))
+
     db.session.delete(zug)
     db.session.commit()
-
     flash('Zug {} wurde erfolgreich gelöscht!'.format(zug_nummer))
     return redirect(url_for('zugOverview'))
 
 
+
 @app.route('/api/züge', methods=['GET'])
 def get_zug():
-    zug = Zug.query.all()
-    if zug is None:
-        return jsonify({'message': 'Der Zug ist nicht verfügbar'}), 404
+    zug = Zug.query.outerjoin(Wartung).filter(
+        (Wartung.zug_nummer == None) | (Wartung.end_time < sa.func.now())
+    ).all()
+
+    if not zug:
+        return jsonify({'message': 'Keine verfügbaren Züge'}), 404
+
     zug_data = []
     for z in zug:
         zug_data.append({
@@ -414,7 +438,7 @@ def createWartung():
                     or (start_time <= wartung.start_time <= end_time)
                     or (start_time <= wartung.end_time <= end_time)
                 ):
-                    flash(f'Warning: Member {mitarbeiter.username} is not available from {start_time} to {end_time}!')
+                    flash('Warning: Mitarbeiter {mitarbeiter.username} ist von {start_time} bis {end_time}!')
                     return redirect(url_for('createWartung'))
 
         wartung = Wartung(
@@ -465,6 +489,7 @@ def updateWartung(wartung_nr):
         start_time = form.start_time.data
         end_time = form.end_time.data
 
+
         for mitarbeiter_id in form_mitarbeiter_ids:
             mitarbeiter = User.query.get(mitarbeiter_id)
             for wartung in mitarbeiter.wartungs:
@@ -477,7 +502,9 @@ def updateWartung(wartung_nr):
                     or (start_time <= wartung.start_time <= end_time)
                     or (start_time <= wartung.end_time <= end_time)
                 ):
-                    flash(f'Warning: Mitarbeiter {mitarbeiter.username} ist von {start_time} bis {end_time} nicht verfügbar!')
+
+                    flash('Warning: Mitarbeiter {mitarbeiter.username} ist von {start_time} bis {end_time} nicht verfügbar!')
+
                     return redirect(url_for('updateWartung' ,wartung_nr=wartung_nr))
 
         wartung.wartung_nr = form.wartung_nr.data
@@ -486,7 +513,6 @@ def updateWartung(wartung_nr):
         wartung.end_time = end_time
         db.session.commit()
 
-        # Remove all existing relationships
         wartung.mitarbeiters.clear()
         db.session.commit()
 
