@@ -47,53 +47,22 @@ class Database:
         __init__(db_path)
 
     def insert_testdata(self):
-        """self.Session.query(Mitarbeiter).delete()
-        self.Session.query(Zug).delete()
-        self.Session.query(Abschnitt).delete()
-        self.Session.query(Halteplan).delete()
-        self.Session.query(AbschnittHalteplan).delete()"""
         fake = Faker()
 
-        #Zug Data
-        """newZug = Zug(name=fake.name(), spurenweite=550)
-        addedZug = self.baseController.add(newZug)
-        print("Added Zug: " + str(addedZug))"""
+        #Zug Daten
         self.getZuege()
 
-        #Mitarbeiter Data
-        if self.get_controller("ma").get_mitarbeiter_by_username("1") is None:
-            newMitarbeiter = Mitarbeiter(name="Caps", svnr="12345678", username="1", role="admin", email="caps.claps@g2.at")
-            newMitarbeiter.set_password("12")
+        #Default Admin
+        if self.get_controller("ma").does_admin_exist() is False:
+            print("No admin found, creating default...")
+            newMitarbeiter = Mitarbeiter(name=fake.name(), svnr="12345678", username="admin", role="admin", email=fake.email())
+            newMitarbeiter.set_password("admin")
             addedMitarbeiter = self.baseController.add(newMitarbeiter)
-            print("Added Mitarbeiter: " + str(addedMitarbeiter))
+            print("Added Default Admin")
+            print("username: admin")
+            print("password: admin")
+            print("change password after first login!")
 
-        #Abschnitt Data
-        """
-        abschnitt1 = Abschnitt(spurenweite=1.435, nutzungsentgelt=100.0, StartBahnhof="Wien", EndBahnhof="Budapest")
-        abschnitt2 = Abschnitt(spurenweite=1.435, nutzungsentgelt=100.0, StartBahnhof="Budapest", EndBahnhof="Sofia")
-        abschnitt3 = Abschnitt(spurenweite=1.435, nutzungsentgelt=100.0, StartBahnhof="Sofia", EndBahnhof="Istanbul")
-        self.baseController.add(abschnitt1)
-        self.baseController.add(abschnitt2)
-        self.baseController.add(abschnitt3)
-
-
-        #Halteplan Data
-        halteplan1 = Halteplan(name="Orient Express Long", streckenName="Orient Route")
-        self.baseController.add(halteplan1)
-
-
-
-        #AbschnittHalteplan Data to link
-        wien_budapest = AbschnittHalteplan(abschnitt_id=abschnitt1.id, halteplan_id=halteplan1.id, reihung=1)
-        budapest_sofia = AbschnittHalteplan(abschnitt_id=abschnitt2.id, halteplan_id=halteplan1.id, reihung=2)
-        sofia_istanbul = AbschnittHalteplan(abschnitt_id=abschnitt3.id, halteplan_id=halteplan1.id, reihung=3)
-
-        self.baseController.add(wien_budapest)
-        self.baseController.add(budapest_sofia)
-        self.baseController.add(sofia_istanbul)
-        """
-
-        #Commit
         self.Session.commit()
 
 

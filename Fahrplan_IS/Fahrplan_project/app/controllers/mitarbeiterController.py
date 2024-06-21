@@ -15,6 +15,9 @@ class MitarbeiterController(BaseController):
     def get_mitarbeiter_by_role(self, role):
         return self.session.query(Mitarbeiter).filter(Mitarbeiter.role == role).all()
 
+    def does_admin_exist(self):
+        return self.session.query(Mitarbeiter).filter(Mitarbeiter.role == "admin").first() is not None
+
 
 
 
