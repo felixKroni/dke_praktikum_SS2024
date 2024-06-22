@@ -19,6 +19,7 @@
                     <th>Triebwagen</th>
                     <th>Personenwagen</th>
                     <th>Spurweite</th>
+
                     {% if current_user.is_admin %}
                         <th>Aktionen</th>
                     {% endif %}
@@ -42,11 +43,12 @@
                         {% endif %}
                     {% endfor %}
 
+
                     {% if current_user.is_admin %}
                     <td>
-                        <div style="display: inline;">
-                        <button class="btn-custom">
-                            <a href="{{ url_for('updateZug', zug_nummer=z.zug_nummer) }}" role="button">Update</a>
+                        <div>
+                        <button class="btn btn-primary">
+                            <a href="{{ url_for('updateZug', zug_nummer=z.zug_nummer) }}" style="color: white;">Bearbeiten</a>
                         </button>
 
                         <form action="{{ url_for('deleteZug', zug_nummer=z.zug_nummer) }}" method="post" style="display: inline;">

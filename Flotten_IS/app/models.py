@@ -4,7 +4,6 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from flask_login import UserMixin
 from sqlalchemy.ext.declarative import AbstractConcreteBase
-from sqlalchemy.orm import configure_mappers
 
 from app import login
 

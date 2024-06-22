@@ -39,7 +39,7 @@ def login():
         user = db.session.scalar(
             sa.select(User).where(User.username == form.username.data))
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('ungültiger Benutzername oder Passwort')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -65,7 +65,7 @@ def createUser():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('User created successfully!')
+        flash('User wurde erfolgreich erstellt!')
         return redirect(url_for('userOverview'))
     return render_template('create_user.html', title='Create User', form=form)
 
@@ -128,7 +128,6 @@ def deleteUser(user_id):
 def wagenOverview():
         triebwagen = Triebwagen.query.all()
         personenwagen = Personenwagen.query.all()
-        # Get zug for personenwagen
         for p in personenwagen:
             p.zug = Zug.query.filter_by(zug_nummer=p.zug_nummer).first()
 
@@ -176,8 +175,12 @@ def updateWagen(wagennummer):
     form = UpdateTriebwagenForm(wagennummer) if isinstance(wagen, Triebwagen) else UpdatePersonenwagenForm(wagennummer)
 
     if form.validate_on_submit():
+        if wagen.zug is not None:
+            flash('Wagen {} ist einem Zug zugeordnet und die Spurweite kann nicht aktualisiert werden!'.format(
+                wagennummer))
+            return redirect(url_for('wagenOverview'))
+
         wagen.wagennummer = form.wagennummer.data
-        wagen.spurweite = form.spurweite.data
 
         if isinstance(wagen, Triebwagen):
             wagen.maxZugkraft = form.maxZugkraft.data

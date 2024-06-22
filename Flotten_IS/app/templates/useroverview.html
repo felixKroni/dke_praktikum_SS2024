@@ -25,7 +25,7 @@
                     <td>
                         <div>
                             <button class="btn btn-primary">
-                                <a href="{{ url_for('updateUser', user_id=user.id) }}" style="color: white;">Update</a>
+                                <a href="{{ url_for('updateUser', user_id=user.id) }}" style="color: white;">Bearbeiten</a>
                             </button>
                             <form action="{{ url_for('deleteUser', user_id=user.id) }}" method="post" style="display: inline;">
                                 <button type="submit" class="btn-custom" onclick="return confirm('Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?')">Löschen</button>

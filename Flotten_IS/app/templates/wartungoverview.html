@@ -34,7 +34,7 @@
                     <td>{{ wartung.end_time }}</td>
                     {% if current_user.is_admin %}
                     <td>
-                      <a href="{{ url_for('updateWartung', wartung_nr=wartung.wartung_nr) }}">Update</a>
+                      <a href="{{ url_for('updateWartung', wartung_nr=wartung.wartung_nr) }}">Bearbeiten</a>
                       <form action="{{ url_for('deleteWartung', wartung_nr=wartung.wartung_nr) }}" method="post" style="display:inline;">
                         <button type="submit" class="btn-custom" onclick="return confirm('Sind Sie sicher, dass Sie diesen Wagen löschen möchten?')">Löschen</button>
                       </form>

@@ -24,7 +24,7 @@
                 {% for error in form.zug_nummer.errors %}
                     <span class="text-danger">{{ error }}</span>
                 {% endfor %}
-            </div>
+            </div><br>
 
             <div>
                 {{ form.mitarbeiter_ids.label (class="form-label") }}<br>
@@ -41,7 +41,7 @@
                 {% for error in form.mitarbeiter_ids.errors %}
                     <span class="text-danger">{{ error }}</span>
                 {% endfor %}
-            </div>
+            </div><br>
 
 
             <div>
@@ -50,7 +50,7 @@
                 {% for error in form.start_time.errors %}
                     <span class="text-danger">{{ error }}</span>
                 {% endfor %}
-            </div>
+            </div><br>
 
             <div>
               {{ form.end_time.label (class="form-control-label")}}<br>
