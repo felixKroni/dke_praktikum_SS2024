@@ -26,6 +26,15 @@ Führen Sie den folgenden Befehl aus, um die Anwendung zu starten:
 ```bash
 flask run --port=5001
 ```
+## Account für den Login
+Username: 
+```bash
+admin
+```
+Password:
+```bash
+a
+```
 # Dokumentation der Anwendung
 
 Das Projekt ist eine Webanwendung, die mit dem Flask-Framework in Python erstellt wurde. Es verwendet SQLAlchemy als ORM (Object-Relational Mapper) für die Datenbankinteraktionen und Flask-Login für die Benutzerauthentifizierung.
