@@ -74,7 +74,7 @@ Diese Klasse repräsentiert eine Wartung für einen Zug. Sie hat Attribute wie `
 - **Wagen und Triebwagen/Personenwagen:** Triebwagen und Personenwagen erben von Wagen (Vererbung).
 - **Zug und Triebwagen:** Ein Zug hat genau einen Triebwagen (one-to-one Beziehung).
 - **Zug und Personenwagen:** Ein Zug kann mehrere Personenwagen haben (one-to-many Beziehung).
-- **Zug und Wartung:** Ein Zug kann mehrere Wartungen haben (eins-zu-viele Beziehung).
+- **Zug und Wartung:** Ein Zug kann mehrere Wartungen haben (one-to-many Beziehung).
 
 ## Die Datei `routes.py`
 Die Datei `routes.py` ist ein zentraler Bestandteil des Projekts, da sie die Routen der Webanwendung definiert. Jede dieser Routen ist mit einer Funktion verbunden, die festlegt, welche Aktionen bei einem Aufruf der Route durchgeführt werden. Hier sind die wichtigsten Routen nach Administrator und Mitarbeiter Rechten kategorisiert: 
